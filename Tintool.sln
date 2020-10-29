@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tintool", "Tintool.csproj", "{464B2554-06F7-4205-836E-76FAF0B48724}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{464B2554-06F7-4205-836E-76FAF0B48724}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{464B2554-06F7-4205-836E-76FAF0B48724}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{464B2554-06F7-4205-836E-76FAF0B48724}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{464B2554-06F7-4205-836E-76FAF0B48724}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {881C8D18-899D-4AF0-BCB1-6B0CC045824F}
+	EndGlobalSection
+EndGlobal

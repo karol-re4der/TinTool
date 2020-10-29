@@ -1,0 +1,25 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:datastructures="clr-namespace:Tinder.DataStructures" xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:local="clr-namespace:Tintool.Views" 
+        x:Class="Tintool.Views.LoggedView"
+        mc:Ignorable="d"
+        Title="Tintool - logged" Height="450" Width="800">
+    <Grid>
+        <TabControl cal:Message.Attach="[Event SelectionChanged] = [Action RefreshContent($eventArgs)]">
+            <TabItem Header="Tools" x:Name="ToolsTab">
+                <ContentControl x:Name="ToolsUserControl"/>
+            </TabItem>
+            <TabItem Header="Matches" Name="MatchesTab">
+                <ContentControl x:Name="MatchesUserControl"/>
+            </TabItem>
+            <TabItem Header="Messages">
+            </TabItem>
+            <TabItem Header="Misc">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
