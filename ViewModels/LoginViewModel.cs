@@ -3,6 +3,7 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using Tintool.Views;
 
 namespace Tintool.ViewModels
@@ -48,7 +49,7 @@ namespace Tintool.ViewModels
             }
             else
             {
-
+                MessageBox.Show("Cannot authenticate");
             }
         }
     }

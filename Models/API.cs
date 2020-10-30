@@ -19,19 +19,21 @@ namespace Models
     {
         private string token;
         private string uri = "https://api.gotinder.com/";
+        HttpClient client;
         private Random rand = new Random();
         private ProgressBar progressIndicator;
 
         public API(string token)
         {
             this.token = token;
+
+            client = new HttpClient();
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders.Add("x-auth-token", token);
         }
 
         public MatchesResponse GetMatches(int amount)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(uri);
-            client.DefaultRequestHeaders.Add("x-auth-token", token);
             HttpResponseMessage response = client.GetAsync("/v2/matches?count=" + amount).Result;
 
 
@@ -48,11 +50,7 @@ namespace Models
         public NearbyResponse GetNearby()
         {
             Delay();
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(uri);
-            client.DefaultRequestHeaders.Add("x-auth-token", token);
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
-
 
             if (!response.IsSuccessStatusCode)
             {
@@ -67,9 +65,6 @@ namespace Models
         public LikeResponse SendLike(string userID)
         {
             Delay();
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(uri);
-            client.DefaultRequestHeaders.Add("x-auth-token", token);
             HttpResponseMessage response = client.GetAsync("/like/"+userID).Result;
 
 
@@ -100,11 +95,7 @@ namespace Models
 
         public bool Authenticate()
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(uri);
-            client.DefaultRequestHeaders.Add("x-auth-token", token);
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
-
 
             if (response.IsSuccessStatusCode)
             {
@@ -114,18 +105,6 @@ namespace Models
             {
                 return false;
             }
-        }
-        
-        public void RunWorker(DoWorkEventHandler workAction, ProgressBar progressIndicator)
-        {
-            this.progressIndicator = progressIndicator;
-
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.DoWork += workAction;
-            worker.ProgressChanged += workerProgress;
-
-            worker.RunWorkerAsync();
         }
 
         public int SwipeAll()
@@ -139,7 +118,6 @@ namespace Models
                 {
                     foreach (Tintool.Models.DataStructures.Responses.Nearby.Result user in nearby.data.results)
                     {
-                        //(sender as BackgroundWorker).ReportProgress(iterations);
                         iterations++;
                         var likeResult = SendLike(user.user._id);
 
@@ -180,11 +158,6 @@ namespace Models
         private void Delay()
         {
             System.Threading.Thread.Sleep(rand.Next() % 50 + 50);
-        }
-
-        void workerProgress(object sender, ProgressChangedEventArgs e)
-        {
-            progressIndicator.Value = e.ProgressPercentage;
         }
     }
 }
