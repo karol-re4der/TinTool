@@ -12,6 +12,7 @@ using Tintool.Models.DataStructures.Responses.Like;
 using Tintool.Models.DataStructures.Responses.Like.Tintool.Models.DataStructures.Responses.Like;
 using System.ComponentModel;
 using System.Windows.Controls;
+using Tintool.Models.DataStructures.UserResponse;
 
 namespace Models
 {
@@ -20,13 +21,13 @@ namespace Models
         private string token;
         private string uri = "https://api.gotinder.com/";
         HttpClient client;
-        private Random rand = new Random();
-        private ProgressBar progressIndicator;
+        private Random rand;
 
         public API(string token)
         {
             this.token = token;
 
+            rand = new Random();
             client = new HttpClient();
             client.BaseAddress = new Uri(uri);
             client.DefaultRequestHeaders.Add("x-auth-token", token);
@@ -60,6 +61,22 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
             return JsonSerializer.Deserialize<NearbyResponse>(textResponse);
+        }
+
+        public UserResponse GetUser(string userID)
+        {
+            Delay();
+            HttpResponseMessage response = client.GetAsync("/user/" + userID).Result;
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
+
+            string textResponse = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<UserResponse>(textResponse);
         }
 
         public LikeResponse SendLike(string userID)

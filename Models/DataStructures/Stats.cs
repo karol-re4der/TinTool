@@ -32,14 +32,9 @@ namespace Tinder.DataStructures
             }
         }
 
-        public void Display()
-        {
-            Console.WriteLine("Average matches per day since "+date.ToString("d") + ": "+AverageMatchesPerDay());
-        }
-
         public float AverageMatchesPerDay()
         {
-            int daysPassed = DateTime.Now.Day-date.Day+1;
+            int daysPassed = (DateTime.Now-date).Days+1;
             int matchesCount = matches.Count;
             float result = (float)matchesCount/daysPassed;
             return result;

@@ -19,5 +19,25 @@ namespace Tintool.Models
                 stats.matches.Add(match);
             }
         }
+
+        public static List<string> ProximityCheck(List<DataStructures.UserResponse.Results> matches, int cutout, int distance)
+        {
+            List<string> results = new List<string>();
+
+            foreach (DataStructures.UserResponse.Results match in matches)
+            {
+                if (match!=null)
+                {
+                    if (match.distance_mi > distance)
+                    {
+                        continue;
+                    }
+
+                    results.Add(match.name);
+                }
+            }
+
+            return results;
+        }
     }
 }
