@@ -13,6 +13,7 @@ using Tintool.Models.DataStructures.Responses.Like.Tintool.Models.DataStructures
 using System.ComponentModel;
 using System.Windows.Controls;
 using Tintool.Models.DataStructures.UserResponse;
+using System.Threading.Tasks;
 
 namespace Models
 {
@@ -110,9 +111,9 @@ namespace Models
             return null;
         }
 
-        public bool Authenticate()
+        public async Task<bool> Authenticate()
         {
-            HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
+            HttpResponseMessage response = await client.GetAsync("/v2/recs/core");
 
             if (response.IsSuccessStatusCode)
             {
@@ -122,54 +123,6 @@ namespace Models
             {
                 return false;
             }
-        }
-
-        public int SwipeAll()
-        {
-            int iterations = 0;
-            int matchesGained = 0;
-
-            while (iterations < 100) {
-                NearbyResponse nearby = GetNearby();
-                if (nearby.data.results != null)
-                {
-                    foreach (Tintool.Models.DataStructures.Responses.Nearby.Result user in nearby.data.results)
-                    {
-                        iterations++;
-                        var likeResult = SendLike(user.user._id);
-
-                        if (likeResult!=null)
-                        {
-                            if(likeResult.GetType() == typeof(LikeWithoutMatchResponse))
-                            {
-
-                            }
-                            else if(likeResult.GetType() == typeof(LikeAndMatchResponse))
-                            {
-                                matchesGained++;
-                            }
-                            else
-                            {
-                                return matchesGained;
-                            }
-                        }
-                        else
-                        {
-                            return matchesGained;
-                        }
-                        
-                        if(likeResult?.likes_remaining == 0)
-                        {
-                            return matchesGained;
-                        }
-                    }
-                }
-                else
-                {
-                    return matchesGained;
-                }
-            }
-            return matchesGained;
         }
 
         private void Delay()

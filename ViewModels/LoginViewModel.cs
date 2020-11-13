@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 using Tintool.Views;
 
 namespace Tintool.ViewModels
@@ -36,21 +37,31 @@ namespace Tintool.ViewModels
             }
         }
 
-
+        private async void Authenticate()
+        {
+            try
+            {
+                API api = new API(_token);
+                if (await api.Authenticate())
+                {
+                    FileManager.SaveToken(_token);
+                    LoggedViewModel loggedViewModel = new LoggedViewModel(wm, api);
+                    wm.ShowWindow(loggedViewModel);
+                    TryClose();
+                }
+                else
+                {
+                    MessageBox.Show("Cannot authenticate");
+                }
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Error authenticating: " + e.Message);
+            }
+        }
         public void LoginAction()
         {
-            API api = new API(_token);
-            if (api.Authenticate())
-            {
-                FileManager.SaveToken(_token);
-                LoggedViewModel loggedViewModel = new LoggedViewModel(wm, api);
-                wm.ShowWindow(loggedViewModel);
-                TryClose();
-            }
-            else
-            {
-                MessageBox.Show("Cannot authenticate");
-            }
+            Authenticate();
         }
     }
 }

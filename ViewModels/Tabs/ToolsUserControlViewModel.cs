@@ -3,10 +3,13 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Tinder.DataStructures;
 using Tinder.DataStructures.Responses.Matches;
 using Tintool.Models;
+using Tintool.ViewModels.Dialogs;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -48,17 +51,23 @@ namespace Tintool.ViewModels.Tabs
             }
             set
             {
-                _swipeAllSize = int.Parse(value);
-                NotifyOfPropertyChange(() => SwipeAllSize);
+                try
+                {
+                    _swipeAllSize = int.Parse(value);
+                    NotifyOfPropertyChange(() => SwipeAllSize);
+                }catch(Exception e)
+                {
+                    _swipeAllSize = 0;
+                }
             }
         }
-
 
 
         private IWindowManager _wm;
 
         private API _api;
         private Stats _stats;
+        private ProgressDialogViewModel _dialog;
 
         public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
         {
@@ -92,9 +101,19 @@ namespace Tintool.ViewModels.Tabs
 
         public void SwipeAllAction()
         {
-            string result = "Swiped all, gained "+_api.SwipeAll()+" matches!";
-            MessageBox.Show(result);
-            Unitool.LogNewMatches(_api.GetMatches(100).data.matches, _stats);
+            if (_dialog==null)
+            {
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                CancellationToken token = tokenSource.Token;
+
+                _dialog = new ProgressDialogViewModel(_swipeAllSize, 0, 0, "No matches gained", "Swipe all!");
+                Task task = Unitool.SwipeAll(_api, _swipeAllSize, (x) => _dialog.Progress = x, (x) => _dialog.ProgressText = x + " matched!", token);
+                Action<object> finalTask = (x) => Unitool.LogNewMatches(_api.GetMatches(100).data.matches, _stats);
+                task.ContinueWith(finalTask);
+                _dialog.OnCloseAction = (x) => { tokenSource.Cancel(); _dialog = null; finalTask.Invoke(null); };
+                _wm.ShowWindow(_dialog);
+                task.Start();
+            }
         }
     }
 }
