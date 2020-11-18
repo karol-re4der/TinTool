@@ -16,7 +16,8 @@
             <TabItem Header="Matches" Name="MatchesTab">
                 <ContentControl x:Name="MatchesUserControl"/>
             </TabItem>
-            <TabItem Header="Messages">
+            <TabItem Header="Messages" Name="MessagesTab">
+                <ContentControl x:Name="MessagesUserControl"/>
             </TabItem>
             <TabItem Header="Misc">
             </TabItem>

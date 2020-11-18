@@ -23,6 +23,7 @@ namespace Tintool.ViewModels
         public API api;
 
         public MatchesUserControlViewModel MatchesUserControl { get; }
+        public MessagesUserControlViewModel MessagesUserControl { get; }
         public ToolsUserControlViewModel ToolsUserControl { get; }
 
 
@@ -36,6 +37,7 @@ namespace Tintool.ViewModels
             Unitool.LogNewMatches(api.GetMatches(100).data.matches, stats);
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
+            MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
             ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats);
         }
 
@@ -58,6 +60,10 @@ namespace Tintool.ViewModels
                 else if (tab.Equals("ToolsTab"))
                 {
                     ToolsUserControl.RefreshContent();
+                }
+                else if (tab.Equals("MessagesTab"))
+                {
+                    MessagesUserControl.RefreshContent();
                 }
             }
             else

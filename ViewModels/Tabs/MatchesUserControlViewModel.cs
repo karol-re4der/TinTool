@@ -16,8 +16,6 @@ namespace Tintool.ViewModels
         public PlotData MatchesThroughTimePlot { get; set; } = new PlotData();
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
 
-        //public string avg { get; } = "ASDASD";
-
         public MatchesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
         {
             this._wm = wm;
