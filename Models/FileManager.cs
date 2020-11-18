@@ -9,7 +9,7 @@ namespace Models
 {
     class FileManager
     {
-        private static string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private static string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"/Tintool/";
         private static string statsFileName = "tst";
         private static string statsFileExtension = ".stat";
         private static string tokenFileName = "tkn";
