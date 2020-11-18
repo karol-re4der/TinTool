@@ -64,7 +64,7 @@ namespace Tintool.ViewModels
                 else if (tab.Equals("MessagesTab"))
                 {
                     MessagesUserControl.RefreshContent();
-                    var foo = Unitool.GetMessages(api);
+                    Unitool.ValidateMatches(api, stats);
                 }
             }
             else

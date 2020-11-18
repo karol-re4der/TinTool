@@ -34,11 +34,10 @@ namespace Models
             client.DefaultRequestHeaders.Add("x-auth-token", token);
         }
 
-        public List<MessageData> GetMessages(string userID, int amount = 100)
+        public List<MessageData> GetMessages(string matchID, int amount = 100)
         {
-        https://api.gotinder.com/v2/matches/5f87585d448b7b010062cd675f9fcfa74962d601007a07f7/messages?locale=en&count=100&page_token=MjAyMC0xMS0wM1QxMToxNTo0Mi45NTla
-
-            HttpResponseMessage response = client.GetAsync($"/v2/matches/{userID}/messages?count={amount}").Result;
+            Delay();
+            HttpResponseMessage response = client.GetAsync($"/v2/matches/{matchID}/messages?count={amount}").Result;
 
 
             if (!response.IsSuccessStatusCode)
@@ -55,7 +54,7 @@ namespace Models
                 MessageData nextMessage = new MessageData
                 {
                     Text = msg.message,
-                    SenderId = msg.from
+                    ReceiverId = msg.from
                 };
                 result.Add(nextMessage);
             }

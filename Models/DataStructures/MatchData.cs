@@ -5,21 +5,24 @@ using System.Linq;
 
 namespace Tintool.Models.DataStructures
 {
+    public enum ResponseStatusTypes
+    {
+        Undefined,
+        Empty,
+        MessagedNotResponded,
+        MessagedResponded,
+        GotMessageResponded,
+        GotMessageNotResponded
+    }
+
     public class MatchData
     {
-        public enum ResponseStatusTypes
-        {
-            Undefined,
-            MessagedNotResponded,
-            MessagedResponded,
-            GotMessageResponded,
-            GotMessageNotResponded
-        }
-
         public string Id { get; set; }
         public ResponseStatusTypes ResponseStatus { get; set; } = ResponseStatusTypes.Undefined;
+        public int MessageCount = 0;
         public DateTime CreationDate { get; set; }
         public PersonData Person { get; set; }
+        public bool Active { get; set; } = true;
 
         public MatchData()
         {

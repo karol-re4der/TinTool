@@ -1,5 +1,6 @@
 ﻿using Models;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -12,28 +13,71 @@ namespace Tintool.Models
 {
     class Unitool
     {
-        public static List<MessageData> GetMessages(API api)
-        {
-            List<MessageData> result = new List<MessageData>();
-
-            string foo = "5cbb0a3178d4ba1500457ad55f9fcfa74962d601007a07f7";
-
-            var bar = api.GetMessages(foo);
-
-            return result;
-        }
-
         public static void LogNewMatches(List<MatchData> potentialMatches, Stats stats)
         {
             foreach (MatchData match in potentialMatches)
             {
+                //add
                 MatchData existing = stats.Matches.Find((x) => x.Id.Equals(match.Id));
-                if (existing != null)
+                if (existing?.Active == true)
                 {
                     stats.Matches.Remove(existing);
                 }
                 stats.Matches.Add(match);
             }
+        }
+
+        public static void ValidateMatches(API api, Stats stats)
+        {
+            foreach (MatchData match in stats.Matches)
+            {
+                if (match.Active)
+                {
+                    List<MessageData> messages = api.GetMessages(match.Id);
+
+                    //activity
+                    if (messages==null)
+                    {
+                        match.Active = false;
+                        continue;
+                    }
+                    //messages
+                    if(!(match.ResponseStatus==ResponseStatusTypes.GotMessageResponded || match.ResponseStatus == ResponseStatusTypes.MessagedResponded))
+                    {
+                        if(messages == null)
+                        {
+                            continue;
+                        }
+                        else if (messages.Find((x) => !x.ReceiverId.Equals(messages.First().ReceiverId))!=null){
+                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.MessagedResponded;
+                            }
+                            else
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.GotMessageResponded;
+                            }
+                        }
+                        else if(messages.Count>0)
+                        {
+                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.MessagedNotResponded;
+                            }
+                            else
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.GotMessageNotResponded;
+                            }
+                        }
+                        else
+                        {
+                            match.ResponseStatus = ResponseStatusTypes.Empty;
+                        }
+                        match.MessageCount = messages.Count;
+                    }
+                }
+            }
+
         }
 
         public static List<string> ProximityCheck(List<DataStructures.UserResponse.Results> matches, int cutout, int distance)
