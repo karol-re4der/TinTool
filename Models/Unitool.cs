@@ -12,6 +12,17 @@ namespace Tintool.Models
 {
     class Unitool
     {
+        public static List<MessageData> GetMessages(API api)
+        {
+            List<MessageData> result = new List<MessageData>();
+
+            string foo = "5cbb0a3178d4ba1500457ad55f9fcfa74962d601007a07f7";
+
+            var bar = api.GetMessages(foo);
+
+            return result;
+        }
+
         public static void LogNewMatches(List<MatchData> potentialMatches, Stats stats)
         {
             foreach (MatchData match in potentialMatches)

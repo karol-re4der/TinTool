@@ -7,8 +7,17 @@ namespace Tintool.Models.DataStructures
 {
     public class MatchData
     {
+        public enum ResponseStatusTypes
+        {
+            Undefined,
+            MessagedNotResponded,
+            MessagedResponded,
+            GotMessageResponded,
+            GotMessageNotResponded
+        }
+
         public string Id { get; set; }
-        public string ResponseStatus { get; set; }
+        public ResponseStatusTypes ResponseStatus { get; set; } = ResponseStatusTypes.Undefined;
         public DateTime CreationDate { get; set; }
         public PersonData Person { get; set; }
 

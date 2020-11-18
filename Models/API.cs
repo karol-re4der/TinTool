@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using Tintool.Models.DataStructures.UserResponse;
 using System.Threading.Tasks;
+using Tintool.Models.DataStructures.Responses.Messages;
 
 namespace Models
 {
@@ -31,6 +32,35 @@ namespace Models
             client = new HttpClient();
             client.BaseAddress = new Uri(uri);
             client.DefaultRequestHeaders.Add("x-auth-token", token);
+        }
+
+        public List<MessageData> GetMessages(string userID, int amount = 100)
+        {
+        https://api.gotinder.com/v2/matches/5f87585d448b7b010062cd675f9fcfa74962d601007a07f7/messages?locale=en&count=100&page_token=MjAyMC0xMS0wM1QxMToxNTo0Mi45NTla
+
+            HttpResponseMessage response = client.GetAsync($"/v2/matches/{userID}/messages?count={amount}").Result;
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
+
+            string textResponse = response.Content.ReadAsStringAsync().Result;
+
+            List<MessageData> result = new List<MessageData>();
+            foreach (Tintool.Models.DataStructures.Responses.Messages.Message msg in JsonSerializer.Deserialize<MessagesResponse>(textResponse).data.messages)
+            {
+                MessageData nextMessage = new MessageData
+                {
+                    Text = msg.message,
+                    SenderId = msg.from
+                };
+                result.Add(nextMessage);
+            }
+
+            return result;
         }
 
         public List<MatchData> GetMatches(int amount)
