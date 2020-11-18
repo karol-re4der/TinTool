@@ -9,7 +9,6 @@ using Tintool.Models.DataStructures;
 using Tintool.Models.DataStructures.Responses.Nearby;
 using Tinder.DataStructures.Responses.Matches;
 using Tintool.Models.DataStructures.Responses.Like;
-using Tintool.Models.DataStructures.Responses.Like.Tintool.Models.DataStructures.Responses.Like;
 using System.ComponentModel;
 using System.Windows.Controls;
 using Tintool.Models.DataStructures.UserResponse;
@@ -50,19 +49,14 @@ namespace Models
             List<MatchData> result = new List<MatchData>();
             foreach(Tinder.DataStructures.Responses.Matches.Match match in JsonSerializer.Deserialize<MatchesResponse>(textResponse).data.matches)
             {
-                MatchData newMatchData = new MatchData
-                {
-                    Id = match._id,
-                    Name = match.person.name,
-                    CreationDate = match.created_date,
-                };
+                MatchData newMatchData = new MatchData(match);
                 result.Add(newMatchData);
             }
 
             return result;
         }
 
-        public NearbyResponse GetNearby()
+        public List<PersonData> GetNearby()
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
@@ -74,10 +68,21 @@ namespace Models
             }
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<NearbyResponse>(textResponse);
+
+            List<PersonData> result = new List<PersonData>();
+            foreach(Result person in JsonSerializer.Deserialize<NearbyResponse>(textResponse).data.results)
+            {
+                PersonData newPerson = new PersonData
+                {
+                    Id = person.user._id,
+                    Name = person.user.name
+                };
+                result.Add(newPerson);
+            }
+            return result;
         }
 
-        public UserResponse GetUser(string userID)
+        public PersonData GetUser(string userID)
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/user/" + userID).Result;
@@ -90,10 +95,24 @@ namespace Models
             }
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<UserResponse>(textResponse);
+
+            UserResponse userResponse = JsonSerializer.Deserialize<UserResponse>(textResponse);
+            if (userResponse?.results!=null)
+            {
+                PersonData result = new PersonData
+                {
+                    Id = userResponse.results._id,
+                    Name = userResponse.results.name
+                };
+                return result;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public LikeResponse SendLike(string userID)
+        public LikeData SendLike(string userID)
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/like/"+userID).Result;
@@ -106,22 +125,26 @@ namespace Models
             }
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
+
+            LikeData result = new LikeData();
             try
             {
-                return JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
+                LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
+                result.LikesRemaining = likeWithoutMatchResponse.likes_remaining;
             }
             catch(System.Text.Json.JsonException e)
             {
                 try
                 {
-                    return JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
+                    LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
+                    result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
                 }
                 catch (System.Text.Json.JsonException e2)
                 {
-
+                    return null;
                 }
             }
-            return null;
+            return result;
         }
 
         public async Task<bool> Authenticate()

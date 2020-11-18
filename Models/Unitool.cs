@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tinder.DataStructures;
 using Tintool.Models.DataStructures;
-using Tintool.Models.DataStructures.Responses.Like.Tintool.Models.DataStructures.Responses.Like;
 using Tintool.Models.DataStructures.Responses.Nearby;
 
 namespace Tintool.Models
@@ -58,16 +57,16 @@ namespace Tintool.Models
 
                 while (iterations <= size)
                 {
-                    NearbyResponse nearby = api.GetNearby();
-                    if (nearby.data.results != null)
+                    List<PersonData> nearby = api.GetNearby();
+                    if (nearby?.Count>0)
                     {
-                        foreach (Tintool.Models.DataStructures.Responses.Nearby.Result user in nearby.data.results)
+                        foreach (PersonData person in nearby)
                         {
                             iterations++;
                             if (iterations <= size)
                             {
                                 //orginal
-                                var likeResult = api.SendLike(user.user._id);
+                                LikeData likeResult = api.SendLike(person.Id);
                                 //
 
                                 //debug
@@ -76,7 +75,7 @@ namespace Tintool.Models
                                 //likeResult.likes_remaining = 10;
                                 //
 
-                                if (likeResult != null)
+                                if (likeResult?.LikesRemaining>0)
                                 {
                                     if (token.IsCancellationRequested)
                                     {
@@ -86,11 +85,7 @@ namespace Tintool.Models
                                     {
                                         OnProgress(iterations);
                                     }
-                                    if (likeResult.GetType() == typeof(LikeWithoutMatchResponse))
-                                    {
-
-                                    }
-                                    else if (likeResult.GetType() == typeof(LikeAndMatchResponse))
+                                    if (likeResult?.ResultingMatch!=null)
                                     {
                                         matchesGained++;
                                         if (token.IsCancellationRequested)
@@ -102,17 +97,8 @@ namespace Tintool.Models
                                             OnMatch(matchesGained);
                                         }
                                     }
-                                    else
-                                    {
-                                        return;
-                                    }
                                 }
                                 else
-                                {
-                                    return;
-                                }
-
-                                if (likeResult?.likes_remaining == 0)
                                 {
                                     return;
                                 }
@@ -128,7 +114,6 @@ namespace Tintool.Models
                         return;
                     }
                 }
-                return;
             });
         }
     }

@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Tinder.DataStructures;
+using Tinder.DataStructures.Responses.Matches;
+using Tintool.Models.DataStructures;
 
 namespace Models
 {
@@ -14,7 +16,6 @@ namespace Models
         private static string statsFileExtension = ".stat";
         private static string tokenFileName = "tkn";
         private static string tokenFileExtension = ".ttool";
-
 
         public static Stats LoadStats()
         {

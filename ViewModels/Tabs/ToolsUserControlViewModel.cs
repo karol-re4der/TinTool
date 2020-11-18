@@ -92,7 +92,7 @@ namespace Tintool.ViewModels.Tabs
             List<Models.DataStructures.UserResponse.Results> potentials = new List<Models.DataStructures.UserResponse.Results>();
             foreach(MatchData match in _api.GetMatches(100))
             {
-                potentials.Add(_api.GetUser(match.Id)?.results);
+                //potentials.Add(_api.GetUser(match.Id)?.results);
             }
             var foo = Unitool.ProximityCheck(potentials, _proximityInactivityCutout, _proximityDistance);
             string resultsText = "Proximity check results: " + foo.Count + " potential matches";
