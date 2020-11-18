@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:Tintool.Views" 
         x:Class="Tintool.Views.LoggedView"
         mc:Ignorable="d"
-        Title="Tintool - logged" Height="450" Width="800">
+        Title="Tintool - logged" Height="450" Width="800"
+        cal:Message.Attach="[Event Closing] = [Action WindowExit()]">
     <Grid>
         <TabControl cal:Message.Attach="[Event SelectionChanged] = [Action RefreshContent($eventArgs)]">
             <TabItem Header="Tools" x:Name="ToolsTab">

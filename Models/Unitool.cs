@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tinder.DataStructures;
+using Tintool.Models.DataStructures;
 using Tintool.Models.DataStructures.Responses.Like.Tintool.Models.DataStructures.Responses.Like;
 using Tintool.Models.DataStructures.Responses.Nearby;
 
@@ -12,16 +13,16 @@ namespace Tintool.Models
 {
     class Unitool
     {
-        public static void LogNewMatches(List<Tinder.DataStructures.Responses.Matches.Match> potentialMatches, Stats stats)
+        public static void LogNewMatches(List<MatchData> potentialMatches, Stats stats)
         {
-            foreach (Tinder.DataStructures.Responses.Matches.Match match in potentialMatches)
+            foreach (MatchData match in potentialMatches)
             {
-                Tinder.DataStructures.Responses.Matches.Match existing = stats.matches.Find((x) => x.id.Equals(match.id));
+                MatchData existing = stats.Matches.Find((x) => x.Id.Equals(match.Id));
                 if (existing != null)
                 {
-                    stats.matches.Remove(existing);
+                    stats.Matches.Remove(existing);
                 }
-                stats.matches.Add(match);
+                stats.Matches.Add(match);
             }
         }
 

@@ -9,12 +9,12 @@ namespace Tinder.DataStructures
 {
     public class Stats
     {
-        public List<Responses.Matches.Match> matches { get; set; }
+        public List<MatchData> Matches { get; set; }
         private DateTime date = DateTime.MinValue;
 
         public Stats()
         {
-            matches = new List<Responses.Matches.Match>();
+            Matches = new List<MatchData>();
         }
 
         public void ResetDate()
@@ -22,11 +22,11 @@ namespace Tinder.DataStructures
             if (date == DateTime.MinValue)
             {
                 date = DateTime.Now;
-                foreach (Responses.Matches.Match match in matches)
+                foreach (MatchData match in Matches)
                 {
-                    if (match.created_date.CompareTo(date) < 0)
+                    if (match.CreationDate.CompareTo(date) < 0)
                     {
-                        date = match.created_date;
+                        date = match.CreationDate;
                     }
                 }
             }
@@ -35,7 +35,7 @@ namespace Tinder.DataStructures
         public float AverageMatchesPerDay()
         {
             int daysPassed = (DateTime.Now-date).Days+1;
-            int matchesCount = matches.Count;
+            int matchesCount = Matches.Count;
             float result = (float)matchesCount/daysPassed;
             return result;
         }
@@ -47,9 +47,14 @@ namespace Tinder.DataStructures
             for(DateTime i = date.Date; i<=DateTime.Now.Date;  i = i.AddDays(1))
             {
                 int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
-                int matchesThatDay = matches.Where((x)=>x.created_date.Date.Equals(i)).Count();
+                int matchesThatDay = Matches.Where((x)=>x.CreationDate.Date.Equals(i)).Count();
                 dest.Points.Add(new DataPoint(daysAgo, matchesThatDay));
             }
+        }
+
+        public void PlotMessagesThroughTime(PlotData dest)
+        {
+
         }
     }
 }

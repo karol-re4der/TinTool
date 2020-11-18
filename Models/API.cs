@@ -34,7 +34,7 @@ namespace Models
             client.DefaultRequestHeaders.Add("x-auth-token", token);
         }
 
-        public MatchesResponse GetMatches(int amount)
+        public List<MatchData> GetMatches(int amount)
         {
             HttpResponseMessage response = client.GetAsync("/v2/matches?count=" + amount).Result;
 
@@ -46,7 +46,20 @@ namespace Models
             }
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<MatchesResponse>(textResponse);
+
+            List<MatchData> result = new List<MatchData>();
+            foreach(Tinder.DataStructures.Responses.Matches.Match match in JsonSerializer.Deserialize<MatchesResponse>(textResponse).data.matches)
+            {
+                MatchData newMatchData = new MatchData
+                {
+                    Id = match._id,
+                    Name = match.person.name,
+                    CreationDate = match.created_date,
+                };
+                result.Add(newMatchData);
+            }
+
+            return result;
         }
 
         public NearbyResponse GetNearby()

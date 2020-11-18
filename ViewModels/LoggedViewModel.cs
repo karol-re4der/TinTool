@@ -34,7 +34,7 @@ namespace Tintool.ViewModels
 
             stats = FileManager.LoadStats() ?? (new Stats());
             stats.ResetDate();
-            Unitool.LogNewMatches(api.GetMatches(100).data.matches, stats);
+            Unitool.LogNewMatches(api.GetMatches(100), stats);
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
@@ -72,7 +72,7 @@ namespace Tintool.ViewModels
             }
         }
 
-        private void WindowExit(object sender, CancelEventArgs e)
+        public void WindowExit()
         {
             FileManager.SaveStats(stats);
         }

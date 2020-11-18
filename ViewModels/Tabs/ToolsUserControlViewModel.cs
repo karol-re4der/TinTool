@@ -9,6 +9,7 @@ using System.Windows;
 using Tinder.DataStructures;
 using Tinder.DataStructures.Responses.Matches;
 using Tintool.Models;
+using Tintool.Models.DataStructures;
 using Tintool.ViewModels.Dialogs;
 
 namespace Tintool.ViewModels.Tabs
@@ -89,9 +90,9 @@ namespace Tintool.ViewModels.Tabs
             //make it check only non messaged matches, then make it check for inactivity
 
             List<Models.DataStructures.UserResponse.Results> potentials = new List<Models.DataStructures.UserResponse.Results>();
-            foreach(Match match in _api.GetMatches(100).data.matches)
+            foreach(MatchData match in _api.GetMatches(100))
             {
-                potentials.Add(_api.GetUser(match.person._id)?.results);
+                potentials.Add(_api.GetUser(match.Id)?.results);
             }
             var foo = Unitool.ProximityCheck(potentials, _proximityInactivityCutout, _proximityDistance);
             string resultsText = "Proximity check results: " + foo.Count + " potential matches";
@@ -108,7 +109,7 @@ namespace Tintool.ViewModels.Tabs
 
                 _dialog = new ProgressDialogViewModel(_swipeAllSize, 0, 0, "No matches gained", "Swipe all!");
                 Task task = Unitool.SwipeAll(_api, _swipeAllSize, (x) => _dialog.Progress = x, (x) => _dialog.ProgressText = x + " matched!", token);
-                Action<object> finalTask = (x) => Unitool.LogNewMatches(_api.GetMatches(100).data.matches, _stats);
+                Action<object> finalTask = (x) => Unitool.LogNewMatches(_api.GetMatches(100), _stats);
                 task.ContinueWith(finalTask);
                 _dialog.OnCloseAction = (x) => { tokenSource.Cancel(); _dialog = null; finalTask.Invoke(null); };
                 _wm.ShowWindow(_dialog);
