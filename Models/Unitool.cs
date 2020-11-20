@@ -19,11 +19,10 @@ namespace Tintool.Models
             {
                 //add
                 MatchData existing = stats.Matches.Find((x) => x.Id.Equals(match.Id));
-                if (existing?.Active == true)
+                if (existing == null)
                 {
-                    stats.Matches.Remove(existing);
+                    stats.Matches.Add(match);
                 }
-                stats.Matches.Add(match);
             }
         }
 
@@ -41,40 +40,40 @@ namespace Tintool.Models
                         match.Active = false;
                         continue;
                     }
+
                     //messages
-                    if(!(match.ResponseStatus==ResponseStatusTypes.GotMessageResponded || match.ResponseStatus == ResponseStatusTypes.MessagedResponded))
+                    if(messages == null)
                     {
-                        if(messages == null)
+                        continue;
+                    }
+                    else if (messages.Find((x) => !x.ReceiverId.Equals(messages.First().ReceiverId))!=null){
+                        if (!messages.Last().ReceiverId.Equals(match.Person.Id))
                         {
-                            continue;
-                        }
-                        else if (messages.Find((x) => !x.ReceiverId.Equals(messages.First().ReceiverId))!=null){
-                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
-                            {
-                                match.ResponseStatus = ResponseStatusTypes.MessagedResponded;
-                            }
-                            else
-                            {
-                                match.ResponseStatus = ResponseStatusTypes.GotMessageResponded;
-                            }
-                        }
-                        else if(messages.Count>0)
-                        {
-                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
-                            {
-                                match.ResponseStatus = ResponseStatusTypes.MessagedNotResponded;
-                            }
-                            else
-                            {
-                                match.ResponseStatus = ResponseStatusTypes.GotMessageNotResponded;
-                            }
+                            match.ResponseStatus = ResponseStatusTypes.MessagedResponded;
                         }
                         else
                         {
-                            match.ResponseStatus = ResponseStatusTypes.Empty;
+                            match.ResponseStatus = ResponseStatusTypes.GotMessageResponded;
                         }
-                        match.MessageCount = messages.Count;
                     }
+                    else if(messages.Count>0)
+                    {
+                        if (!messages.Last().ReceiverId.Equals(match.Person.Id))
+                        {
+                            match.ResponseStatus = ResponseStatusTypes.MessagedNotResponded;
+                        }
+                        else
+                        {
+                            match.ResponseStatus = ResponseStatusTypes.GotMessageNotResponded;
+                        }
+                    }
+                    else
+                    {
+                        match.ResponseStatus = ResponseStatusTypes.Empty;
+                    }
+
+                    match.Conversation = messages;
+                    match.MessageCount = messages.Count;
                 }
             }
 

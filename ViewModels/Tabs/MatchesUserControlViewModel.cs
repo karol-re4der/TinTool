@@ -31,7 +31,7 @@ namespace Tintool.ViewModels
         public void Replot()
         {
             float avg = _stats.AverageMatchesPerDay();
-            MatchesThroughTimePlot.Title = "Matches per day (" + avg + " average)";
+            MatchesThroughTimePlot.Title = $"Matches per day. Average: ({avg:F2})";
             _stats.PlotMatchesThroughTime(MatchesThroughTimePlot);
 
             NotifyOfPropertyChange(() => MatchesThroughTimePlot);

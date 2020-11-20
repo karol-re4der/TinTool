@@ -7,12 +7,14 @@
              mc:Ignorable="d"
         d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <oxy:Plot x:Name="PlotItem" Title="{Binding MessagesThroughTimePlot.Title}" VerticalAlignment="Stretch" Height="407">
+        <oxy:Plot x:Name="PlotItem" Title="{Binding PlotTitle}" VerticalAlignment="Stretch" Height="407">
             <oxy:Plot.Axes>
                 <oxy:LinearAxis Title="Days ago" StartPosition="1" EndPosition="0" Position="Bottom"/>
-                <oxy:LinearAxis Title="Matches" Position="Left"/>
+                <oxy:LinearAxis Title="Messages" Position="Left"/>
             </oxy:Plot.Axes>
-            <oxy:LineSeries ItemsSource="{Binding MessagesThroughTimePlot.Points}"/>
+            <oxy:LineSeries Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
+            <oxy:LineSeries Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
+            <oxy:LineSeries Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
         </oxy:Plot>
     </DockPanel>
 </UserControl>

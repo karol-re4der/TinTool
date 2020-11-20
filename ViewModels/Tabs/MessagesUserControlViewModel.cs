@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tinder.DataStructures;
+using Tintool.Models;
 using Tintool.Models.DataStructures;
 
 namespace Tintool.ViewModels.Tabs
@@ -16,7 +17,12 @@ namespace Tintool.ViewModels.Tabs
         private Stats _stats;
 
 
-        public PlotData MessagesThroughTimePlot { get; set; } = new PlotData();
+        public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
+        public PlotData SentThroughTimePlot { get; set; } = new PlotData();
+        public PlotData ReceivedThroughTimePlot { get; set; } = new PlotData();
+
+        public string PlotTitle { get; set; } = "";
+
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
 
         public MessagesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
@@ -33,11 +39,17 @@ namespace Tintool.ViewModels.Tabs
 
         public void Replot()
         {
-            //float avg = _stats.AverageMatchesPerDay();
-            //MatchesThroughTimePlot.Title = "Matches per day (" + avg + " average)";
-            //_stats.PlotMatchesThroughTime(MatchesThroughTimePlot);
+            //Unitool.ValidateMatches(_api, _stats);
 
-            NotifyOfPropertyChange(() => MessagesThroughTimePlot);
+            PlotTitle = $"Messages per day. Response rate: {_stats.ResponseRate():F2}, Average convo length: {_stats.AverageConversationLength():F2}";
+            _stats.PlotMessagesThroughTime(TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);
+
+
+            NotifyOfPropertyChange(() => TotalThroughTimePlot);
+            NotifyOfPropertyChange(() => SentThroughTimePlot);
+            NotifyOfPropertyChange(() => ReceivedThroughTimePlot);
+            NotifyOfPropertyChange(() => PlotTitle);
+
 
             PlotItem.InvalidatePlot(true);
         }

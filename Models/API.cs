@@ -14,23 +14,24 @@ using System.Windows.Controls;
 using Tintool.Models.DataStructures.UserResponse;
 using System.Threading.Tasks;
 using Tintool.Models.DataStructures.Responses.Messages;
+using Tintool.Models.DataStructures.Responses;
 
 namespace Models
 {
     public class API
     {
-        private string token;
-        private string uri = "https://api.gotinder.com/";
+        private string _token;
+        private string _uri = "https://api.gotinder.com/";
         HttpClient client;
         private Random rand;
 
         public API(string token)
         {
-            this.token = token;
+            this._token = token;
 
             rand = new Random();
             client = new HttpClient();
-            client.BaseAddress = new Uri(uri);
+            client.BaseAddress = new Uri(_uri);
             client.DefaultRequestHeaders.Add("x-auth-token", token);
         }
 
@@ -54,7 +55,8 @@ namespace Models
                 MessageData nextMessage = new MessageData
                 {
                     Text = msg.message,
-                    ReceiverId = msg.from
+                    ReceiverId = msg.from,
+                    Date = msg.sent_date,
                 };
                 result.Add(nextMessage);
             }
@@ -187,6 +189,30 @@ namespace Models
             else
             {
                 return false;
+            }
+        }
+
+        public string GetProfileID()
+        {
+            Delay();
+            HttpResponseMessage response = client.GetAsync("/v2/profile?locale=en&include=likes%2Cplus_control%2Cproducts%2Cpurchase%2Cuser").Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
+
+            string textResponse = response.Content.ReadAsStringAsync().Result;
+
+            ProfileResponse profileResponse = JsonSerializer.Deserialize<ProfileResponse>(textResponse);
+            if (profileResponse?.data?.user!=null)
+            {
+                return profileResponse.data.user._id;
+            }
+            else
+            {
+                return null;
             }
         }
 

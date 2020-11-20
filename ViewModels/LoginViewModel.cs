@@ -42,6 +42,7 @@ namespace Tintool.ViewModels
             try
             {
                 API api = new API(_token);
+
                 if (await api.Authenticate())
                 {
                     FileManager.SaveToken(_token);

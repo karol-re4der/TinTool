@@ -33,6 +33,7 @@ namespace Tintool.ViewModels
             this.api = api;
 
             stats = FileManager.LoadStats() ?? (new Stats());
+            stats.ProfileID = api.GetProfileID();
             stats.ResetDate();
             Unitool.LogNewMatches(api.GetMatches(100), stats);
 
@@ -64,7 +65,6 @@ namespace Tintool.ViewModels
                 else if (tab.Equals("MessagesTab"))
                 {
                     MessagesUserControl.RefreshContent();
-                    Unitool.ValidateMatches(api, stats);
                 }
             }
             else

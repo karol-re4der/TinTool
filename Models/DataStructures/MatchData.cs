@@ -19,10 +19,11 @@ namespace Tintool.Models.DataStructures
     {
         public string Id { get; set; }
         public ResponseStatusTypes ResponseStatus { get; set; } = ResponseStatusTypes.Undefined;
-        public int MessageCount = 0;
+        public int MessageCount { get; set; } = 0;
         public DateTime CreationDate { get; set; }
         public PersonData Person { get; set; }
         public bool Active { get; set; } = true;
+        public List<MessageData> Conversation { get; set; }
 
         public MatchData()
         {
@@ -43,5 +44,6 @@ namespace Tintool.Models.DataStructures
             Id = match._id;
             CreationDate = match.created_date;
         }
+
     }
 }
