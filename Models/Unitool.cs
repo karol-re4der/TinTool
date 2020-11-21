@@ -26,58 +26,6 @@ namespace Tintool.Models
             }
         }
 
-        public static void ValidateMatches(API api, Stats stats)
-        {
-            foreach (MatchData match in stats.Matches)
-            {
-                if (match.Active)
-                {
-                    List<MessageData> messages = api.GetMessages(match.Id);
-
-                    //activity
-                    if (messages==null)
-                    {
-                        match.Active = false;
-                        continue;
-                    }
-
-                    //messages
-                    if(messages == null)
-                    {
-                        continue;
-                    }
-                    else if (messages.Find((x) => !x.ReceiverId.Equals(messages.First().ReceiverId))!=null){
-                        if (!messages.Last().ReceiverId.Equals(match.Person.Id))
-                        {
-                            match.ResponseStatus = ResponseStatusTypes.MessagedResponded;
-                        }
-                        else
-                        {
-                            match.ResponseStatus = ResponseStatusTypes.GotMessageResponded;
-                        }
-                    }
-                    else if(messages.Count>0)
-                    {
-                        if (!messages.Last().ReceiverId.Equals(match.Person.Id))
-                        {
-                            match.ResponseStatus = ResponseStatusTypes.MessagedNotResponded;
-                        }
-                        else
-                        {
-                            match.ResponseStatus = ResponseStatusTypes.GotMessageNotResponded;
-                        }
-                    }
-                    else
-                    {
-                        match.ResponseStatus = ResponseStatusTypes.Empty;
-                    }
-
-                    match.Conversation = messages;
-                    match.MessageCount = messages.Count;
-                }
-            }
-
-        }
 
         public static List<string> ProximityCheck(List<DataStructures.UserResponse.Results> matches, int cutout, int distance)
         {
@@ -168,6 +116,81 @@ namespace Tintool.Models
                         return;
                     }
                 }
+            });
+        }
+
+        public static Task ValidateMatches(API api, Stats stats, Action<int> OnProgress, CancellationToken cancellationToken)
+        {
+            return new Task(() =>
+            {
+                return;
+                int progress = 0;
+                int maxProgress = stats.Matches.Where((x) => x.Active).Count();
+                CancellationToken token = cancellationToken;
+                foreach (MatchData match in stats.Matches)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    else if (match.Active)
+                    {
+                        List<MessageData> messages = api.GetMessages(match.Id);
+
+                        //activity
+                        if (messages == null)
+                        {
+                            match.Active = false;
+                            continue;
+                        }
+
+                        //messages
+                        if (messages == null)
+                        {
+                            continue;
+                        }
+                        else if (messages.Find((x) => !x.ReceiverId.Equals(messages.First().ReceiverId)) != null)
+                        {
+                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.MessagedResponded;
+                            }
+                            else
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.GotMessageResponded;
+                            }
+                        }
+                        else if (messages.Count > 0)
+                        {
+                            if (!messages.Last().ReceiverId.Equals(match.Person.Id))
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.MessagedNotResponded;
+                            }
+                            else
+                            {
+                                match.ResponseStatus = ResponseStatusTypes.GotMessageNotResponded;
+                            }
+                        }
+                        else
+                        {
+                            match.ResponseStatus = ResponseStatusTypes.Empty;
+                        }
+
+                        match.Conversation = messages;
+                        match.MessageCount = messages.Count;
+
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            progress++;
+                            OnProgress((int)((float)progress/maxProgress*100));
+                        }
+                    }
+                }
+
             });
         }
     }

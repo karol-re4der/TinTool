@@ -218,7 +218,7 @@ namespace Models
 
         private void Delay()
         {
-            System.Threading.Thread.Sleep(rand.Next() % 50 + 50);
+            System.Threading.Thread.Sleep(rand.Next() % 50 + 25);
         }
     }
 }
