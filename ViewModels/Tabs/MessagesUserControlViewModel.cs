@@ -39,7 +39,7 @@ namespace Tintool.ViewModels.Tabs
 
         public void Replot()
         {
-            //Unitool.ValidateMatches(_api, _stats);
+            Unitool.ValidateMatches(_api, _stats);
 
             PlotTitle = $"Messages per day. Response rate: {_stats.ResponseRate():F2}, Average convo length: {_stats.AverageConversationLength():F2}";
             _stats.PlotMessagesThroughTime(TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);

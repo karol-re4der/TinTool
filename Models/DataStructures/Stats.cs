@@ -130,7 +130,7 @@ namespace Tinder.DataStructures
 
                 int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
                 int totalThatDay = msgThatDay.Count;
-                int sentThatDay = msgThatDay.Where((x) => !x.ReceiverId.Equals(ProfileID)).Count();
+                int sentThatDay = msgThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
                 int receivedThatDay = totalThatDay-sentThatDay;
                 totalDest.Points.Add(new DataPoint(daysAgo, totalThatDay));
                 sentDest.Points.Add(new DataPoint(daysAgo, sentThatDay));
