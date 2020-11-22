@@ -15,16 +15,16 @@
             </Grid>
             <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" Width="150">
                 <TextBlock DockPanel.Dock="Top">Plot content:</TextBlock>
-                <CheckBox DockPanel.Dock="Top" IsChecked="True" cal:Message.Attach="[Event Checked]=[Replot()];[Event Unchecked]=[Replot()]">Sent</CheckBox>
-                <CheckBox DockPanel.Dock="Top" IsChecked="True" cal:Message.Attach="[Event Checked]=[Replot()];[Event Unchecked]=[Replot()]">Received</CheckBox>
-                <CheckBox DockPanel.Dock="Top" IsChecked="True" cal:Message.Attach="[Event Checked]=[Replot()];[Event Unchecked]=[Replot()]">Total</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding SentVisible}">Sent</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding ReceivedVisible}">Received</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding TotalVisible}">Total</CheckBox>
 
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
                 
                 <TextBlock DockPanel.Dock="Top">From:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]" SelectedDate="{Binding StartingDate}"/>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding StartingDate}"/>
                 <TextBlock DockPanel.Dock="Top">To:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]" SelectedDate="{Binding EndingDate}"></DatePicker>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding EndingDate}"></DatePicker>
 
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
 
@@ -36,9 +36,9 @@
                     <oxy:DateTimeAxis  Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
                     <oxy:LinearAxis Title="Messages" Position="Left"/>
                 </oxy:Plot.Axes>
-                <oxy:LineSeries Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
-                <oxy:LineSeries Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
-                <oxy:LineSeries Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
+                <oxy:LineSeries Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
+                <oxy:LineSeries Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
+                <oxy:LineSeries Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
             </oxy:Plot>
         </DockPanel>
     </Grid>

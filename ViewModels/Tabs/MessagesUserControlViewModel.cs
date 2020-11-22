@@ -84,6 +84,70 @@ namespace Tintool.ViewModels.Tabs
             }
         }
 
+        private bool _totalVisible = true;
+        public string TotalVisibleAsString
+        {
+            get
+            {
+                return _totalVisible ? "Visible" : "Hidden";
+            }
+        }
+        public bool TotalVisible
+        {
+            get
+            {
+                return _totalVisible;
+            }
+            set
+            {
+                _totalVisible = value;
+                NotifyOfPropertyChange(() => TotalVisible);
+                NotifyOfPropertyChange(() => TotalVisibleAsString);
+            }
+        }
+        private bool _sentVisible = true;
+        public string SentVisibleAsString
+        {
+            get
+            {
+                return _sentVisible ? "Visible" : "Hidden";
+            }
+        }
+        public bool SentVisible
+        {
+            get
+            {
+                return _sentVisible;
+            }
+            set
+            {
+                _sentVisible = value;
+                NotifyOfPropertyChange(() => SentVisible);
+                NotifyOfPropertyChange(() => SentVisibleAsString);
+            }
+        }
+        private bool _receivedVisible = true;
+        public string ReceivedVisibleAsString
+        {
+            get
+            {
+                return _receivedVisible ? "Visible" : "Hidden";
+            }
+        }
+        public bool ReceivedVisible
+        {
+            get
+            {
+                return _receivedVisible;
+            }
+            set
+            {
+                _receivedVisible = value;
+                NotifyOfPropertyChange(() => ReceivedVisible);
+                NotifyOfPropertyChange(() => ReceivedVisibleAsString);
+            }
+        }
+
         private DateTime _endingDate;
         public DateTime EndingDate
         {
