@@ -36,9 +36,9 @@
                     <oxy:DateTimeAxis  Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
                     <oxy:LinearAxis Title="Messages" Position="Left"/>
                 </oxy:Plot.Axes>
-                <oxy:LineSeries Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
-                <oxy:LineSeries Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
-                <oxy:LineSeries Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Red" Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Green" Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
             </oxy:Plot>
         </DockPanel>
     </Grid>

@@ -123,7 +123,6 @@ namespace Tintool.Models
         {
             return new Task(() =>
             {
-                return;
                 int progress = 0;
                 int maxProgress = stats.Matches.Where((x) => x.Active).Count();
                 CancellationToken token = cancellationToken;
