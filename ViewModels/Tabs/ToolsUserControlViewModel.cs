@@ -28,8 +28,15 @@ namespace Tintool.ViewModels.Tabs
             }
             set
             {
-                _proximityDistance = int.Parse(value);
-                NotifyOfPropertyChange(() => ProximityDistance);
+                try
+                {
+                    _proximityDistance = int.Parse(value);
+                    NotifyOfPropertyChange(() => ProximityDistance);
+                }
+                catch (Exception e)
+                {
+
+                }
             }
         }
         public string ProximityInactivityCutout
@@ -40,8 +47,15 @@ namespace Tintool.ViewModels.Tabs
             }
             set
             {
-                _proximityInactivityCutout = int.Parse(value);
-                NotifyOfPropertyChange(() => ProximityInactivityCutout);
+                try
+                {
+                    _proximityInactivityCutout = int.Parse(value);
+                    NotifyOfPropertyChange(() => ProximityInactivityCutout);
+                }
+                catch (Exception e)
+                {
+
+                }
             }
         }
         public string SwipeAllSize
@@ -56,9 +70,10 @@ namespace Tintool.ViewModels.Tabs
                 {
                     _swipeAllSize = int.Parse(value);
                     NotifyOfPropertyChange(() => SwipeAllSize);
-                }catch(Exception e)
+                }
+                catch(Exception e)
                 {
-                    _swipeAllSize = 0;
+
                 }
             }
         }
