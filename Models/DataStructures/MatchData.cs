@@ -15,10 +15,22 @@ namespace Tintool.Models.DataStructures
         GotMessageNotResponded
     }
 
+    public enum MatchTypes
+    {
+        Undefined,
+        Regular,
+        Super,
+        Boost,
+        SuperBoost,
+        Experiences,
+        Fast
+    }
+
     public class MatchData
     {
         public string Id { get; set; }
         public ResponseStatusTypes ResponseStatus { get; set; } = ResponseStatusTypes.Undefined;
+        public MatchTypes MatchType { get; set; } = MatchTypes.Undefined;
         public int MessageCount { get; set; } = 0;
         public DateTime CreationDate { get; set; }
         public PersonData Person { get; set; }
@@ -33,6 +45,32 @@ namespace Tintool.Models.DataStructures
         {
             Id = match.id;
             CreationDate = match.created_date;
+
+            if (match.is_super_like)
+            {
+                MatchType = MatchTypes.Super;
+            }
+            else if(match.is_super_boost_match)
+            {
+                MatchType = MatchTypes.SuperBoost;
+            }
+            else if (match.is_boost_match)
+            {
+                MatchType = MatchTypes.Boost;
+            }
+            else if (match.is_experiences_match)
+            {
+                MatchType = MatchTypes.Experiences;
+            }
+            else if (match.is_fast_match)
+            {
+                MatchType = MatchTypes.Fast;
+            }
+            else
+            {
+                MatchType = MatchTypes.Regular;
+            }
+
             Person = new PersonData
             {
                 Name = match.person.name,
@@ -43,6 +81,31 @@ namespace Tintool.Models.DataStructures
         {
             Id = match._id;
             CreationDate = match.created_date;
+
+            if (match.is_super_like)
+            {
+                MatchType = MatchTypes.Super;
+            }
+            else if (match.is_super_boost_match)
+            {
+                MatchType = MatchTypes.SuperBoost;
+            }
+            else if (match.is_boost_match)
+            {
+                MatchType = MatchTypes.Boost;
+            }
+            else if (match.is_experiences_match)
+            {
+                MatchType = MatchTypes.Experiences;
+            }
+            else if (match.is_fast_match)
+            {
+                MatchType = MatchTypes.Fast;
+            }
+            else
+            {
+                MatchType = MatchTypes.Regular;
+            }
         }
 
     }

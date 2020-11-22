@@ -35,23 +35,40 @@ namespace Tinder.DataStructures
         }
 
         #region Matches
-        public float AverageMatchesPerDay()
+        public float AverageMatchesPerDay(DateTime startDate, DateTime endDate)
         {
-            int daysPassed = (DateTime.Now-Date).Days+1;
-            int matchesCount = Matches.Count;
+            int daysPassed = endDate.Subtract(startDate).Days;
+            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=endDate).Count();
             float result = (float)matchesCount/daysPassed;
             return result;
         }
 
-        public void PlotMatchesThroughTime(PlotData dest)
+        public void PlotMatchesThroughTime(DateTime startDate, DateTime endDate, PlotData totalDest, PlotData regularDest, PlotData superDest, PlotData boostsDest, PlotData fastDest, PlotData expDest)
         {
-            dest.Points.Clear();
+            totalDest.Points.Clear();
+            regularDest.Points.Clear();
+            superDest.Points.Clear();
 
             for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
             {
-                int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
-                int matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).Count();
-                dest.Points.Add(new DataPoint(daysAgo, matchesThatDay));
+                List<MatchData> matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).ToList();
+
+                int totalThatDay = matchesThatDay.Count();
+                int regularThatDay = matchesThatDay.Where((x)=>x.MatchType==MatchTypes.Regular).Count();
+                int superThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Super).Count();
+                int boostsThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Boost || x.MatchType == MatchTypes.SuperBoost).Count();
+                int expThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Experiences).Count();
+                int fastThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Fast).Count();
+
+
+                double translatedDate = DateTimeAxis.ToDouble(i);
+
+                totalDest.Points.Add(new DataPoint(translatedDate, totalThatDay));
+                regularDest.Points.Add(new DataPoint(translatedDate, regularThatDay));
+                superDest.Points.Add(new DataPoint(translatedDate, superThatDay));
+                boostsDest.Points.Add(new DataPoint(translatedDate, boostsThatDay));
+                expDest.Points.Add(new DataPoint(translatedDate, expThatDay));
+                fastDest.Points.Add(new DataPoint(translatedDate, fastThatDay));
             }
         }
         #endregion
@@ -141,7 +158,6 @@ namespace Tinder.DataStructures
                 totalDest.Points.Add(new DataPoint(translatedDate, totalThatDay));
                 sentDest.Points.Add(new DataPoint(translatedDate, sentThatDay));
                 receivedDest.Points.Add(new DataPoint(translatedDate, receivedThatDay));
-
             }
         }
         #endregion

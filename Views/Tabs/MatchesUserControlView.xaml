@@ -3,16 +3,50 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:Tintool.Views" xmlns:oxy="http://oxyplot.org/wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <DockPanel>
-        <oxy:Plot x:Name="PlotItem" Title="{Binding MatchesThroughTimePlot.Title}" VerticalAlignment="Stretch" Height="407">
-            <oxy:Plot.Axes>
-                <oxy:LinearAxis Title="Days ago" StartPosition="1" EndPosition="0" Position="Bottom"/>
-                <oxy:LinearAxis Title="Matches" Position="Left"/>
-            </oxy:Plot.Axes>
-            <oxy:LineSeries ItemsSource="{Binding MatchesThroughTimePlot.Points}"/>
-        </oxy:Plot>
-    </DockPanel>
+    <Grid>
+        <DockPanel FlowDirection="LeftToRight">
+            <Grid DockPanel.Dock="Bottom">
+                <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
+                <TextBlock Text="{Binding ProgressText}"/>
+            </Grid>
+            <Separator DockPanel.Dock="Bottom"></Separator>
+            <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" Width="150">
+                <TextBlock DockPanel.Dock="Top">Plot content:</TextBlock>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding TotalVisible}">Total</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding RegularVisible}">Regular</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding SuperVisible}">Super Like</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding BoostsVisible}">Boosts</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding FastVisible}">Fast</CheckBox>
+                <CheckBox DockPanel.Dock="Top" IsChecked="{Binding ExpVisible}">Experiences</CheckBox>
+
+                <Separator DockPanel.Dock="Top" Height="20"></Separator>
+
+                <TextBlock DockPanel.Dock="Top">From:</TextBlock>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding StartingDate}" FirstDayOfWeek="Monday"/>
+                <TextBlock DockPanel.Dock="Top">To:</TextBlock>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding EndingDate}" FirstDayOfWeek="Monday"></DatePicker>
+
+                <Separator DockPanel.Dock="Top" Height="20"></Separator>
+
+                <Button DockPanel.Dock="Bottom" VerticalAlignment="Stretch" Height="50" HorizontalAlignment="Stretch" cal:Message.Attach="[Event Click]=[PreparePlot()]">Refresh</Button>
+                <Separator Visibility="Hidden"></Separator>
+            </DockPanel>
+            <oxy:Plot x:Name="PlotItem" Title="{Binding TotalThroughTimePlot.Title}" VerticalAlignment="Stretch">
+                <oxy:Plot.Axes>
+                    <oxy:DateTimeAxis StringFormat = "{Binding DateTimeAxisFormat}" AbsoluteMinimum="{Binding StartingDateAsDouble}"  AbsoluteMaximum="{Binding EndingDateAsDouble}" IntervalType="Days" Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
+                    <oxy:LinearAxis Minimum="0" Maximum="{Binding PlotUpperConstraint}" AbsoluteMinimum="0" AbsoluteMaximum="{Binding PlotUpperConstraint}" Title="Matches" Position="Left"/>
+                </oxy:Plot.Axes>
+                <oxy:LineSeries Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Green" Visibility="{Binding RegularVisibleAsString}" Title="Regular Likes" ItemsSource="{Binding RegularThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Blue" Visibility="{Binding SuperVisibleAsString}" Title="Super Likes" ItemsSource="{Binding SuperThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Gold" Visibility="{Binding BoostsVisibleAsString}" Title="Boost" ItemsSource="{Binding BoostsThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Red" Visibility="{Binding ExpVisibleAsString}" Title="Experience" ItemsSource="{Binding ExpThroughTimePlot.Points}"/>
+                <oxy:LineSeries Color="Red" Visibility="{Binding FastVisibleAsString}" Title="Fast" ItemsSource="{Binding FastThroughTimePlot.Points}"/>
+            </oxy:Plot>
+        </DockPanel>
+    </Grid>
 </UserControl>
