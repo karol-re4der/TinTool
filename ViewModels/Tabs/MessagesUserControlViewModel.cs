@@ -245,6 +245,7 @@ namespace Tintool.ViewModels.Tabs
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
+                Progress = 0;
                 ProgressText = "Loading new messages";
                 _currentTask = Unitool.ValidateMatches(_api, _stats, (x) => Progress = x, token);
 
@@ -252,6 +253,7 @@ namespace Tintool.ViewModels.Tabs
                 Action<object> continuation = (x) =>
                 {
                     Replot();
+                    Progress = 100;
                     ProgressText = "Complete!";
                 };
                 _currentTask.ContinueWith(continuation);

@@ -133,7 +133,9 @@ namespace Models
                 PersonData result = new PersonData
                 {
                     Id = userResponse.results._id,
-                    Name = userResponse.results.name
+                    Name = userResponse.results.name,
+                    Birthday = userResponse.results.birth_date,
+                    Distance = userResponse.results.distance_mi
                 };
                 return result;
             }

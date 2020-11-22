@@ -26,27 +26,71 @@ namespace Tintool.Models
             }
         }
 
-
-        public static List<string> ProximityCheck(List<DataStructures.UserResponse.Results> matches, int cutout, int distance)
+        public static Task ProximityCheck(API api, Stats stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
         {
-            List<string> results = new List<string>();
-
-            foreach (DataStructures.UserResponse.Results match in matches)
+            return new Task(() =>
             {
-                if (match != null)
+                string resultText = "";
+                List<string> results = new List<string>();
+                int progress = 0;
+                int maxProgress = stats.Matches.Count();
+                List<MatchData> allMatches = api.GetMatches(100);
+                
+
+                foreach (MatchData match in stats.Matches)
                 {
-                    if (match.distance_mi > distance)
+                    if (token.IsCancellationRequested)
                     {
-                        continue;
+                        resultText = "Proximity check:";
+                        foreach(string result in results)
+                        {
+                            resultText += "\n"+result;
+                        }
+                        OnFinish.Invoke(resultText);
+                        return;
+                    }
+                    else
+                    {
+                        progress++;
+                        OnProgress.Invoke((int)((float)progress / maxProgress * 100));
                     }
 
-                    results.Add(match.name);
+                    if (match.Active && (match.ResponseStatus == ResponseStatusTypes.Empty || match.ResponseStatus == ResponseStatusTypes.Undefined))
+                    {
+                        if (allMatches.Any((x) => x.Person.Id.Equals(match.Person.Id)))
+                        {
+                            PersonData upToDateMatch = api.GetUser(match.Person.Id);
+                            if (upToDateMatch?.Distance <= distance)
+                            {
+                                results.Add(upToDateMatch.Name);
+                                if (token.IsCancellationRequested)
+                                {
+                                    resultText = "Proximity check: Canceled!";
+                                    OnFinish.Invoke(resultText);
+                                    return;
+                                }
+                                else
+                                {
+                                    OnProgress.Invoke((int)((float)progress / maxProgress * 100));
+                                    OnResults.Invoke(upToDateMatch.Name);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            match.Active = false;
+                        }
+                    }
                 }
-            }
-
-            return results;
+                resultText = "Proximity check: Complete! Result:";
+                foreach (string result in results)
+                {
+                    resultText += "\n" + result;
+                }
+                OnFinish.Invoke(resultText);
+                return;
+            });
         }
-
 
         public static Task SwipeAll(API api, int size, Action<int> OnProgress, Action<string> OnMatch, Action<string> OnFinish, CancellationToken cancellationToken)
         {
@@ -122,6 +166,7 @@ namespace Tintool.Models
             {
                 int progress = 0;
                 int maxProgress = stats.Matches.Where((x) => x.Active).Count();
+                List<MatchData> allMatches = api.GetMatches(100);
                 CancellationToken token = cancellationToken;
                 foreach (MatchData match in stats.Matches)
                 {
@@ -134,7 +179,7 @@ namespace Tintool.Models
                         List<MessageData> messages = api.GetMessages(match.Id);
 
                         //activity
-                        if (messages == null)
+                        if (messages == null || !allMatches.Any((x)=>x.Person.Id.Equals(match.Person.Id)))
                         {
                             match.Active = false;
                             continue;

@@ -116,17 +116,22 @@ namespace Tintool.ViewModels.Tabs
 
         public void ProximityCheckAction()
         {
-            //make it check only non messaged matches, then make it check for inactivity
-
-            List<Models.DataStructures.UserResponse.Results> potentials = new List<Models.DataStructures.UserResponse.Results>();
-            foreach(MatchData match in _api.GetMatches(100))
+            if (_currentTask == null || _currentTask.IsCompleted)
             {
-                //potentials.Add(_api.GetUser(match.Id)?.results);
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                CancellationToken token = tokenSource.Token;
+
+                Progress = 0;
+                ProgressText = "Checking";
+                _currentTask = Unitool.ProximityCheck(_api, _stats, _proximityDistance, (x)=>Progress = x, (x) => ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
+                Action<object> continuation = (x) =>
+                {
+                    ProgressText = "Checked all!";
+                    Progress = 100;
+                };
+                _currentTask.ContinueWith(continuation);
+                _currentTask.Start();
             }
-            var foo = Unitool.ProximityCheck(potentials, _proximityInactivityCutout, _proximityDistance);
-            string resultsText = "Proximity check results: " + foo.Count + " potential matches";
-            foo.ForEach((x) => resultsText += "\n" + x);
-            MessageBox.Show(resultsText);
         }
 
         public void SwipeAllAction()
@@ -138,15 +143,15 @@ namespace Tintool.ViewModels.Tabs
 
                 Progress = 0;
                 ProgressText = "Swiping";
-                Task task = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = "Matched with "+x+"!", (x)=>MessageBox.Show(x), token);
+                _currentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = "Matched with "+x+"!", (x)=>MessageBox.Show(x), token);
                 Action<object> continuation = (x) => 
                 {
                     Unitool.LogNewMatches(_api.GetMatches(100), _stats);
                     ProgressText = "Swiped all!";
                     Progress = 100;
                 };
-                task.ContinueWith(continuation);
-                task.Start();
+                _currentTask.ContinueWith(continuation);
+                _currentTask.Start();
             }
         }
     }

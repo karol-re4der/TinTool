@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Tintool.Models.DataStructures
 {
@@ -43,6 +44,7 @@ namespace Tintool.Models.DataStructures
         }
         public MatchData(Tinder.DataStructures.Responses.Matches.Match match)
         {
+
             Id = match.id;
             CreationDate = match.created_date;
 
@@ -74,7 +76,8 @@ namespace Tintool.Models.DataStructures
             Person = new PersonData
             {
                 Name = match.person.name,
-                Id = match.person._id
+                Id = match.person._id,
+                Birthday = match.person.birth_date
             };
         }
         public MatchData(Responses.Like.Match match)
