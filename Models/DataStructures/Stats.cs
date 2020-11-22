@@ -34,6 +34,7 @@ namespace Tinder.DataStructures
             }
         }
 
+        #region Matches
         public float AverageMatchesPerDay()
         {
             int daysPassed = (DateTime.Now-Date).Days+1;
@@ -42,11 +43,25 @@ namespace Tinder.DataStructures
             return result;
         }
 
-        public float ResponseRate()
+        public void PlotMatchesThroughTime(PlotData dest)
+        {
+            dest.Points.Clear();
+
+            for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
+            {
+                int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
+                int matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).Count();
+                dest.Points.Add(new DataPoint(daysAgo, matchesThatDay));
+            }
+        }
+        #endregion
+
+        #region Messages
+        public float ResponseRate(DateTime startDate, DateTime endDate)
         {
             int totalResponses = 0;
             int totalMessaged = 0;
-            foreach (MatchData match in Matches)
+            foreach (MatchData match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
@@ -72,11 +87,11 @@ namespace Tinder.DataStructures
             }
         }
 
-        public float AverageConversationLength()
+        public float AverageConversationLength(DateTime startDate, DateTime endDate)
         {
             int totalConversations = 0;
             int totalMessages = 0;
-            foreach (MatchData match in Matches)
+            foreach (MatchData match in Matches.Where((x)=>x.CreationDate.Date>=startDate && x.CreationDate<=endDate))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
@@ -95,19 +110,7 @@ namespace Tinder.DataStructures
             }
         }
 
-        public void PlotMatchesThroughTime(PlotData dest)
-        {
-            dest.Points.Clear();
-
-            for(DateTime i = Date.Date; i<=DateTime.Now.Date;  i = i.AddDays(1))
-            {
-                int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
-                int matchesThatDay = Matches.Where((x)=>x.CreationDate.Date.Equals(i)).Count();
-                dest.Points.Add(new DataPoint(daysAgo, matchesThatDay));
-            }
-        }
-
-        public void PlotMessagesThroughTime(PlotData totalDest, PlotData sentDest, PlotData receivedDest)
+        public void PlotMessagesThroughTime(DateTime startDate, DateTime endDate, PlotData totalDest, PlotData sentDest, PlotData receivedDest)
         {
             totalDest.Points.Clear();
             sentDest.Points.Clear();
@@ -124,53 +127,23 @@ namespace Tinder.DataStructures
                     }
                 }
             }
-            allMsg = allMsg.OrderBy((x) => x.Date.Date).ToList();
 
-            int sentThatDay = 0;
-            int receivedThatDay = 0;
-            int totalThatDay = 0;
-            DateTime date = allMsg.First().Date.Date;
-            foreach(MessageData msg in allMsg)
+            for (DateTime i = startDate; i <= endDate; i = i.AddDays(1))
             {
-                if (msg.Date.Date != date)
-                {
-                    totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), totalThatDay));
-                    sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), sentThatDay));
-                    receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), receivedThatDay));
-                    sentThatDay = 0;
-                    receivedThatDay = 0;
-                    totalThatDay = 0;
-                    date = msg.Date.Date;
-                }
-                totalThatDay++;
-                if (msg.ReceiverId.Equals(ProfileID))
-                {
-                    receivedThatDay++;
-                }
-                else
-                {
-                    sentThatDay++;
-                }
-            }
-            if (allMsg.Count > 0)
-            {
-                totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), totalThatDay));
-                sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), sentThatDay));
-                receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), receivedThatDay));
-            }
+                List<MessageData> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
 
-            //for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
-            //{
-            //    List<MessageData> msgThatDay = allMsg.Where((x) => x.Date.Date.Equals(i)).ToList();
+                int totalThatDay = messagesThatDay.Count();
+                int sentThatDay = messagesThatDay.Where((x) => !x.ReceiverId.Equals(ProfileID)).Count();
+                int receivedThatDay = totalThatDay-sentThatDay;
 
-            //    int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
-            //    int totalThatDay = msgThatDay.Count;
-            //    int sentThatDay = msgThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
-            //    int receivedThatDay = totalThatDay - sentThatDay;
-            //    totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), totalThatDay));
-            //    sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), sentThatDay));
-            //    receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), receivedThatDay));
-            //}
+                double translatedDate = DateTimeAxis.ToDouble(i);
+
+                totalDest.Points.Add(new DataPoint(translatedDate, totalThatDay));
+                sentDest.Points.Add(new DataPoint(translatedDate, sentThatDay));
+                receivedDest.Points.Add(new DataPoint(translatedDate, receivedThatDay));
+
+            }
         }
+        #endregion
     }
 }

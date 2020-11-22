@@ -2,6 +2,7 @@
 using Models;
 using OxyPlot.Axes;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -54,35 +55,6 @@ namespace Tintool.ViewModels.Tabs
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
         public PlotData SentThroughTimePlot { get; set; } = new PlotData();
         public PlotData ReceivedThroughTimePlot { get; set; } = new PlotData();
-
-        private DateTime _startingDate;
-        public DateTime StartingDate
-        {
-            get
-            {
-                return _startingDate;
-            }
-            set
-            {
-                _startingDate = value;
-                StartingDateAsDouble = DateTimeAxis.ToDouble(value);
-                NotifyOfPropertyChange(() => StartingDate);
-                Replot();
-            }
-        }
-        private double _startingDateAsDouble;
-        public double StartingDateAsDouble
-        {
-            get
-            {
-                return _startingDateAsDouble;
-            }
-            set
-            {
-                _startingDateAsDouble = value;
-                NotifyOfPropertyChange(() => StartingDateAsDouble);
-            }
-        }
 
         private bool _totalVisible = true;
         public string TotalVisibleAsString
@@ -148,6 +120,38 @@ namespace Tintool.ViewModels.Tabs
             }
         }
 
+        private DateTime _startingDate;
+        public DateTime StartingDate
+        {
+            get
+            {
+                return _startingDate;
+            }
+            set
+            {
+                if (value < EndingDate)
+                {
+                    _startingDate = value;
+                    StartingDateAsDouble = DateTimeAxis.ToDouble(value);
+                }
+                NotifyOfPropertyChange(() => StartingDate);
+                Replot();
+            }
+        }
+        private double _startingDateAsDouble;
+        public double StartingDateAsDouble
+        {
+            get
+            {
+                return _startingDateAsDouble;
+            }
+            set
+            {
+                _startingDateAsDouble = value;
+                NotifyOfPropertyChange(() => StartingDateAsDouble);
+            }
+        }
+
         private DateTime _endingDate;
         public DateTime EndingDate
         {
@@ -157,8 +161,11 @@ namespace Tintool.ViewModels.Tabs
             }
             set
             {
-                _endingDate = value;
-                EndingDateAsDouble = DateTimeAxis.ToDouble(value);
+                if (value > StartingDate)
+                {
+                    _endingDate = value;
+                    EndingDateAsDouble = DateTimeAxis.ToDouble(value);
+                }
                 NotifyOfPropertyChange(() => EndingDate);
                 Replot();
             }
@@ -174,6 +181,34 @@ namespace Tintool.ViewModels.Tabs
             {
                 _endingDateAsDouble = value;
                 NotifyOfPropertyChange(() => EndingDateAsDouble);
+            }
+        }
+        
+        private double _plotUpperConstraint;
+        public double PlotUpperConstraint
+        {
+            get
+            {
+                return _plotUpperConstraint;
+            }
+            set
+            {
+                _plotUpperConstraint = value;
+                NotifyOfPropertyChange(() => PlotUpperConstraint);
+            }
+        }
+
+        private string _dateTimeAxisFormat;
+        public string DateTimeAxisFormat
+        {
+            get
+            {
+                return _dateTimeAxisFormat;
+            }
+            set
+            {
+                _dateTimeAxisFormat = value;
+                NotifyOfPropertyChange(() => DateTimeAxisFormat);
             }
         }
 
@@ -216,9 +251,6 @@ namespace Tintool.ViewModels.Tabs
                 //Prepare ploting
                 Action<object> continuation = (x) =>
                 {
-                    ProgressText = "Preparing the plot";
-                    _stats.PlotMessagesThroughTime(TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);
-                    PlotTitle = $"Messages per day. Response rate: {_stats.ResponseRate():F2}, Average convo length: {_stats.AverageConversationLength():F2}";
                     Replot();
                     ProgressText = "Complete!";
                 };
@@ -230,13 +262,24 @@ namespace Tintool.ViewModels.Tabs
 
         public void Replot()
         {
+            _stats.PlotMessagesThroughTime(StartingDate, EndingDate, TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);
+            PlotTitle = $"Messages per day. Response rate: {_stats.ResponseRate(StartingDate, EndingDate):F2}, Average convo length: {_stats.AverageConversationLength(StartingDate, EndingDate):F2}";
+            PlotUpperConstraint = TotalThroughTimePlot.Points.Max((x) => x.Y) + 5.0;
+
+            TimeSpan timespan = EndingDate.Subtract(StartingDate);
+            if (timespan.Days <= 360)
+            {
+                DateTimeAxisFormat = "dd.MM"; 
+            }
+            else
+            {
+                DateTimeAxisFormat = "dd.MM.yyyy";
+            }
+
             NotifyOfPropertyChange(() => TotalThroughTimePlot);
             NotifyOfPropertyChange(() => SentThroughTimePlot);
             NotifyOfPropertyChange(() => ReceivedThroughTimePlot);
             NotifyOfPropertyChange(() => PlotTitle);
-
-
-            //PlotItem.InvalidatePlot(true);
         }
 
         public void Button_Refresh()

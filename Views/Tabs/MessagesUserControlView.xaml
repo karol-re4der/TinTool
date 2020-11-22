@@ -13,6 +13,7 @@
                 <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
                 <TextBlock Text="{Binding ProgressText}"/>
             </Grid>
+            <Separator DockPanel.Dock="Bottom"></Separator>
             <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" Width="150">
                 <TextBlock DockPanel.Dock="Top">Plot content:</TextBlock>
                 <CheckBox DockPanel.Dock="Top" IsChecked="{Binding SentVisible}">Sent</CheckBox>
@@ -22,9 +23,9 @@
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
                 
                 <TextBlock DockPanel.Dock="Top">From:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding StartingDate}"/>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding StartingDate}" FirstDayOfWeek="Monday"/>
                 <TextBlock DockPanel.Dock="Top">To:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding EndingDate}"></DatePicker>
+                <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding EndingDate}" FirstDayOfWeek="Monday"></DatePicker>
 
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
 
@@ -33,8 +34,8 @@
             </DockPanel>
             <oxy:Plot x:Name="PlotItem" Title="{Binding PlotTitle}">
                 <oxy:Plot.Axes>
-                    <oxy:DateTimeAxis  Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
-                    <oxy:LinearAxis Title="Messages" Position="Left"/>
+                    <oxy:DateTimeAxis StringFormat = "{Binding DateTimeAxisFormat}" AbsoluteMinimum="{Binding StartingDateAsDouble}"  AbsoluteMaximum="{Binding EndingDateAsDouble}" IntervalType="Days" Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
+                    <oxy:LinearAxis Minimum="0" Maximum="{Binding PlotUpperConstraint}" AbsoluteMinimum="0" AbsoluteMaximum="{Binding PlotUpperConstraint}" Title="Messages" Position="Left"/>
                 </oxy:Plot.Axes>
                 <oxy:LineSeries Color="Red" Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
                 <oxy:LineSeries Color="Green" Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
