@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Models;
+using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,8 +19,9 @@ namespace Tintool.ViewModels.Tabs
 
         private API _api;
         private Stats _stats;
-        private Task _currentTask;
 
+        #region Progressbar
+        private Task _currentTask;
         private int _progress = 0;
         public int Progress
         {
@@ -46,26 +48,94 @@ namespace Tintool.ViewModels.Tabs
                 NotifyOfPropertyChange(() => ProgressText);
             }
         }
+        #endregion
 
-
+        #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
         public PlotData SentThroughTimePlot { get; set; } = new PlotData();
         public PlotData ReceivedThroughTimePlot { get; set; } = new PlotData();
 
-        public string PlotTitle { get; set; } = "MessagesPerDay";
+        private DateTime _startingDate;
+        public DateTime StartingDate
+        {
+            get
+            {
+                return _startingDate;
+            }
+            set
+            {
+                _startingDate = value;
+                StartingDateAsDouble = DateTimeAxis.ToDouble(value);
+                NotifyOfPropertyChange(() => StartingDate);
+                Replot();
+            }
+        }
+        private double _startingDateAsDouble;
+        public double StartingDateAsDouble
+        {
+            get
+            {
+                return _startingDateAsDouble;
+            }
+            set
+            {
+                _startingDateAsDouble = value;
+                NotifyOfPropertyChange(() => StartingDateAsDouble);
+            }
+        }
+
+        private DateTime _endingDate;
+        public DateTime EndingDate
+        {
+            get
+            {
+                return _endingDate;
+            }
+            set
+            {
+                _endingDate = value;
+                EndingDateAsDouble = DateTimeAxis.ToDouble(value);
+                NotifyOfPropertyChange(() => EndingDate);
+                Replot();
+            }
+        }
+        private double _endingDateAsDouble;
+        public double EndingDateAsDouble
+        {
+            get
+            {
+                return _endingDateAsDouble;
+            }
+            set
+            {
+                _endingDateAsDouble = value;
+                NotifyOfPropertyChange(() => EndingDateAsDouble);
+            }
+        }
+
+        public string PlotTitle { get; set; } = "Messages per day";
 
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
+        #endregion
 
         public MessagesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
         {
             this._wm = wm;
             this._api = api;
             this._stats = stats;
+
+            SetTime();
+        }
+
+        private void SetTime()
+        {
+            EndingDate = DateTime.Today;
+            StartingDate = _stats.Date.Date;
         }
 
         public void RefreshContent()
         {
-            Replot();
+            //Replot();
         }
 
         public void PreparePlot()

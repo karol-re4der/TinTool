@@ -22,9 +22,9 @@
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
                 
                 <TextBlock DockPanel.Dock="Top">From:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]"/>
+                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]" SelectedDate="{Binding StartingDate}"/>
                 <TextBlock DockPanel.Dock="Top">To:</TextBlock>
-                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]"></DatePicker>
+                <DatePicker DockPanel.Dock="Top" cal:Message.Attach="[Event SelectedDateChanged]=[Replot()]" SelectedDate="{Binding EndingDate}"></DatePicker>
 
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
 
@@ -33,7 +33,7 @@
             </DockPanel>
             <oxy:Plot x:Name="PlotItem" Title="{Binding PlotTitle}">
                 <oxy:Plot.Axes>
-                    <oxy:LinearAxis Title="Days ago" StartPosition="1" EndPosition="0" Position="Bottom"/>
+                    <oxy:DateTimeAxis  Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
                     <oxy:LinearAxis Title="Messages" Position="Left"/>
                 </oxy:Plot.Axes>
                 <oxy:LineSeries Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>

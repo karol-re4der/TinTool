@@ -4,13 +4,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Tintool.Models.DataStructures;
+using OxyPlot.Axes;
 
 namespace Tinder.DataStructures
 {
     public class Stats
     {
         public List<MatchData> Matches { get; set; }
-        private DateTime date = DateTime.MinValue;
+        public DateTime Date = DateTime.MinValue;
         public string ProfileID { get; set; }
 
         public Stats()
@@ -20,14 +21,14 @@ namespace Tinder.DataStructures
 
         public void ResetDate()
         {
-            if (date == DateTime.MinValue)
+            if (Date == DateTime.MinValue)
             {
-                date = DateTime.Now;
+                Date = DateTime.Now;
                 foreach (MatchData match in Matches)
                 {
-                    if (match.CreationDate.CompareTo(date) < 0)
+                    if (match.CreationDate.CompareTo(Date) < 0)
                     {
-                        date = match.CreationDate;
+                        Date = match.CreationDate;
                     }
                 }
             }
@@ -35,7 +36,7 @@ namespace Tinder.DataStructures
 
         public float AverageMatchesPerDay()
         {
-            int daysPassed = (DateTime.Now-date).Days+1;
+            int daysPassed = (DateTime.Now-Date).Days+1;
             int matchesCount = Matches.Count;
             float result = (float)matchesCount/daysPassed;
             return result;
@@ -98,7 +99,7 @@ namespace Tinder.DataStructures
         {
             dest.Points.Clear();
 
-            for(DateTime i = date.Date; i<=DateTime.Now.Date;  i = i.AddDays(1))
+            for(DateTime i = Date.Date; i<=DateTime.Now.Date;  i = i.AddDays(1))
             {
                 int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
                 int matchesThatDay = Matches.Where((x)=>x.CreationDate.Date.Equals(i)).Count();
@@ -123,19 +124,53 @@ namespace Tinder.DataStructures
                     }
                 }
             }
+            allMsg = allMsg.OrderBy((x) => x.Date.Date).ToList();
 
-            for (DateTime i = date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
+            int sentThatDay = 0;
+            int receivedThatDay = 0;
+            int totalThatDay = 0;
+            DateTime date = allMsg.First().Date.Date;
+            foreach(MessageData msg in allMsg)
             {
-                List<MessageData> msgThatDay = allMsg.Where((x) => x.Date.Date.Equals(i)).ToList();
-
-                int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
-                int totalThatDay = msgThatDay.Count;
-                int sentThatDay = msgThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
-                int receivedThatDay = totalThatDay-sentThatDay;
-                totalDest.Points.Add(new DataPoint(daysAgo, totalThatDay));
-                sentDest.Points.Add(new DataPoint(daysAgo, sentThatDay));
-                receivedDest.Points.Add(new DataPoint(daysAgo, receivedThatDay));
+                if (msg.Date.Date != date)
+                {
+                    totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), totalThatDay));
+                    sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), sentThatDay));
+                    receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), receivedThatDay));
+                    sentThatDay = 0;
+                    receivedThatDay = 0;
+                    totalThatDay = 0;
+                    date = msg.Date.Date;
+                }
+                totalThatDay++;
+                if (msg.ReceiverId.Equals(ProfileID))
+                {
+                    receivedThatDay++;
+                }
+                else
+                {
+                    sentThatDay++;
+                }
             }
+            if (allMsg.Count > 0)
+            {
+                totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), totalThatDay));
+                sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), sentThatDay));
+                receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date), receivedThatDay));
+            }
+
+            //for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
+            //{
+            //    List<MessageData> msgThatDay = allMsg.Where((x) => x.Date.Date.Equals(i)).ToList();
+
+            //    int daysAgo = DateTime.Now.Date.Subtract(i.Date).Days;
+            //    int totalThatDay = msgThatDay.Count;
+            //    int sentThatDay = msgThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
+            //    int receivedThatDay = totalThatDay - sentThatDay;
+            //    totalDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), totalThatDay));
+            //    sentDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), sentThatDay));
+            //    receivedDest.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.Date.Subtract(i.Date)), receivedThatDay));
+            //}
         }
     }
 }
