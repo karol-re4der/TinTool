@@ -48,7 +48,7 @@ namespace Tintool.Models
         }
 
 
-        public static Task SwipeAll(API api, int size, Action<int> OnProgress, Action<int> OnMatch, CancellationToken cancellationToken)
+        public static Task SwipeAll(API api, int size, Action<int> OnProgress, Action<string> OnMatch, Action<string> OnFinish, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
@@ -67,16 +67,8 @@ namespace Tintool.Models
                             iterations++;
                             if (iterations <= size)
                             {
-                                //orginal
                                 LikeData likeResult = api.SendLike(person.Id);
-                                //
-
-                                //debug
-                                //var likeResult = new LikeAndMatchResponse();
-                                //Thread.Sleep(1000);
-                                //likeResult.likes_remaining = 10;
-                                //
-
+   
                                 if (likeResult?.LikesRemaining>0)
                                 {
                                     if (token.IsCancellationRequested)
@@ -85,7 +77,7 @@ namespace Tintool.Models
                                     }
                                     else
                                     {
-                                        OnProgress(iterations);
+                                        OnProgress((int)((float)iterations/size*100));
                                     }
                                     if (likeResult?.ResultingMatch!=null)
                                     {
@@ -96,26 +88,31 @@ namespace Tintool.Models
                                         }
                                         else
                                         {
-                                            OnMatch(matchesGained);
+                                            OnMatch(likeResult.ResultingMatch.Person.Name);
                                         }
                                     }
                                 }
                                 else
                                 {
+                                    OnFinish.Invoke($"Swipe all: No more swipes available. {matchesGained} matches gained!");
                                     return;
                                 }
                             }
                             else
                             {
+                                OnFinish.Invoke($"Swipe all: Finished! {matchesGained} matches gained!");
                                 return;
                             }
                         }
                     }
                     else
                     {
+                        OnFinish.Invoke($"Swipe all: No one to swipe on! {matchesGained} matches gained!");
                         return;
                     }
                 }
+                OnFinish.Invoke($"Swipe all: Finished! {matchesGained} matches gained!");
+                return;
             });
         }
 

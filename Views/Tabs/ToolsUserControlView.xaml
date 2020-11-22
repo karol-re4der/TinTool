@@ -7,24 +7,31 @@
              xmlns:local="clr-namespace:Tintool.Views.Tabs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button cal:Message.Attach="[Event Click]=[SwipeAllAction()]" Width="200" Height="40">Swipe All</Button>
-            <StackPanel Width="200" Height="40">
-                <TextBlock HorizontalAlignment="Center" Height="20">Swipe All Size</TextBlock>
-                <TextBox Text="{Binding SwipeAllSize}" Height="20"/>
+    <DockPanel FlowDirection="LeftToRight">
+        <Grid DockPanel.Dock="Bottom">
+            <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
+            <TextBlock Text="{Binding ProgressText}"/>
+        </Grid>
+        <Separator DockPanel.Dock="Bottom"></Separator>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button cal:Message.Attach="[Event Click]=[SwipeAllAction()]" Width="200" Height="40">Swipe All</Button>
+                <StackPanel Width="200" Height="40">
+                    <TextBlock HorizontalAlignment="Center" Height="20">Swipe All Size</TextBlock>
+                    <TextBox Text="{Binding SwipeAllSize}" Height="20"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button cal:Message.Attach="[Event Click]=[ProximityCheckAction()]" Width="200">Proximity Check</Button>
+                <StackPanel Width="200" Height="40">
+                    <TextBlock HorizontalAlignment="Center" Height="20">Max Distance</TextBlock>
+                    <TextBox Text="{Binding ProximityDistance}" Width="200" Height="20"/>
+                </StackPanel>
+                <StackPanel Width="200" Height="40">
+                    <TextBlock HorizontalAlignment="Center" Height="20">Inactivity Cutout</TextBlock>
+                    <TextBox Text="{Binding ProximityInactivityCutout}"  Width="200" Height="20"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button cal:Message.Attach="[Event Click]=[ProximityCheckAction()]" Width="200">Proximity Check</Button>
-            <StackPanel Width="200" Height="40">
-                <TextBlock HorizontalAlignment="Center" Height="20">Max Distance</TextBlock>
-                <TextBox Text="{Binding ProximityDistance}" Width="200" Height="20"/>
-            </StackPanel>
-            <StackPanel Width="200" Height="40">
-                <TextBlock HorizontalAlignment="Center" Height="20">Inactivity Cutout</TextBlock>
-                <TextBox Text="{Binding ProximityInactivityCutout}"  Width="200" Height="20"/>
-            </StackPanel>
-        </StackPanel>
-    </StackPanel>
+    </DockPanel>
 </UserControl>

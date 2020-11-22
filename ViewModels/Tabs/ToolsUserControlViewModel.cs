@@ -68,7 +68,36 @@ namespace Tintool.ViewModels.Tabs
 
         private API _api;
         private Stats _stats;
-        private ProgressDialogViewModel _dialog;
+
+        #region Progressbar
+        private Task _currentTask;
+        private int _progress = 0;
+        public int Progress
+        {
+            get
+            {
+                return _progress;
+            }
+            set
+            {
+                _progress = value;
+                NotifyOfPropertyChange(() => Progress);
+            }
+        }
+        private string _progressText = "";
+        public string ProgressText
+        {
+            get
+            {
+                return _progressText;
+            }
+            set
+            {
+                _progressText = value;
+                NotifyOfPropertyChange(() => ProgressText);
+            }
+        }
+        #endregion
 
         public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
         {
@@ -102,17 +131,21 @@ namespace Tintool.ViewModels.Tabs
 
         public void SwipeAllAction()
         {
-            if (_dialog==null)
+            if (_currentTask==null || _currentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                _dialog = new ProgressDialogViewModel(_swipeAllSize, 0, 0, "No matches gained", "Swipe all!");
-                Task task = Unitool.SwipeAll(_api, _swipeAllSize, (x) => _dialog.Progress = x, (x) => _dialog.ProgressText = x + " matched!", token);
-                Action<object> finalTask = (x) => Unitool.LogNewMatches(_api.GetMatches(100), _stats);
-                task.ContinueWith(finalTask);
-                _dialog.OnCloseAction = (x) => { tokenSource.Cancel(); _dialog = null; finalTask.Invoke(null); };
-                _wm.ShowWindow(_dialog);
+                Progress = 0;
+                ProgressText = "Swiping";
+                Task task = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = "Matched with "+x+"!", (x)=>MessageBox.Show(x), token);
+                Action<object> continuation = (x) => 
+                {
+                    Unitool.LogNewMatches(_api.GetMatches(100), _stats);
+                    ProgressText = "Swiped all!";
+                    Progress = 100;
+                };
+                task.ContinueWith(continuation);
                 task.Start();
             }
         }

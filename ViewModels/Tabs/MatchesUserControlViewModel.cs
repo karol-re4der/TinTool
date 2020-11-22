@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tinder.DataStructures;
+using Tintool.Models;
 using Tintool.Models.DataStructures;
 
 namespace Tintool.ViewModels
@@ -31,7 +32,7 @@ namespace Tintool.ViewModels
                 NotifyOfPropertyChange(() => Progress);
             }
         }
-        private string _progressText = "Matches per day";
+        private string _progressText = "";
         public string ProgressText
         {
             get
@@ -301,6 +302,9 @@ namespace Tintool.ViewModels
 
         public void PreparePlot()
         {
+            ProgressText = "Searching for new matches!";
+            Progress = 0;
+            Unitool.LogNewMatches(_api.GetMatches(100), _stats);
             ProgressText = "Complete!";
             Progress = 100;
         }
