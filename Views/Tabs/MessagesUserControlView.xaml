@@ -37,9 +37,9 @@
                     <oxy:DateTimeAxis StringFormat = "{Binding DateTimeAxisFormat}" AbsoluteMinimum="{Binding StartingDateAsDouble}"  AbsoluteMaximum="{Binding EndingDateAsDouble}" IntervalType="Days" Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
                     <oxy:LinearAxis Minimum="0" Maximum="{Binding PlotUpperConstraint}" AbsoluteMinimum="0" AbsoluteMaximum="{Binding PlotUpperConstraint}" Title="Messages" Position="Left"/>
                 </oxy:Plot.Axes>
-                <oxy:LineSeries Color="Red" Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Green" Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} messages&#x0a; {2:dd.M.yyyy}" Color="Red" Visibility="{Binding SentVisibleAsString}" Title="Sent" ItemsSource="{Binding SentThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} messages&#x0a; {2:dd.M.yyyy}" Color="Green" Visibility="{Binding ReceivedVisibleAsString}" Title="Received" ItemsSource="{Binding ReceivedThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} messages&#x0a; {2:dd.M.yyyy}" Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
             </oxy:Plot>
         </DockPanel>
     </Grid>

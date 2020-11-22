@@ -40,12 +40,12 @@
                     <oxy:DateTimeAxis StringFormat = "{Binding DateTimeAxisFormat}" AbsoluteMinimum="{Binding StartingDateAsDouble}"  AbsoluteMaximum="{Binding EndingDateAsDouble}" IntervalType="Days" Minimum="{Binding StartingDateAsDouble}" Maximum="{Binding EndingDateAsDouble}" Position="Bottom"/>
                     <oxy:LinearAxis Minimum="0" Maximum="{Binding PlotUpperConstraint}" AbsoluteMinimum="0" AbsoluteMaximum="{Binding PlotUpperConstraint}" Title="Matches" Position="Left"/>
                 </oxy:Plot.Axes>
-                <oxy:LineSeries Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Green" Visibility="{Binding RegularVisibleAsString}" Title="Regular Likes" ItemsSource="{Binding RegularThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Blue" Visibility="{Binding SuperVisibleAsString}" Title="Super Likes" ItemsSource="{Binding SuperThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Gold" Visibility="{Binding BoostsVisibleAsString}" Title="Boost" ItemsSource="{Binding BoostsThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Red" Visibility="{Binding ExpVisibleAsString}" Title="Experience" ItemsSource="{Binding ExpThroughTimePlot.Points}"/>
-                <oxy:LineSeries Color="Red" Visibility="{Binding FastVisibleAsString}" Title="Fast" ItemsSource="{Binding FastThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Black" Visibility="{Binding TotalVisibleAsString}" Title="Total" ItemsSource="{Binding TotalThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Green" Visibility="{Binding RegularVisibleAsString}" Title="Regular Likes" ItemsSource="{Binding RegularThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Blue" Visibility="{Binding SuperVisibleAsString}" Title="Super Likes" ItemsSource="{Binding SuperThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Gold" Visibility="{Binding BoostsVisibleAsString}" Title="Boost" ItemsSource="{Binding BoostsThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Red" Visibility="{Binding ExpVisibleAsString}" Title="Experience" ItemsSource="{Binding ExpThroughTimePlot.Points}"/>
+                <oxy:LineSeries CanTrackerInterpolatePoints="False"  TrackerFormatString=" {0}&#x0a; {4:0.###} matches&#x0a; {2:dd.M.yyyy}" Color="Red" Visibility="{Binding FastVisibleAsString}" Title="Fast" ItemsSource="{Binding FastThroughTimePlot.Points}"/>
             </oxy:Plot>
         </DockPanel>
     </Grid>
