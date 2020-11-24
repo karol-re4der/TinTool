@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
@@ -18,6 +20,7 @@ using Tintool.Models.DataStructures.Responses;
 
 namespace Models
 {
+
     public class API
     {
         private string _token;
@@ -33,6 +36,12 @@ namespace Models
             client = new HttpClient();
             client.BaseAddress = new Uri(_uri);
             client.DefaultRequestHeaders.Add("x-auth-token", token);
+        }
+        public API()
+        {
+            rand = new Random();
+            client = new HttpClient();
+            client.BaseAddress = new Uri(_uri);
         }
 
         public List<MessageData> GetMessages(string matchID, int amount = 100)
@@ -180,18 +189,25 @@ namespace Models
             return result;
         }
 
-        public async Task<bool> Authenticate()
+        public bool SendLoginCode(string phoneNumber)
         {
-            HttpResponseMessage response = await client.GetAsync("/v2/recs/core");
+            Delay();
+            var payload = new StringContent("�3�050��0�45��V�", Encoding.UTF8, "application /x-google-protobuf");
+            HttpResponseMessage response = client.PostAsync("/v3/auth/login", payload).Result;
 
-            if (response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
             {
-                return true;
-            }
-            else
-            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
                 return false;
             }
+
+            return true;
+        }
+        public bool CheckToken()
+        {
+            HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
+            return response.IsSuccessStatusCode;
         }
 
         public string GetProfileID()
