@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using Tintool.Models.DataStructures;
 using OxyPlot.Axes;
+using System.Collections.Immutable;
+using System.Collections;
 
 namespace Tinder.DataStructures
 {
@@ -48,6 +50,9 @@ namespace Tinder.DataStructures
             totalDest.Points.Clear();
             regularDest.Points.Clear();
             superDest.Points.Clear();
+            boostsDest.Points.Clear();
+            expDest.Points.Clear();
+            fastDest.Points.Clear();
 
             for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
             {
