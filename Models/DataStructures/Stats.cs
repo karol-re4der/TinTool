@@ -155,7 +155,7 @@ namespace Tinder.DataStructures
                 List<MessageData> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
 
                 int totalThatDay = messagesThatDay.Count();
-                int sentThatDay = messagesThatDay.Where((x) => !x.ReceiverId.Equals(ProfileID)).Count();
+                int sentThatDay = messagesThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
                 int receivedThatDay = totalThatDay-sentThatDay;
 
                 double translatedDate = DateTimeAxis.ToDouble(i);
