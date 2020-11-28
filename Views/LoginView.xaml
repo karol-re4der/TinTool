@@ -8,21 +8,14 @@
         mc:Ignorable="d"
         Title="Tintool - Login" Width="300" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
     <DockPanel>
-        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="10,5,10,0">Authentication token</TextBlock>
-        <TextBox DockPanel.Dock="Top" Text="{Binding Token}" Width="300" Height="35" Margin="10,10,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Separator DockPanel.Dock="Top"/>
-        <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">or</TextBlock>
-        <Separator DockPanel.Dock="Top"/>
         <StackPanel DockPanel.Dock="Bottom">
             <Button Margin="10,10,10,5" Content="Authenticate" Width="150" Height="50" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" cal:Message.Attach="[Event Click] = [Action Button_Authenticate()]"/>
             <CheckBox Margin="10,5,10,10" HorizontalAlignment="Center" IsChecked="{Binding KeepLogged}">Keep logged</CheckBox>
         </StackPanel>
         <Separator DockPanel.Dock="Bottom"/>
         <StackPanel>
-            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Login</TextBlock>
-            <TextBox Text="{Binding Login}" Width="300" Height="35" Margin="10,5,10,5" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Password</TextBlock>
-            <TextBox Text="{Binding Password}" Width="300" Height="35" Margin="10,5,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0" Text="Phone Number"/>
+            <TextBox Text="{Binding PhoneNumber}" Width="300" Height="35" Margin="10,5,10,5" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock Visibility="{Binding CodeSent}" HorizontalAlignment="Center" Margin="10,10,10,0">Code</TextBlock>
             <TextBox Visibility="{Binding CodeSent}" Text="{Binding Code}" Width="300" Height="35" Margin="10,10,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
         </StackPanel>

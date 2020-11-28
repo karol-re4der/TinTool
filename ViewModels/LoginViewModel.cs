@@ -12,21 +12,8 @@ namespace Tintool.ViewModels
 {
     class LoginViewModel:Screen
     {
-        private IWindowManager wm;
+        private IWindowManager _wm;
         private API _api;
-
-        private string _token;
-        public string Token
-        {
-            get
-            {
-                return _token;
-            }
-            set {
-                _token = value;
-                NotifyOfPropertyChange(()=>Token);
-            }
-        }
 
         private string _code;
         public string Code
@@ -42,31 +29,17 @@ namespace Tintool.ViewModels
             }
         }
 
-        private string _login;
-        public string Login
+        private string _phoneNumber;
+        public string PhoneNumber
         {
             get
             {
-                return _login;
+                return _phoneNumber;
             }
             set
             {
-                _login = value;
-                NotifyOfPropertyChange(() => Login);
-            }
-        }
-
-        private string _password;
-        public string Password
-        {
-            get
-            {
-                return _password;
-            }
-            set
-            {
-                _password = value;
-                NotifyOfPropertyChange(()=>Password);
+                _phoneNumber = value;
+                NotifyOfPropertyChange(() => PhoneNumber);
             }
         }
 
@@ -93,74 +66,82 @@ namespace Tintool.ViewModels
             }
         }
 
-        Task<bool> loginTask;
 
 
         public LoginViewModel(IWindowManager wm)
         {
-            this.wm = wm;
+            this._wm = wm;
+            _api = new API();
 
-            string loadedToken = FileManager.LoadToken();
-            if (loadedToken?.Length > 0)
+            if (KeepLogged)
             {
-                Token = loadedToken;
+                string loadedToken = FileManager.LoadToken();
+                if (loadedToken?.Length > 0)
+                {
+                    _api.SetToken(loadedToken);
+                    if (_api.IsTokenWorking())
+                    {
+                        FinalizeLogin();
+                    }
+                }
             }
         }
 
         private async void Authenticate()
         {
-            if (loginTask == null || loginTask.IsCompleted)
+            if (!string.IsNullOrWhiteSpace(Code))
             {
-                if(!string.IsNullOrWhiteSpace(Code))
+                if (await RequestToken())
                 {
-                    if(await LogByCode())
-                    {
-                        FinalizeLogin();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Cannot authenticate: wrong code!");
-                    }
-                }
-                else if (string.IsNullOrWhiteSpace(Token) && (string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(Login)))
-                {
-                    MessageBox.Show("Cannot authenticate: need token, or login and password filled in");
-                }
-                else if (string.IsNullOrWhiteSpace(Token))
-                {
-                    if (await LogByCredentials())
-                    {
-                        _codeSent = true;
-                        NotifyOfPropertyChange(() => CodeSent);
-                    }
+                    FinalizeLogin();
                 }
                 else
                 {
-                    if (await LogByToken())
-                    {
-                        FinalizeLogin();
-                    }
+                    MessageBox.Show("Cannot authenticate!");
                 }
+            }
+            else if (!string.IsNullOrWhiteSpace(PhoneNumber))
+            {
+                if (await RequestCode())
+                {
+                    _codeSent = true;
+                    NotifyOfPropertyChange(() => CodeSent);
+                }
+                else
+                {
+                    MessageBox.Show("Cannot authenticate!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Cannot authenticate!");
             }
         }
 
-        public async Task<bool> LogByCode()
+        public async Task<bool> RequestToken()
         {
             await Task.Delay(1);
-            return false;
+            string token = _api.RequestAuthToken(Code, PhoneNumber);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                _api.SetToken(token);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public async Task<bool> LogByCredentials()
+        public async Task<bool> RequestCode()
         {
             await Task.Delay(1);
-            _api = new API();
-            if (_api.SendLoginCode(Login))
+            if (_api.RequestLoginCode(PhoneNumber))
             {
                 return true;
             }
             else
             {
-                MessageBox.Show("Cannot authenticate: invalid login and/or password");
                 return false;
             }
         }
@@ -168,25 +149,23 @@ namespace Tintool.ViewModels
         public async Task<bool> LogByToken()
         {
             await Task.Delay(1);
-            _api = new API(_token);
-            if (_api.CheckToken())
+            if (_api.IsTokenWorking())
             {
                 if (KeepLogged)
                 {
-                    FileManager.SaveToken(_token);
+                    FileManager.SaveToken(_api.GetToken());
                 }
                 return true;
             }
             else
             {
-                MessageBox.Show("Cannot authenticate: invalid token");
                 return false;
             }
         }
 
         public void FinalizeLogin()
         {
-            wm.ShowWindow(new LoggedViewModel(wm, _api));
+            _wm.ShowWindow(new LoggedViewModel(_wm, _api));
             TryClose();
         }
 
