@@ -191,10 +191,6 @@ namespace Models
         #region authentication
         public bool RequestLoginCode(string phoneNumber)
         {
-            //string foo = "\u001f�\b\0\0\0\0\0\0\u0003r���\u0015�Z镑䞜���\u0019Z�i��e���n��l�\u000f�~!�zn�~�\u0011A~�N��y%f�\u0011�in���U��y�\u0011\u0001.y%�\u001e\u0005\u0006��I9�B*F�)F)�))��i�f�&��準��I��\u0016��I�\u0006�Ɇ\u0016J\u0012�i�i�i��&�fF)f\u0006�\u0006\u0006�\u0006�i�Zl\u001c7��n`\u0004\0\0\0��\u0003\0ӊ�>�\0\0\0";
-            //var bar = Decompress(Encoding.UTF8.GetBytes(foo));
-            //string foobar = Encoding.UTF8.GetString(bar);
-            //return false;
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
             client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
@@ -202,9 +198,9 @@ namespace Models
             client.DefaultRequestHeaders.Add("persistent-device-id", "89621f05-6135-426c-b74e-8b4a850ff1d8");
             client.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate");
             client.DefaultRequestHeaders.Add("app-version", "1026400");
-            client.DefaultRequestHeaders.Add("app-session-id", "28cb573e-0727-4541-a605-75b9cea98767");
+            client.DefaultRequestHeaders.Add("app-session-id", "180c1aab-4c2a-41b1-afad-cf713c1c8f3f");
             client.DefaultRequestHeaders.Add("x-supported-image-formats", "webp");
-            client.DefaultRequestHeaders.Add("funnel-session-id", "727442c23bbc4799");
+            client.DefaultRequestHeaders.Add("funnel-session-id", "f0b6eb6320d8d3fe");
             client.DefaultRequestHeaders.Add("app-session-time-elapsed", "45913");
             client.DefaultRequestHeaders.Add("accept-language", "en-US");
 
@@ -301,28 +297,6 @@ namespace Models
         private void Delay()
         {
             System.Threading.Thread.Sleep(rand.Next() % 50 + 25);
-        }
-        private byte[] Decompress(byte[] gzip)
-        {
-            using (GZipStream stream = new GZipStream(new MemoryStream(gzip), CompressionMode.Decompress))
-            {
-                const int size = 4096;
-                byte[] buffer = new byte[size];
-                using (MemoryStream memory = new MemoryStream())
-                {
-                    int count = 0;
-                    do
-                    {
-                        count = stream.Read(buffer, 0, size);
-                        if (count > 0)
-                        {
-                            memory.Write(buffer, 0, count);
-                        }
-                    }
-                    while (count > 0);
-                    return memory.ToArray();
-                }
-            }
         }
     }
 }

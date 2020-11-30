@@ -16,6 +16,8 @@ namespace Models
         private static string statsFileExtension = ".stat";
         private static string tokenFileName = "tkn";
         private static string tokenFileExtension = ".ttool";
+        private static string settingsFileName = "app_settings";
+        private static string settingsFileExtension = ".set";
 
         public static Stats LoadStats()
         {
@@ -110,6 +112,55 @@ namespace Models
             finally
             {
                 reader?.Close();
+            }
+        }
+
+        public static AppSettings LoadSettings()
+        {
+            Directory.CreateDirectory(path);
+            string fullFilePath = path + @"\" + settingsFileName + settingsFileExtension;
+
+            StreamReader reader = null;
+            try
+            {
+                reader = new StreamReader(fullFilePath);
+                AppSettings stats = JsonSerializer.Deserialize<AppSettings>(reader.ReadToEnd());
+                return stats;
+            }
+            catch (FileNotFoundException e)
+            {
+                return new AppSettings();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+            finally
+            {
+                reader?.Close();
+            }
+        }
+
+        public static void SaveSettings(AppSettings settings)
+        {
+            try
+            {
+                Directory.CreateDirectory(path);
+
+                string settingsAsJson = JsonSerializer.Serialize(settings);
+
+                FileStream file = File.Create(path + @"\" + settingsFileName + settingsFileExtension);
+
+                StreamWriter writer = new StreamWriter(file);
+                writer.Write(settingsAsJson);
+                writer.Close();
+                file.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
             }
         }
     }

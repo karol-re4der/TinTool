@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Tintool.Models.DataStructures;
 using Tintool.Views;
 
 namespace Tintool.ViewModels
@@ -14,6 +15,7 @@ namespace Tintool.ViewModels
     {
         private IWindowManager _wm;
         private API _api;
+        private AppSettings _settings;
 
         private string _code;
         public string Code
@@ -48,7 +50,14 @@ namespace Tintool.ViewModels
         {
             get
             {
-                return _codeSent ? "Visible" : "Hidden";
+                return _codeSent ? "True" : "False";
+            }
+        }
+        public string CodeSentNegation
+        {
+            get
+            {
+                return _codeSent ? "False" : "True";
             }
         }
 
@@ -72,6 +81,8 @@ namespace Tintool.ViewModels
         {
             this._wm = wm;
             _api = new API();
+            _settings = FileManager.LoadSettings();
+            KeepLogged = _settings.KeepLogged;
 
             if (KeepLogged)
             {
@@ -85,6 +96,8 @@ namespace Tintool.ViewModels
                     }
                 }
             }
+
+            PhoneNumber = _settings.LoginNumber;
         }
 
         private async void Authenticate()
@@ -106,6 +119,7 @@ namespace Tintool.ViewModels
                 {
                     _codeSent = true;
                     NotifyOfPropertyChange(() => CodeSent);
+                    NotifyOfPropertyChange(() => CodeSentNegation);
                 }
                 else
                 {
@@ -165,7 +179,10 @@ namespace Tintool.ViewModels
 
         public void FinalizeLogin()
         {
-            _wm.ShowWindow(new LoggedViewModel(_wm, _api));
+            _settings.KeepLogged = KeepLogged;
+            _settings.LoginNumber = PhoneNumber;
+            FileManager.SaveSettings(_settings);
+            _wm.ShowWindow(new LoggedViewModel(_wm, _api, _settings));
             TryClose();
         }
 

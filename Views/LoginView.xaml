@@ -15,9 +15,9 @@
         <Separator DockPanel.Dock="Bottom"/>
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0" Text="Phone Number"/>
-            <TextBox Text="{Binding PhoneNumber}" Width="300" Height="35" Margin="10,5,10,5" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
-            <TextBlock Visibility="{Binding CodeSent}" HorizontalAlignment="Center" Margin="10,10,10,0">Code</TextBlock>
-            <TextBox Visibility="{Binding CodeSent}" Text="{Binding Code}" Width="300" Height="35" Margin="10,10,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <TextBox IsEnabled="{Binding CodeSentNegation}" Text="{Binding PhoneNumber}" Width="300" Height="35" Margin="10,5,10,5" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Code</TextBlock>
+            <TextBox IsEnabled="{Binding CodeSent}" Text="{Binding Code}" Width="300" Height="35" Margin="10,10,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
         </StackPanel>
     </DockPanel>
 

@@ -19,6 +19,7 @@ namespace Tintool.ViewModels
     {
         private IWindowManager wm;
 
+        private AppSettings _settings;
         public Stats stats;
         public API api;
 
@@ -27,10 +28,11 @@ namespace Tintool.ViewModels
         public ToolsUserControlViewModel ToolsUserControl { get; }
 
 
-        public LoggedViewModel(IWindowManager wm, API api)
+        public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
         {
             this.wm = wm;
             this.api = api;
+            this._settings = settings;
 
             stats = FileManager.LoadStats() ?? (new Stats());
             stats.ProfileID = api.GetProfileID();
