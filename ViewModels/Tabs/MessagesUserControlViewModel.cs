@@ -298,6 +298,14 @@ namespace Tintool.ViewModels.Tabs
 
             SetTime(start, end);
         }
+
+        public void Button_FullTimeframe()
+        {
+            DateTime start = _stats.Date.Date;
+            DateTime end = DateTime.Now.Date;
+
+            SetTime(start, end);
+        }
         #endregion
     }
 }
