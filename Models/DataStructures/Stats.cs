@@ -40,7 +40,7 @@ namespace Tinder.DataStructures
         public float AverageMatchesPerDay(DateTime startDate, DateTime endDate)
         {
             int daysPassed = endDate.Subtract(startDate).Days;
-            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=endDate).Count();
+            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=endDate.AddDays(1)).Count();
             float result = (float)matchesCount/daysPassed;
             return result;
         }
@@ -83,7 +83,7 @@ namespace Tinder.DataStructures
         {
             int totalResponses = 0;
             int totalMessaged = 0;
-            foreach (MatchData match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate))
+            foreach (MatchData match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate.AddDays(1)))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
@@ -92,7 +92,7 @@ namespace Tinder.DataStructures
                         totalResponses += 1;
                         totalMessaged += 1;
                     }
-                    if (match.ResponseStatus != ResponseStatusTypes.MessagedNotResponded)
+                    if (match.ResponseStatus == ResponseStatusTypes.MessagedNotResponded)
                     {
                         totalMessaged += 1;
                     }
@@ -113,7 +113,7 @@ namespace Tinder.DataStructures
         {
             int totalConversations = 0;
             int totalMessages = 0;
-            foreach (MatchData match in Matches.Where((x)=>x.CreationDate.Date>=startDate && x.CreationDate<=endDate))
+            foreach (MatchData match in Matches.Where((x)=>x.CreationDate.Date>=startDate && x.CreationDate<=endDate.AddDays(1)))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
