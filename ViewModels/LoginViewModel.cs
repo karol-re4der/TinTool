@@ -3,64 +3,193 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Tintool.Models.DataStructures;
 using Tintool.Views;
 
 namespace Tintool.ViewModels
 {
     class LoginViewModel:Screen
     {
-        private IWindowManager wm;
+        private IWindowManager _wm;
+        private API _api;
+        private AppSettings _settings;
 
-        private string _token;
-        public string Token
+        private string _code;
+        public string Code
         {
             get
             {
-                return _token;
+                return _code;
             }
-            set {
-                _token = value;
-                NotifyOfPropertyChange(()=>Token);
+            set
+            {
+                _code = value;
+                NotifyOfPropertyChange(() => Code);
             }
         }
 
+        private string _phoneNumber;
+        public string PhoneNumber
+        {
+            get
+            {
+                return _phoneNumber;
+            }
+            set
+            {
+                _phoneNumber = value;
+                NotifyOfPropertyChange(() => PhoneNumber);
+            }
+        }
+
+        private bool _codeSent = false;
+        public string CodeSent
+        {
+            get
+            {
+                return _codeSent ? "True" : "False";
+            }
+        }
+        public string CodeSentNegation
+        {
+            get
+            {
+                return _codeSent ? "False" : "True";
+            }
+        }
+
+        private bool _keepLogged = true;
+        public bool KeepLogged
+        {
+            get
+            {
+                return _keepLogged;
+            }
+            set
+            {
+                _keepLogged = value;
+                NotifyOfPropertyChange(() => KeepLogged);
+            }
+        }
+
+
+
         public LoginViewModel(IWindowManager wm)
         {
-            this.wm = wm;
+            this._wm = wm;
+            _api = new API();
+            _settings = FileManager.LoadSettings();
+            KeepLogged = _settings.KeepLogged;
+            PhoneNumber = _settings.LoginNumber;
+        }
 
-            string loadedToken = FileManager.LoadToken();
-            if (loadedToken?.Length > 0)
+        protected override void OnActivate()
+        {
+            if (KeepLogged)
             {
-                Token = loadedToken;
+                string loadedToken = FileManager.LoadToken();
+                if (loadedToken?.Length > 0)
+                {
+                    _api.SetToken(loadedToken);
+                    if (_api.IsTokenWorking())
+                    {
+                        FinalizeLogin();
+                    }
+                }
             }
         }
 
         private async void Authenticate()
         {
-            try
+            if (!string.IsNullOrWhiteSpace(Code))
             {
-                API api = new API(_token);
-
-                if (await api.Authenticate())
+                if (await RequestToken())
                 {
-                    FileManager.SaveToken(_token);
-                    LoggedViewModel loggedViewModel = new LoggedViewModel(wm, api);
-                    wm.ShowWindow(loggedViewModel);
-                    TryClose();
+                    FinalizeLogin();
                 }
                 else
                 {
-                    MessageBox.Show("Cannot authenticate");
+                    MessageBox.Show("Cannot authenticate!");
                 }
             }
-            catch(Exception e)
+            else if (!string.IsNullOrWhiteSpace(PhoneNumber))
             {
-                MessageBox.Show("Error authenticating: " + e.Message);
+                if (await RequestCode())
+                {
+                    _codeSent = true;
+                    NotifyOfPropertyChange(() => CodeSent);
+                    NotifyOfPropertyChange(() => CodeSentNegation);
+                }
+                else
+                {
+                    MessageBox.Show("Cannot authenticate!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Cannot authenticate!");
             }
         }
-        public void LoginAction()
+
+        public async Task<bool> RequestToken()
+        {
+            await Task.Delay(1);
+            string token = _api.RequestAuthToken(Code, PhoneNumber);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                _api.SetToken(token);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RequestCode()
+        {
+            await Task.Delay(1);
+            if (_api.RequestLoginCode(PhoneNumber))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> LogByToken()
+        {
+            await Task.Delay(1);
+            if (_api.IsTokenWorking())
+            {
+                if (KeepLogged)
+                {
+                    FileManager.SaveToken(_api.GetToken());
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void FinalizeLogin()
+        {
+            _settings.KeepLogged = KeepLogged;
+            _settings.LoginNumber = PhoneNumber;
+            FileManager.SaveSettings(_settings);
+            FileManager.SaveToken(_api.GetToken());
+            _wm.ShowWindow(new LoggedViewModel(_wm, _api, _settings));
+            TryClose();
+        }
+
+        public void Button_Authenticate()
         {
             Authenticate();
         }

@@ -19,6 +19,7 @@ namespace Tintool.ViewModels
     {
         private IWindowManager wm;
 
+        private AppSettings _settings;
         public Stats stats;
         public API api;
 
@@ -27,10 +28,11 @@ namespace Tintool.ViewModels
         public ToolsUserControlViewModel ToolsUserControl { get; }
 
 
-        public LoggedViewModel(IWindowManager wm, API api)
+        public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
         {
             this.wm = wm;
             this.api = api;
+            this._settings = settings;
 
             stats = FileManager.LoadStats() ?? (new Stats());
             stats.ProfileID = api.GetProfileID();
@@ -39,7 +41,7 @@ namespace Tintool.ViewModels
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
-            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats);
+            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings);
         }
 
 
@@ -76,6 +78,15 @@ namespace Tintool.ViewModels
         public void WindowExit()
         {
             FileManager.SaveStats(stats);
+        }
+
+        public void Button_LogOut()
+        {
+            _settings.KeepLogged = false;
+            FileManager.SaveSettings(_settings);
+            FileManager.SaveStats(stats);
+            wm.ShowWindow(new LoginViewModel(wm));
+            TryClose();
         }
     }
 }

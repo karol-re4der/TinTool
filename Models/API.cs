@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net.Http;
@@ -15,25 +17,31 @@ using Tintool.Models.DataStructures.UserResponse;
 using System.Threading.Tasks;
 using Tintool.Models.DataStructures.Responses.Messages;
 using Tintool.Models.DataStructures.Responses;
+using System.Net;
+using System.IO.Compression;
 
 namespace Models
 {
+
     public class API
     {
         private string _token;
         private string _uri = "https://api.gotinder.com/";
+        HttpClientHandler handler;
         HttpClient client;
         private Random rand;
 
-        public API(string token)
+        public API()
         {
-            this._token = token;
-
             rand = new Random();
-            client = new HttpClient();
+            handler = new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            client = new HttpClient(handler);
             client.BaseAddress = new Uri(_uri);
-            client.DefaultRequestHeaders.Add("x-auth-token", token);
         }
+
 
         public List<MessageData> GetMessages(string matchID, int amount = 100)
         {
@@ -180,19 +188,87 @@ namespace Models
             return result;
         }
 
-        public async Task<bool> Authenticate()
+        #region authentication
+        public bool RequestLoginCode(string phoneNumber)
         {
-            HttpResponseMessage response = await client.GetAsync("/v2/recs/core");
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
+            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+            client.DefaultRequestHeaders.Add("platform", "web");
+            client.DefaultRequestHeaders.Add("persistent-device-id", "89621f05-6135-426c-b74e-8b4a850ff1d8");
+            client.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate");
+            client.DefaultRequestHeaders.Add("app-version", "1026400");
+            client.DefaultRequestHeaders.Add("app-session-id", "180c1aab-4c2a-41b1-afad-cf713c1c8f3f");
+            client.DefaultRequestHeaders.Add("x-supported-image-formats", "webp");
+            client.DefaultRequestHeaders.Add("funnel-session-id", "f0b6eb6320d8d3fe");
+            client.DefaultRequestHeaders.Add("app-session-time-elapsed", "45913");
+            client.DefaultRequestHeaders.Add("accept-language", "en-US");
 
-            if (response.IsSuccessStatusCode)
+            string payloadContent = "\n\r\n\v" + phoneNumber;
+
+            Delay();
+            var payload = new StringContent(payloadContent, Encoding.UTF8, "application/x-google-protobuf");
+            HttpResponseMessage response = client.PostAsync("/v3/auth/login", payload).Result;
+
+
+            if (!response.IsSuccessStatusCode)
             {
-                return true;
-            }
-            else
-            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
                 return false;
             }
+
+            return true;
         }
+        public string RequestAuthToken(string code, string phoneNumber)
+        {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
+            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+            client.DefaultRequestHeaders.Add("platform", "web");
+            client.DefaultRequestHeaders.Add("persistent-device-id", "89621f05-6135-426c-b74e-8b4a850ff1d8");
+            client.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate");
+            client.DefaultRequestHeaders.Add("app-version", "1026400");
+            client.DefaultRequestHeaders.Add("app-session-id", "28cb573e-0727-4541-a605-75b9cea98767");
+            client.DefaultRequestHeaders.Add("x-supported-image-formats", "webp");
+            client.DefaultRequestHeaders.Add("funnel-session-id", "727442c23bbc4799");
+            client.DefaultRequestHeaders.Add("app-session-time-elapsed", "45913");
+            client.DefaultRequestHeaders.Add("accept-language", "en-US");
+
+            string payloadContent = "" + "\n\r\n\v" + phoneNumber + "" + code;
+
+            Delay();
+            var payload = new StringContent(payloadContent, Encoding.UTF8, "application/x-google-protobuf");
+            HttpResponseMessage response = client.PostAsync("/v3/auth/login", payload).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return "";
+            }
+
+            string responseAsString = response.Content.ReadAsStringAsync().Result;
+            int tokenStartIndex = responseAsString.IndexOf("$")+2;
+            int tokenEndIndex = responseAsString.IndexOf("\"");
+            int tokenLength = tokenEndIndex - tokenStartIndex;
+            return responseAsString.Substring(tokenStartIndex, tokenLength);
+        }
+
+        public bool IsTokenWorking()
+        {
+            Delay();
+            HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
+            return response.IsSuccessStatusCode;
+        }
+        public void SetToken(string newToken)
+        {
+            this._token = newToken;
+            client.DefaultRequestHeaders.Add("x-auth-token", newToken);
+        }
+        public string GetToken()
+        {
+            return _token;
+        }
+        #endregion
 
         public string GetProfileID()
         {

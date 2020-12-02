@@ -13,15 +13,16 @@
             <TextBlock Text="{Binding ProgressText}"/>
         </Grid>
         <Separator DockPanel.Dock="Bottom"></Separator>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Height="40" Orientation="Horizontal">
                 <Button cal:Message.Attach="[Event Click]=[SwipeAllAction()]" Width="200" Height="40">Swipe All</Button>
                 <StackPanel Width="200" Height="40">
                     <TextBlock HorizontalAlignment="Center" Height="20">Swipe All Size</TextBlock>
                     <TextBox Text="{Binding SwipeAllSize}" Height="20"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <Separator DockPanel.Dock="Top"/>
+            <StackPanel DockPanel.Dock="Top" Height="40" Orientation="Horizontal">
                 <Button cal:Message.Attach="[Event Click]=[ProximityCheckAction()]" Width="200">Proximity Check</Button>
                 <StackPanel Width="200" Height="40">
                     <TextBlock HorizontalAlignment="Center" Height="20">Max Distance</TextBlock>
@@ -32,6 +33,8 @@
                     <TextBox Text="{Binding ProximityInactivityCutout}"  Width="200" Height="20"/>
                 </StackPanel>
             </StackPanel>
-        </StackPanel>
+            <Separator DockPanel.Dock="Top"/>
+            <Separator Visibility="Hidden"/>
+        </DockPanel>
     </DockPanel>
 </UserControl>
