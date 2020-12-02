@@ -173,7 +173,6 @@ namespace Models
             try
             {
                 LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
-                result.ResultingMatch.MatcherID = _lastID;
                 result.LikesRemaining = likeWithoutMatchResponse.likes_remaining;
             }
             catch(System.Text.Json.JsonException e)
@@ -181,8 +180,8 @@ namespace Models
                 try
                 {
                     LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
-                    result.ResultingMatch.MatcherID = _lastID;
                     result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
+                    result.ResultingMatch.MatcherID = _lastID;
                     result.LikesRemaining = likeAndMatchResponse.likes_remaining;
                 }
                 catch (System.Text.Json.JsonException e2)
