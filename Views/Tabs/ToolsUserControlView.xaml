@@ -34,9 +34,6 @@
                 </StackPanel>
             </StackPanel>
             <Separator DockPanel.Dock="Top"/>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" FlowDirection="RightToLeft">
-                <Button cal:Message.Attach="[Event Click]=[Button_LogOut()]" Height="40" Width="200">Log out</Button>
-            </StackPanel>
             <Separator Visibility="Hidden"/>
         </DockPanel>
     </DockPanel>

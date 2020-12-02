@@ -83,7 +83,11 @@ namespace Tintool.ViewModels
             _api = new API();
             _settings = FileManager.LoadSettings();
             KeepLogged = _settings.KeepLogged;
+            PhoneNumber = _settings.LoginNumber;
+        }
 
+        protected override void OnActivate()
+        {
             if (KeepLogged)
             {
                 string loadedToken = FileManager.LoadToken();
@@ -96,8 +100,6 @@ namespace Tintool.ViewModels
                     }
                 }
             }
-
-            PhoneNumber = _settings.LoginNumber;
         }
 
         private async void Authenticate()
@@ -182,6 +184,7 @@ namespace Tintool.ViewModels
             _settings.KeepLogged = KeepLogged;
             _settings.LoginNumber = PhoneNumber;
             FileManager.SaveSettings(_settings);
+            FileManager.SaveToken(_api.GetToken());
             _wm.ShowWindow(new LoggedViewModel(_wm, _api, _settings));
             TryClose();
         }

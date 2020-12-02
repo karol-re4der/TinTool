@@ -19,7 +19,14 @@ namespace Tintool
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             LoginViewModel loginViewModel = new LoginViewModel(wm);
-            wm.ShowWindow(loginViewModel);
+            try
+            {
+                wm.ShowWindow(loginViewModel);
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
     }

@@ -83,6 +83,7 @@ namespace Tintool.ViewModels.Tabs
 
         private API _api;
         private Stats _stats;
+        private AppSettings _settings;
 
         #region Progressbar
         private Task _currentTask;
@@ -114,11 +115,12 @@ namespace Tintool.ViewModels.Tabs
         }
         #endregion
 
-        public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
+        public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings)
         {
             this._wm = wm;
             this._api = api;
             this._stats = stats;
+            this._settings = settings;
 
             ProximityDistance = "20";
             ProximityInactivityCutout = "1";

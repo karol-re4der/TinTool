@@ -41,7 +41,7 @@ namespace Tintool.ViewModels
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
-            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats);
+            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings);
         }
 
 
@@ -78,6 +78,15 @@ namespace Tintool.ViewModels
         public void WindowExit()
         {
             FileManager.SaveStats(stats);
+        }
+
+        public void Button_LogOut()
+        {
+            _settings.KeepLogged = false;
+            FileManager.SaveSettings(_settings);
+            FileManager.SaveStats(stats);
+            wm.ShowWindow(new LoginViewModel(wm));
+            TryClose();
         }
     }
 }
