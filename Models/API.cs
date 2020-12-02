@@ -179,6 +179,7 @@ namespace Models
                 {
                     LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
                     result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
+                    result.LikesRemaining = likeAndMatchResponse.likes_remaining;
                 }
                 catch (System.Text.Json.JsonException e2)
                 {
