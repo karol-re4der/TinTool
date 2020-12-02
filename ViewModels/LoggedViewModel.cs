@@ -35,7 +35,8 @@ namespace Tintool.ViewModels
             this._settings = settings;
 
             stats = FileManager.LoadStats() ?? (new Stats());
-            stats.ProfileID = api.GetProfileID();
+            stats.ProfileIDs.Add(api.GetProfileID());
+            stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
             stats.ResetDate();
             Unitool.LogNewMatches(api.GetMatches(100), stats);
 

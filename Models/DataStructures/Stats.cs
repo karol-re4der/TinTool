@@ -14,7 +14,7 @@ namespace Tinder.DataStructures
     {
         public List<MatchData> Matches { get; set; }
         public DateTime Date = DateTime.MinValue;
-        public string ProfileID { get; set; }
+        public List<string> ProfileIDs { get; set; }
 
         public Stats()
         {
@@ -155,7 +155,7 @@ namespace Tinder.DataStructures
                 List<MessageData> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
 
                 int totalThatDay = messagesThatDay.Count();
-                int sentThatDay = messagesThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
+                int sentThatDay = messagesThatDay.Where((x) => ProfileIDs.Contains(x.ReceiverId)).Count();
                 int receivedThatDay = totalThatDay-sentThatDay;
 
                 double translatedDate = DateTimeAxis.ToDouble(i);
