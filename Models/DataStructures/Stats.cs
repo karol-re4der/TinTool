@@ -54,7 +54,7 @@ namespace Tinder.DataStructures
             expDest.Points.Clear();
             fastDest.Points.Clear();
 
-            for (DateTime i = Date.Date; i <= DateTime.Now.Date; i = i.AddDays(1))
+            for (DateTime i = startDate; i <= endDate.AddDays(1); i = i.AddDays(1))
             {
                 List<MatchData> matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).ToList();
 
