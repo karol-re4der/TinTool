@@ -132,7 +132,7 @@ namespace Tintool.Models
                                         }
                                         else
                                         {
-                                            OnMatch(likeResult.ResultingMatch.Person.Name);
+                                            OnMatch(matchesGained+" matches thus far!");
                                         }
                                     }
                                 }
