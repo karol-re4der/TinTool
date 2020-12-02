@@ -26,6 +26,7 @@ namespace Tintool.ViewModels
         public MatchesUserControlViewModel MatchesUserControl { get; }
         public MessagesUserControlViewModel MessagesUserControl { get; }
         public ToolsUserControlViewModel ToolsUserControl { get; }
+        public AccountsUserControlViewModel AccountsUserControl { get; }
 
 
         public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
@@ -43,6 +44,7 @@ namespace Tintool.ViewModels
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
             ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings);
+            AccountsUserControl = new AccountsUserControlViewModel(wm, ref api, ref stats, ref _settings);
         }
 
 
