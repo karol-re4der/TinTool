@@ -29,10 +29,11 @@
                 <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding StartingDate}" FirstDayOfWeek="Monday"/>
                 <TextBlock DockPanel.Dock="Top">To:</TextBlock>
                 <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding EndingDate}" FirstDayOfWeek="Monday"></DatePicker>
-
+                <Button DockPanel.Dock="Top" Margin="3,8,0,0" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,1,5,1" cal:Message.Attach="[Event Click]=[Button_DefaultTimeframe()]">Current month</Button>
+                
                 <Separator DockPanel.Dock="Top" Height="20"></Separator>
 
-                <Button DockPanel.Dock="Bottom" VerticalAlignment="Stretch" Height="50" HorizontalAlignment="Stretch" cal:Message.Attach="[Event Click]=[PreparePlot()]">Refresh</Button>
+                <Button DockPanel.Dock="Bottom" VerticalAlignment="Stretch" Height="50" HorizontalAlignment="Stretch" cal:Message.Attach="[Event Click]=[Button_Refresh()]">Refresh</Button>
                 <Separator Visibility="Hidden"></Separator>
             </DockPanel>
             <oxy:Plot x:Name="PlotItem" Title="{Binding TotalThroughTimePlot.Title}" VerticalAlignment="Stretch">

@@ -286,13 +286,13 @@ namespace Tintool.ViewModels
             this._api = api;
             this._stats = stats;
 
-            SetTime();
+            SetTime(_stats.Date.Date, DateTime.Today);
         }
 
-        private void SetTime()
+        private void SetTime(DateTime start, DateTime end)
         {
-            EndingDate = DateTime.Today;
-            StartingDate = _stats.Date.Date;
+            StartingDate = start;
+            EndingDate = end;
         }
 
         public void RefreshContent()
@@ -331,5 +331,21 @@ namespace Tintool.ViewModels
             NotifyOfPropertyChange(() => SuperThroughTimePlot);
             NotifyOfPropertyChange(() => PlotTitle);
         }
+
+        #region Buttons
+        public void Button_Refresh()
+        {
+            PreparePlot();
+        }
+
+        public void Button_DefaultTimeframe()
+        {
+            DateTime start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime end = start.AddMonths(1).AddDays(-1);
+
+            SetTime(start, end);
+            Replot();
+        }
+        #endregion
     }
 }
