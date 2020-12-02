@@ -9,8 +9,8 @@
     <DockPanel FlowDirection="LeftToRight">
         <DockPanel DockPanel.Dock="Bottom">
             
-            <Button DockPanel.Dock="Right" cal:Message.Attach="[Event Click]=[Button_AddFromTextBox()]">Add</Button>
-            <TextBox DockPanel.Dock="Right" Width="200" Text="{Binding IDTextBox}"></TextBox>
+            <Button DockPanel.Dock="Left" cal:Message.Attach="[Event Click]=[Button_AddFromTextBox()]">Add</Button>
+            <TextBox DockPanel.Dock="Left" Width="200" Text="{Binding IDTextBox}"></TextBox>
 
             <Separator Visibility="Hidden"/>
         </DockPanel>
@@ -19,12 +19,11 @@
             <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">
                 IDs in use
             </TextBlock>
-            <ListView ItemsSource="{Binding ProfileIDsList}">
+            <ListView SelectedItem="{Binding ProfileIDsSelection}" ItemsSource="{Binding ProfileIDsList}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="200" Header="ID" DisplayMemberBinding="{Binding ID}"/>
                         <GridViewColumn Width="50" Header="Matches" DisplayMemberBinding="{Binding Matches}"/>
-
                     </GridView>
                 </ListView.View>
             </ListView>

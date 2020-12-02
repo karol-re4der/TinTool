@@ -12,17 +12,17 @@ namespace Models
     class FileManager
     {
         private static string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"/Tintool/";
-        private static string statsFileName = "tst";
+        private static string statsFolder = "SaveFiles//";
         private static string statsFileExtension = ".stat";
         private static string tokenFileName = "tkn";
         private static string tokenFileExtension = ".ttool";
         private static string settingsFileName = "app_settings";
         private static string settingsFileExtension = ".set";
 
-        public static Stats LoadStats()
+        public static Stats LoadStats(string statsFileName = "default.stat")
         {
-            Directory.CreateDirectory(path);
-            string fullFilePath = path + @"\" + statsFileName + statsFileExtension;
+            Directory.CreateDirectory(path+statsFolder);
+            string fullFilePath = path + @"\" + statsFolder + statsFileName;
 
             StreamReader reader = null;
             try
@@ -46,15 +46,37 @@ namespace Models
             }
         }
 
-        public static void SaveStats(Stats stats)
+        public static List<Stats> LoadAllSavefiles()
+        {
+            List<Stats> result = new List<Stats>();
+            Directory.CreateDirectory(path+statsFolder);
+
+            DirectoryInfo dir = new DirectoryInfo(path+statsFolder);
+
+            foreach(FileInfo file in dir.GetFiles())
+            {
+                if (file.Extension.Equals(statsFileExtension))
+                {
+                    Stats loadedStats = LoadStats(file.Name);
+                    if (loadedStats != null)
+                    {
+                        result.Add(loadedStats);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static void SaveStats(Stats stats, string statsFileName="default")
         {
             try
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(path+statsFolder);
 
                 string statsAsJson = JsonSerializer.Serialize(stats);
 
-                FileStream file = File.Create(path + @"\" + statsFileName + statsFileExtension);
+                FileStream file = File.Create(path + @"\" +statsFolder+ statsFileName + statsFileExtension);
                 
                 StreamWriter writer = new StreamWriter(file);
                 writer.Write(statsAsJson);

@@ -56,25 +56,32 @@ namespace Tintool.ViewModels
 
         public void RefreshContent(SelectionChangedEventArgs args)
         {
-            if (args.AddedItems.Count > 0)
+            try
             {
-                string tab = ((TabItem)args.AddedItems[0]).Name;
-                if (tab.Equals("MatchesTab"))
+                if (args.AddedItems.Count > 0)
                 {
-                    MatchesUserControl.RefreshContent();
+                    string tab = ((TabItem)args.AddedItems[0]).Name;
+                    if (tab.Equals("MatchesTab"))
+                    {
+                        MatchesUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("ToolsTab"))
+                    {
+                        ToolsUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("MessagesTab"))
+                    {
+                        MessagesUserControl.RefreshContent();
+                    }
                 }
-                else if (tab.Equals("ToolsTab"))
+                else
                 {
-                    ToolsUserControl.RefreshContent();
-                }
-                else if (tab.Equals("MessagesTab"))
-                {
-                    MessagesUserControl.RefreshContent();
+                    return;
                 }
             }
-            else
+            catch(Exception e)
             {
-                return;
+
             }
         }
 

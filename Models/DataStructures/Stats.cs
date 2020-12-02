@@ -15,6 +15,7 @@ namespace Tinder.DataStructures
         public List<MatchData> Matches { get; set; }
         public DateTime Date = DateTime.MinValue;
         public List<string> ProfileIDs { get; set; }
+        public string FileName { get; set; }
 
         public Stats()
         {
