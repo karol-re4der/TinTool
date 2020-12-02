@@ -293,6 +293,7 @@ namespace Tintool.ViewModels
         {
             StartingDate = start;
             EndingDate = end;
+            StartingDate = start;
         }
 
         public void RefreshContent()
@@ -344,7 +345,6 @@ namespace Tintool.ViewModels
             DateTime end = start.AddMonths(1).AddDays(-1);
 
             SetTime(start, end);
-            Replot();
         }
         #endregion
     }
