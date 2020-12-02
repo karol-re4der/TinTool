@@ -30,6 +30,7 @@ namespace Models
         HttpClientHandler handler;
         HttpClient client;
         private Random rand;
+        private string _lastID = "";
 
         public API()
         {
@@ -89,6 +90,7 @@ namespace Models
             foreach(Tinder.DataStructures.Responses.Matches.Match match in JsonSerializer.Deserialize<MatchesResponse>(textResponse).data.matches)
             {
                 MatchData newMatchData = new MatchData(match);
+                newMatchData.MatcherID = _lastID;
                 result.Add(newMatchData);
             }
 
@@ -171,6 +173,7 @@ namespace Models
             try
             {
                 LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
+                result.ResultingMatch.MatcherID = _lastID;
                 result.LikesRemaining = likeWithoutMatchResponse.likes_remaining;
             }
             catch(System.Text.Json.JsonException e)
@@ -178,6 +181,7 @@ namespace Models
                 try
                 {
                     LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
+                    result.ResultingMatch.MatcherID = _lastID;
                     result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
                 }
                 catch (System.Text.Json.JsonException e2)
@@ -278,6 +282,7 @@ namespace Models
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                _lastID = "";
                 return null;
             }
 
@@ -286,10 +291,12 @@ namespace Models
             ProfileResponse profileResponse = JsonSerializer.Deserialize<ProfileResponse>(textResponse);
             if (profileResponse?.data?.user!=null)
             {
+                _lastID = profileResponse.data.user._id;
                 return profileResponse.data.user._id;
             }
             else
             {
+                _lastID = "";
                 return null;
             }
         }
