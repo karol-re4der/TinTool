@@ -112,5 +112,13 @@ namespace Tintool.Models.DataStructures
             }
         }
 
+        public bool IsSameMatch(MatchData match)
+        {
+            if (match.Id.Equals(Id) && match.MatcherID.Equals(MatcherID))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

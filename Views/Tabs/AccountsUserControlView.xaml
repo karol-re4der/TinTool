@@ -32,7 +32,7 @@
             <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">
                 Other savefiles
             </TextBlock>
-            <ListView ItemsSource="{Binding AvailableIDsList}">
+            <ListView SelectedItem="{Binding AvailableIDsSelection}" ItemsSource="{Binding AvailableIDsList}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="100" Header="File Name" DisplayMemberBinding="{Binding FileName}"/>
@@ -45,6 +45,7 @@
         <StackPanel VerticalAlignment="Center">
             <Button DockPanel.Dock="Left" cal:Message.Attach="[Event Click]=[Button_AddFromSelection()]" Content="Add Selected" Margin="10,10,10,0"/>
             <Button DockPanel.Dock="Left" cal:Message.Attach="[Event Click]=[Button_RemoveFromSelection()]" Content="Remove Selected" Margin="10,10,10,0"/>
+            <CheckBox DockPanel.Dock="Left" IsChecked="{Binding UseIDsMerge}" Content="Merge matches" Margin="10,10,10,0"/>
         </StackPanel>
     </DockPanel>
 </UserControl>

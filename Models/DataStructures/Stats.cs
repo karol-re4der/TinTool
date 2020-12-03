@@ -37,6 +37,20 @@ namespace Tinder.DataStructures
             }
         }
 
+        public void MergeUniqueMatchesFrom(Stats stats, string withID = "")
+        {
+            var toMerge = 
+                from MatchData match in stats.Matches
+                where Matches.Find((x) => x.IsSameMatch(match)) == null
+                select match;
+
+            if (!string.IsNullOrEmpty(withID))
+            {
+                toMerge = toMerge.Where((x) => x.MatcherID.Equals(withID));
+            }
+            Matches.AddRange(toMerge);
+        }
+
         #region Matches
         public float AverageMatchesPerDay(DateTime startDate, DateTime endDate)
         {

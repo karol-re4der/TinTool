@@ -18,8 +18,22 @@ namespace Tintool.ViewModels.Tabs
         public List<AccountsTableItemModel> ProfileIDsList { get; set; } = new List<AccountsTableItemModel>();
         public List<AccountsTableItemModel> AvailableIDsList { get; set; } = new List<AccountsTableItemModel>();
 
-        public ListView CurrentIDsList { get; set; }
         public AccountsTableItemModel ProfileIDsSelection { get; set; }
+        public AccountsTableItemModel AvailableIDsSelection { get; set; }
+
+        private bool _useIDsMerge = false;
+        public bool UseIDsMerge
+        {
+            get
+            {
+                return _useIDsMerge;
+            }
+            set
+            {
+                _useIDsMerge = value;
+                NotifyOfPropertyChange(() => UseIDsMerge);
+            }
+        }
 
         string _idTextBox;
         public string IDTextBox
@@ -82,7 +96,8 @@ namespace Tintool.ViewModels.Tabs
                 {
                     FileName = stats.FileName,
                     ID = id,
-                    Matches = stats.Matches.Where((x) => id.Equals(x.MatcherID)).Count()
+                    Matches = stats.Matches.Where((x) => id.Equals(x.MatcherID)).Count(),
+                    LinkedStats = stats
                 });
             }
 
@@ -92,6 +107,18 @@ namespace Tintool.ViewModels.Tabs
         #region Buttons
         public void Button_AddFromSelection()
         {
+            if (AvailableIDsSelection != null)
+            {
+                if (!_stats.ProfileIDs.Contains(AvailableIDsSelection.ID))
+                {
+                    _stats.ProfileIDs.Add(AvailableIDsSelection.ID);
+                }
+                if (UseIDsMerge)
+                {
+                    _stats.MergeUniqueMatchesFrom(AvailableIDsSelection.LinkedStats, AvailableIDsSelection.ID);
+                }
+                RefreshCurrentIDsTable();
+            }
         }
 
         public void Button_RemoveFromSelection()
@@ -99,6 +126,7 @@ namespace Tintool.ViewModels.Tabs
             if (_stats.ProfileIDs.Contains(ProfileIDsSelection.ID))
             {
                 _stats.ProfileIDs.Remove(ProfileIDsSelection.ID);
+                RefreshCurrentIDsTable();
             }
         }
 
