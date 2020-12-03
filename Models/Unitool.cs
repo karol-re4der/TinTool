@@ -18,7 +18,7 @@ namespace Tintool.Models
             foreach (MatchData match in potentialMatches)
             {
                 //add
-                MatchData existing = stats.Matches.Find((x) => x.Id.Equals(match.Id));
+                MatchData existing = stats.Matches.Find((x) => x.IsSameMatch(match));
                 if (existing == null)
                 {
                     stats.Matches.Add(match);
