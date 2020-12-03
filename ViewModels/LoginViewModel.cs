@@ -79,6 +79,8 @@ namespace Tintool.ViewModels
 
         public LoginViewModel(IWindowManager wm)
         {
+            FileManager.Prepare();
+
             this._wm = wm;
             _api = new API();
             _settings = FileManager.LoadSettings();

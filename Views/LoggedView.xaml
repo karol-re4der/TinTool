@@ -23,7 +23,8 @@
             <TabItem Header="Messages" Name="MessagesTab">
                 <ContentControl x:Name="MessagesUserControl"/>
             </TabItem>
-            <TabItem Header="Misc">
+            <TabItem Header="Accounts" Name="AccountsTab">
+                <ContentControl x:Name="AccountsUserControl"/>
             </TabItem>
         </TabControl>
     </DockPanel>

@@ -14,11 +14,18 @@ namespace Tinder.DataStructures
     {
         public List<MatchData> Matches { get; set; }
         public DateTime Date = DateTime.MinValue;
-        public string ProfileID { get; set; }
+        public List<string> ProfileIDs { get; set; } = new List<string>();
+        public string FileName { get; set; }
 
         public Stats()
         {
+
+        }
+
+        public Stats(string fileName)
+        {
             Matches = new List<MatchData>();
+            this.FileName = fileName;
         }
 
         public void ResetDate()
@@ -34,6 +41,20 @@ namespace Tinder.DataStructures
                     }
                 }
             }
+        }
+
+        public void MergeUniqueMatchesFrom(Stats stats, string withID = "")
+        {
+            var toMerge = 
+                from MatchData match in stats.Matches
+                where Matches.Find((x) => x.IsSameMatch(match)) == null
+                select match;
+
+            if (!string.IsNullOrEmpty(withID))
+            {
+                toMerge = toMerge.Where((x) => x.MatcherID.Equals(withID));
+            }
+            Matches.AddRange(toMerge);
         }
 
         #region Matches
@@ -155,7 +176,7 @@ namespace Tinder.DataStructures
                 List<MessageData> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
 
                 int totalThatDay = messagesThatDay.Count();
-                int sentThatDay = messagesThatDay.Where((x) => x.ReceiverId.Equals(ProfileID)).Count();
+                int sentThatDay = messagesThatDay.Where((x) => ProfileIDs.Contains(x.ReceiverId)).Count();
                 int receivedThatDay = totalThatDay-sentThatDay;
 
                 double translatedDate = DateTimeAxis.ToDouble(i);

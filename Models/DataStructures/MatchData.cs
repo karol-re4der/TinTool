@@ -37,6 +37,7 @@ namespace Tintool.Models.DataStructures
         public PersonData Person { get; set; }
         public bool Active { get; set; } = true;
         public List<MessageData> Conversation { get; set; }
+        public string MatcherID { get; set; }
 
         public MatchData()
         {
@@ -111,5 +112,13 @@ namespace Tintool.Models.DataStructures
             }
         }
 
+        public bool IsSameMatch(MatchData match)
+        {
+            if (match.Id.Equals(Id) && match.MatcherID.Equals(MatcherID))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

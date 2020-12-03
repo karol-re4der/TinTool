@@ -160,7 +160,7 @@ namespace Tintool.ViewModels.Tabs
 
                 Progress = 0;
                 ProgressText = "Swiping";
-                _currentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = "Matched with "+x+"!", (x)=>MessageBox.Show(x), token);
+                _currentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = x, (x)=>MessageBox.Show(x), token);
                 Action<object> continuation = (x) => 
                 {
                     Unitool.LogNewMatches(_api.GetMatches(100), _stats);

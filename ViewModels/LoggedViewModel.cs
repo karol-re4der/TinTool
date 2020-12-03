@@ -26,6 +26,7 @@ namespace Tintool.ViewModels
         public MatchesUserControlViewModel MatchesUserControl { get; }
         public MessagesUserControlViewModel MessagesUserControl { get; }
         public ToolsUserControlViewModel ToolsUserControl { get; }
+        public AccountsUserControlViewModel AccountsUserControl { get; }
 
 
         public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
@@ -34,14 +35,26 @@ namespace Tintool.ViewModels
             this.api = api;
             this._settings = settings;
 
-            stats = FileManager.LoadStats() ?? (new Stats());
-            stats.ProfileID = api.GetProfileID();
-            stats.ResetDate();
-            Unitool.LogNewMatches(api.GetMatches(100), stats);
+            stats = FileManager.LoadStatsWithNumber(settings.LoginNumber);
+            if (stats == null)
+            {
+                stats = new Stats(FileManager.CreateUniqueStatsName());
+                FileManager.AddBinding(_settings.LoginNumber, stats.FileName);
+                FileManager.SaveStats(stats);
+                stats.ResetDate();
+            }
+            else
+            {
+
+            }
+            stats.ProfileIDs.Add(api.GetProfileID());
+            stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
+            //Unitool.LogNewMatches(api.GetMatches(100), stats);
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
             ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings);
+            AccountsUserControl = new AccountsUserControlViewModel(wm, ref api, ref stats, ref _settings);
         }
 
 
@@ -53,25 +66,32 @@ namespace Tintool.ViewModels
 
         public void RefreshContent(SelectionChangedEventArgs args)
         {
-            if (args.AddedItems.Count > 0)
+            try
             {
-                string tab = ((TabItem)args.AddedItems[0]).Name;
-                if (tab.Equals("MatchesTab"))
+                if (args.AddedItems.Count > 0)
                 {
-                    MatchesUserControl.RefreshContent();
+                    string tab = ((TabItem)args.AddedItems[0]).Name;
+                    if (tab.Equals("MatchesTab"))
+                    {
+                        MatchesUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("ToolsTab"))
+                    {
+                        ToolsUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("MessagesTab"))
+                    {
+                        MessagesUserControl.RefreshContent();
+                    }
                 }
-                else if (tab.Equals("ToolsTab"))
+                else
                 {
-                    ToolsUserControl.RefreshContent();
-                }
-                else if (tab.Equals("MessagesTab"))
-                {
-                    MessagesUserControl.RefreshContent();
+                    return;
                 }
             }
-            else
+            catch(Exception e)
             {
-                return;
+
             }
         }
 
