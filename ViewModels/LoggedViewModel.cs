@@ -41,6 +41,7 @@ namespace Tintool.ViewModels
                 stats = new Stats(FileManager.CreateUniqueStatsName());
                 FileManager.AddBinding(_settings.LoginNumber, stats.FileName);
                 FileManager.SaveStats(stats);
+                stats.ResetDate();
             }
             else
             {
@@ -48,8 +49,7 @@ namespace Tintool.ViewModels
             }
             stats.ProfileIDs.Add(api.GetProfileID());
             stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
-            stats.ResetDate();
-            Unitool.LogNewMatches(api.GetMatches(100), stats);
+            //Unitool.LogNewMatches(api.GetMatches(100), stats);
 
             MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);

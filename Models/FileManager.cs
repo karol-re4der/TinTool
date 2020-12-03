@@ -45,6 +45,10 @@ namespace Models
             {
                 return null;
             }
+            else if (fileName.EndsWith(_extension))
+            {
+                fileName = fileName.Replace(_extension, "");
+            }
 
             string fullFilePath = _path + @"\" + _statsFolder + fileName + _extension;
 
@@ -53,6 +57,7 @@ namespace Models
             {
                 reader = new StreamReader(fullFilePath);
                 Stats stats = JsonSerializer.Deserialize<Stats>(reader.ReadToEnd());
+                stats.ResetDate();
                 return stats;
             }
             catch (FileNotFoundException e)

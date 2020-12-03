@@ -84,7 +84,7 @@ namespace Tintool.ViewModels.Tabs
 
             RefreshAllTables();
             AvailableSaveFiles = FileManager.FindAvailableSaveFiles();
-            SelectedSaveFile = AvailableSaveFiles.First();
+            SelectedSaveFile = AvailableSaveFiles.Find((x)=>x.Name.Replace(x.Extension, "").Equals(_stats.FileName));
         }
 
         private void RefreshAllTables()
@@ -101,6 +101,7 @@ namespace Tintool.ViewModels.Tabs
 
         private void RefreshAvailableIDsTable()
         {
+            AvailableIDsList.Clear();
             foreach (Stats s in FileManager.LoadAllSavefiles())
             {
                 if (!s.FileName.Equals(_stats.FileName))
@@ -113,7 +114,10 @@ namespace Tintool.ViewModels.Tabs
 
         private void SwitchSaveFile()
         {
-
+            FileManager.SaveStats(_stats);
+            _stats = FileManager.LoadStatsWithFileName(SelectedSaveFile.Name);
+            FileManager.AddBinding(_settings.LoginNumber, _stats.FileName);
+            RefreshAllTables();
         }
 
         private List<AccountsTableItemModel> ListModelsFromStats(Stats stats)
