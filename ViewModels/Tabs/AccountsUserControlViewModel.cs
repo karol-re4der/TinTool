@@ -2,8 +2,10 @@
 using Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using Tinder.DataStructures;
@@ -14,6 +16,21 @@ namespace Tintool.ViewModels.Tabs
 {
     class AccountsUserControlViewModel:Screen
     {
+        public List<FileInfo> AvailableSaveFiles { get; set; }
+
+        private FileInfo _selectedSaveFile;
+        public FileInfo SelectedSaveFile
+        {
+            get
+            {
+                return _selectedSaveFile;
+            }
+            set
+            {
+                _selectedSaveFile = value;
+                NotifyOfPropertyChange(() => SelectedSaveFile);
+            }
+        }
 
         public List<AccountsTableItemModel> ProfileIDsList { get; set; } = new List<AccountsTableItemModel>();
         public List<AccountsTableItemModel> AvailableIDsList { get; set; } = new List<AccountsTableItemModel>();
@@ -51,9 +68,12 @@ namespace Tintool.ViewModels.Tabs
 
         private IWindowManager _wm;
 
+
         private API _api;
         private Stats _stats;
         private AppSettings _settings;
+
+        private bool _comboBoxHandled = false;
 
         public AccountsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings)
         {
@@ -63,6 +83,8 @@ namespace Tintool.ViewModels.Tabs
             _settings = settings;
 
             RefreshAllTables();
+            AvailableSaveFiles = FileManager.FindAvailableSaveFiles();
+            SelectedSaveFile = AvailableSaveFiles.First();
         }
 
         private void RefreshAllTables()
@@ -81,9 +103,17 @@ namespace Tintool.ViewModels.Tabs
         {
             foreach (Stats s in FileManager.LoadAllSavefiles())
             {
-                AvailableIDsList.AddRange(ListModelsFromStats(s));
+                if (!s.FileName.Equals(_stats.FileName))
+                {
+                    AvailableIDsList.AddRange(ListModelsFromStats(s));
+                }
             }
             NotifyOfPropertyChange(() => AvailableIDsList);
+        }
+
+        private void SwitchSaveFile()
+        {
+
         }
 
         private List<AccountsTableItemModel> ListModelsFromStats(Stats stats)
@@ -105,6 +135,27 @@ namespace Tintool.ViewModels.Tabs
         }
 
         #region Buttons
+        public void Combo_SwitchSaveFile(SelectionChangedEventArgs e)
+        {
+            if (!_comboBoxHandled)
+            {
+                var result = MessageBox.Show($"Switch savefile to {((FileInfo)(e.AddedItems[0])).Name}", "", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    _comboBoxHandled = true;
+                    SelectedSaveFile = (FileInfo)e.RemovedItems[0];
+                }
+                else
+                {
+                    SwitchSaveFile();
+                }
+            }
+            else
+            {
+                _comboBoxHandled = false;
+            }
+        }
+
         public void Button_AddFromSelection()
         {
             if (AvailableIDsSelection != null)

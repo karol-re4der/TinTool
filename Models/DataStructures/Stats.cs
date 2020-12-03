@@ -14,12 +14,18 @@ namespace Tinder.DataStructures
     {
         public List<MatchData> Matches { get; set; }
         public DateTime Date = DateTime.MinValue;
-        public List<string> ProfileIDs { get; set; }
+        public List<string> ProfileIDs { get; set; } = new List<string>();
         public string FileName { get; set; }
 
         public Stats()
         {
+
+        }
+
+        public Stats(string fileName)
+        {
             Matches = new List<MatchData>();
+            this.FileName = fileName;
         }
 
         public void ResetDate()

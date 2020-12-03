@@ -9,8 +9,17 @@
     <DockPanel FlowDirection="LeftToRight">
         <DockPanel DockPanel.Dock="Bottom">
             
-            <Button DockPanel.Dock="Left" cal:Message.Attach="[Event Click]=[Button_AddFromTextBox()]">Add</Button>
             <TextBox DockPanel.Dock="Left" Width="200" Text="{Binding IDTextBox}"></TextBox>
+            <Button DockPanel.Dock="Left" cal:Message.Attach="[Event Click]=[Button_AddFromTextBox()]">Add</Button>
+
+            <ComboBox cal:Message.Attach="[Event SelectionChanged]=[Combo_SwitchSaveFile($eventArgs)]" Width="150" DockPanel.Dock="Right" ItemsSource="{Binding AvailableSaveFiles}" SelectedItem="{Binding SelectedSaveFile}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock DockPanel.Dock="Right">Current savefile</TextBlock>
 
             <Separator Visibility="Hidden"/>
         </DockPanel>

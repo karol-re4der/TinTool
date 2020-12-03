@@ -35,7 +35,17 @@ namespace Tintool.ViewModels
             this.api = api;
             this._settings = settings;
 
-            stats = FileManager.LoadStats() ?? (new Stats());
+            stats = FileManager.LoadStatsWithNumber(settings.LoginNumber);
+            if (stats == null)
+            {
+                stats = new Stats(FileManager.CreateUniqueStatsName());
+                FileManager.AddBinding(_settings.LoginNumber, stats.FileName);
+                FileManager.SaveStats(stats);
+            }
+            else
+            {
+
+            }
             stats.ProfileIDs.Add(api.GetProfileID());
             stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
             stats.ResetDate();
