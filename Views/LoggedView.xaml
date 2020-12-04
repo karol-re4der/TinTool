@@ -10,9 +10,13 @@
         Title="Tintool - logged" Height="450" Width="800"
         cal:Message.Attach="[Event Closing] = [Action WindowExit()]">
     <DockPanel>
-        <StackPanel DockPanel.Dock="Bottom">
-            <Button cal:Message.Attach="[Event Click]=[Button_LogOut()]" Height="20" Width="100" HorizontalContentAlignment="Center" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,0">Log out</Button>
-        </StackPanel>
+        <DockPanel DockPanel.Dock="Bottom">
+            <Button DockPanel.Dock="Right" cal:Message.Attach="[Event Click]=[Button_LogOut()]" Height="20" Width="100" HorizontalContentAlignment="Center" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,0">Log out</Button>
+            <Grid>
+                <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
+                <TextBlock Text="{Binding ProgressText}"/>
+            </Grid>
+        </DockPanel>
         <TabControl cal:Message.Attach="[Event SelectionChanged] = [Action RefreshContent($eventArgs)]">
             <TabItem Header="Tools" x:Name="ToolsTab">
                 <ContentControl x:Name="ToolsUserControl"/>

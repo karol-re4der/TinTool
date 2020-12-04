@@ -72,15 +72,17 @@ namespace Tintool.ViewModels.Tabs
         private API _api;
         private Stats _stats;
         private AppSettings _settings;
+        private LoggedViewModel _baseViewModel;
 
         private bool _comboBoxHandled = false;
 
-        public AccountsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings)
+        public AccountsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             _wm = wm;
             _api = api;
             _stats = stats;
             _settings = settings;
+            _baseViewModel = baseViewModel;
 
             RefreshAllTables();
             AvailableSaveFiles = FileManager.FindAvailableSaveFiles();

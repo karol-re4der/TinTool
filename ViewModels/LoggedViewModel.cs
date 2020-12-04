@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Tinder.DataStructures;
@@ -28,6 +29,35 @@ namespace Tintool.ViewModels
         public ToolsUserControlViewModel ToolsUserControl { get; }
         public AccountsUserControlViewModel AccountsUserControl { get; }
 
+        #region Progressbar
+        public Task CurrentTask;
+        private int _progress = 0;
+        public int Progress
+        {
+            get
+            {
+                return _progress;
+            }
+            set
+            {
+                _progress = value;
+                NotifyOfPropertyChange(() => Progress);
+            }
+        }
+        private string _progressText = "";
+        public string ProgressText
+        {
+            get
+            {
+                return _progressText;
+            }
+            set
+            {
+                _progressText = value;
+                NotifyOfPropertyChange(() => ProgressText);
+            }
+        }
+        #endregion
 
         public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
         {
@@ -51,13 +81,11 @@ namespace Tintool.ViewModels
             stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
             //Unitool.LogNewMatches(api.GetMatches(100), stats);
 
-            MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats);
-            MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats);
-            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings);
-            AccountsUserControl = new AccountsUserControlViewModel(wm, ref api, ref stats, ref _settings);
+            MatchesUserControl = new MatchesUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
+            MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
+            ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
+            AccountsUserControl = new AccountsUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
         }
-
-
 
         public void OnStartup(object sender)
         {

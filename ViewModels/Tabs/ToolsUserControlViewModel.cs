@@ -84,43 +84,16 @@ namespace Tintool.ViewModels.Tabs
         private API _api;
         private Stats _stats;
         private AppSettings _settings;
+        private LoggedViewModel _baseViewModel;
+        
 
-        #region Progressbar
-        private Task _currentTask;
-        private int _progress = 0;
-        public int Progress
-        {
-            get
-            {
-                return _progress;
-            }
-            set
-            {
-                _progress = value;
-                NotifyOfPropertyChange(() => Progress);
-            }
-        }
-        private string _progressText = "";
-        public string ProgressText
-        {
-            get
-            {
-                return _progressText;
-            }
-            set
-            {
-                _progressText = value;
-                NotifyOfPropertyChange(() => ProgressText);
-            }
-        }
-        #endregion
-
-        public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings)
+        public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             this._wm = wm;
             this._api = api;
             this._stats = stats;
             this._settings = settings;
+            this._baseViewModel = baseViewModel;
 
             ProximityDistance = "20";
             ProximityInactivityCutout = "1";
@@ -133,42 +106,42 @@ namespace Tintool.ViewModels.Tabs
 
         public void ProximityCheckAction()
         {
-            if (_currentTask == null || _currentTask.IsCompleted)
+            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                Progress = 0;
-                ProgressText = "Checking";
-                _currentTask = Unitool.ProximityCheck(_api, _stats, _proximityDistance, (x)=>Progress = x, (x) => ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
+                _baseViewModel.Progress = 0;
+                _baseViewModel.ProgressText = "Checking";
+                _baseViewModel.CurrentTask = Unitool.ProximityCheck(_api, _stats, _proximityDistance, (x)=> _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
                 Action<object> continuation = (x) =>
                 {
-                    ProgressText = "Checked all!";
-                    Progress = 100;
+                    _baseViewModel.ProgressText = "Checked all!";
+                    _baseViewModel.Progress = 100;
                 };
-                _currentTask.ContinueWith(continuation);
-                _currentTask.Start();
+                _baseViewModel.CurrentTask.ContinueWith(continuation);
+                _baseViewModel.CurrentTask.Start();
             }
         }
 
         public void SwipeAllAction()
         {
-            if (_currentTask==null || _currentTask.IsCompleted)
+            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                Progress = 0;
-                ProgressText = "Swiping";
-                _currentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => Progress = x, (x) => ProgressText = x, (x)=>MessageBox.Show(x), token);
+                _baseViewModel.Progress = 0;
+                _baseViewModel.ProgressText = "Swiping";
+                _baseViewModel.CurrentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x)=>MessageBox.Show(x), token);
                 Action<object> continuation = (x) => 
                 {
                     Unitool.LogNewMatches(_api.GetMatches(100), _stats);
-                    ProgressText = "Swiped all!";
-                    Progress = 100;
+                    _baseViewModel.ProgressText = "Swiped all!";
+                    _baseViewModel.Progress = 100;
                 };
-                _currentTask.ContinueWith(continuation);
-                _currentTask.Start();
+                _baseViewModel.CurrentTask.ContinueWith(continuation);
+                _baseViewModel.CurrentTask.Start();
             }
         }
     }

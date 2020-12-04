@@ -20,36 +20,8 @@ namespace Tintool.ViewModels.Tabs
 
         private API _api;
         private Stats _stats;
-
-        #region Progressbar
-        private Task _currentTask;
-        private int _progress = 0;
-        public int Progress
-        {
-            get
-            {
-                return _progress;
-            }
-            set
-            {
-                _progress = value;
-                NotifyOfPropertyChange(() => Progress);
-            }
-        }
-        private string _progressText = "";
-        public string ProgressText
-        {
-            get
-            {
-                return _progressText;
-            }
-            set
-            {
-                _progressText = value;
-                NotifyOfPropertyChange(() => ProgressText);
-            }
-        }
-        #endregion
+        private AppSettings _settings;
+        private LoggedViewModel _baseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -217,11 +189,13 @@ namespace Tintool.ViewModels.Tabs
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MessagesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
+        public MessagesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             this._wm = wm;
             this._api = api;
             this._stats = stats;
+            this._settings = settings;
+            this._baseViewModel = baseViewModel;
 
             SetTime(_stats.Date.Date, DateTime.Today);
         }
@@ -240,26 +214,26 @@ namespace Tintool.ViewModels.Tabs
 
         public void PreparePlot()
         {
-            if (_currentTask == null || _currentTask.IsCompleted)
+            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
             {
                 //Prepare validation
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                Progress = 0;
-                ProgressText = "Loading new messages";
-                _currentTask = Unitool.ValidateMatches(_api, _stats, (x) => Progress = x, token);
+                _baseViewModel.Progress = 0;
+                _baseViewModel.ProgressText = "Loading new messages";
+                _baseViewModel.CurrentTask = Unitool.ValidateMatches(_api, _stats, (x) => _baseViewModel.Progress = x, token);
 
                 //Prepare ploting
                 Action<object> continuation = (x) =>
                 {
                     Replot();
-                    Progress = 100;
-                    ProgressText = "Complete!";
+                    _baseViewModel.Progress = 100;
+                    _baseViewModel.ProgressText = "Complete!";
                 };
-                _currentTask.ContinueWith(continuation);
-                
-                _currentTask.Start();
+                _baseViewModel.CurrentTask.ContinueWith(continuation);
+
+                _baseViewModel.CurrentTask.Start();
             }
         }
 

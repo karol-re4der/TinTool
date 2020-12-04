@@ -9,10 +9,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <DockPanel FlowDirection="LeftToRight">
-            <Grid DockPanel.Dock="Bottom">
-                <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
-                <TextBlock Text="{Binding ProgressText}"/>
-            </Grid>
             <Separator DockPanel.Dock="Bottom"></Separator>
             <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" Width="150">
                 <TextBlock DockPanel.Dock="Top">Plot content:</TextBlock>

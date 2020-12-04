@@ -16,36 +16,8 @@ namespace Tintool.ViewModels
 
         private API _api;
         private Stats _stats;
-
-        #region Progressbar
-        private Task _currentTask;
-        private int _progress = 0;
-        public int Progress
-        {
-            get
-            {
-                return _progress;
-            }
-            set
-            {
-                _progress = value;
-                NotifyOfPropertyChange(() => Progress);
-            }
-        }
-        private string _progressText = "";
-        public string ProgressText
-        {
-            get
-            {
-                return _progressText;
-            }
-            set
-            {
-                _progressText = value;
-                NotifyOfPropertyChange(() => ProgressText);
-            }
-        }
-        #endregion
+        private AppSettings _settings;
+        private LoggedViewModel _baseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -280,11 +252,13 @@ namespace Tintool.ViewModels
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MatchesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats)
+        public MatchesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             this._wm = wm;
             this._api = api;
             this._stats = stats;
+            this._settings = settings;
+            this._baseViewModel = baseViewModel;
 
             SetTime(_stats.Date.Date, DateTime.Today);
         }
@@ -303,11 +277,11 @@ namespace Tintool.ViewModels
 
         public void PreparePlot()
         {
-            ProgressText = "Searching for new matches!";
-            Progress = 0;
+            _baseViewModel.ProgressText = "Searching for new matches!";
+            _baseViewModel.Progress = 0;
             Unitool.LogNewMatches(_api.GetMatches(100), _stats);
-            ProgressText = "Complete!";
-            Progress = 100;
+            _baseViewModel.ProgressText = "Complete!";
+            _baseViewModel.Progress = 100;
         }
 
         public void Replot()
