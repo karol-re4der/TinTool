@@ -280,6 +280,7 @@ namespace Tintool.ViewModels
             _baseViewModel.ProgressText = "Searching for new matches!";
             _baseViewModel.Progress = 0;
             Unitool.LogNewMatches(_api.GetMatches(100), _stats);
+            Replot();
             _baseViewModel.ProgressText = "Complete!";
             _baseViewModel.Progress = 100;
         }
