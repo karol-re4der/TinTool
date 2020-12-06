@@ -60,8 +60,9 @@ namespace Tinder.DataStructures
         #region Matches
         public float AverageMatchesPerDay(DateTime startDate, DateTime endDate)
         {
-            int daysPassed = endDate.Subtract(startDate).Days;
-            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=endDate.AddDays(1)).Count();
+            DateTime actualEndDate = (DateTime.Now.CompareTo(endDate) < 0 ? DateTime.Now.Date : endDate).AddDays(1);
+            int daysPassed = actualEndDate.Subtract(startDate).Days;
+            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=actualEndDate).Count();
             float result = (float)matchesCount/daysPassed;
             return result;
         }
