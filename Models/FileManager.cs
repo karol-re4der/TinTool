@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Tinder.DataStructures;
@@ -19,6 +20,8 @@ namespace Models
         private static string _bindingsFileName = "bindings";
         private static string _tokenFileExtension = ".ttool";
         private static string _extension = ".json";
+
+        private static byte[] _encryptionKey = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
         private static BindTable _bindTable;
 
@@ -121,7 +124,11 @@ namespace Models
             {
                 FileStream file = File.Create(_path + @"\" + _tokenFileName + _tokenFileExtension);
 
-                StreamWriter writer = new StreamWriter(file);
+                using Aes aes = Aes.Create();
+                aes.Key = _encryptionKey;
+                file.Write(aes.IV, 0, aes.IV.Length);
+                CryptoStream cStream = new CryptoStream(file, aes.CreateEncryptor(), CryptoStreamMode.Write);
+                StreamWriter writer = new StreamWriter(cStream);
                 writer.Write(token);
                 writer.Close();
                 file.Close();
@@ -140,9 +147,18 @@ namespace Models
             StreamReader reader = null;
             try
             {
-                reader = new StreamReader(fullFilePath);
-                string token = reader.ReadToEnd();
-                return token;
+                FileStream file = new FileStream(fullFilePath, FileMode.Open);
+
+                using Aes aes = Aes.Create();
+                byte[] iv = new byte[aes.IV.Length];
+                file.Read(iv, 0, iv.Length);
+
+                CryptoStream cStream = new CryptoStream(file, aes.CreateDecryptor(_encryptionKey, iv), CryptoStreamMode.Read);
+                reader = new StreamReader(cStream);
+
+                string result = reader.ReadToEnd();
+
+                return result;
             }
             catch (FileNotFoundException e)
             {
