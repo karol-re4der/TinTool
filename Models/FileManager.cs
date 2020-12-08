@@ -15,11 +15,11 @@ namespace Models
     {
         private static string _path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"/Tintool/";
         private static string _statsFolder = "SaveFiles//";
-        private static string _tokenFileName = "tkn";
+        private static string _sessionFileName = "session";
         private static string _settingsFileName = "app_settings";
         private static string _bindingsFileName = "bindings";
-        private static string _tokenFileExtension = ".ttool";
-        private static string _extension = ".json";
+        private static string _sessionFileExtension = ".bin";
+        private static string _genericExtension = ".json";
 
         private static byte[] _encryptionKey = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
@@ -28,7 +28,7 @@ namespace Models
         #region Stats
         public static List<FileInfo> FindAvailableSaveFiles()
         {
-            return new DirectoryInfo(_path + _statsFolder).GetFiles().Where((x)=>x.Extension.Equals(_extension)).ToList();
+            return new DirectoryInfo(_path + _statsFolder).GetFiles().Where((x)=>x.Extension.Equals(_genericExtension)).ToList();
         }
 
         public static Stats LoadStatsWithNumber(string number)
@@ -48,12 +48,12 @@ namespace Models
             {
                 return null;
             }
-            else if (fileName.EndsWith(_extension))
+            else if (fileName.EndsWith(_genericExtension))
             {
-                fileName = fileName.Replace(_extension, "");
+                fileName = fileName.Replace(_genericExtension, "");
             }
 
-            string fullFilePath = _path + @"\" + _statsFolder + fileName + _extension;
+            string fullFilePath = _path + @"\" + _statsFolder + fileName + _genericExtension;
 
             StreamReader reader = null;
             try
@@ -84,9 +84,9 @@ namespace Models
 
             foreach(FileInfo file in FindAvailableSaveFiles())
             {
-                if (file.Extension.Equals(_extension))
+                if (file.Extension.Equals(_genericExtension))
                 {
-                    Stats loadedStats = LoadStatsWithFileName(file.Name.Replace(_extension, ""));
+                    Stats loadedStats = LoadStatsWithFileName(file.Name.Replace(_genericExtension, ""));
                     if (loadedStats != null)
                     {
                         result.Add(loadedStats);
@@ -103,7 +103,7 @@ namespace Models
             {
                 string statsAsJson = JsonSerializer.Serialize(stats);
 
-                FileStream file = File.Create(_path + @"\" +_statsFolder+ stats.FileName + _extension);
+                FileStream file = File.Create(_path + @"\" +_statsFolder+ stats.FileName + _genericExtension);
                 
                 StreamWriter writer = new StreamWriter(file);
                 writer.Write(statsAsJson);
@@ -122,7 +122,7 @@ namespace Models
         {
             try
             {
-                FileStream file = File.Create(_path + @"\" + _tokenFileName + _tokenFileExtension);
+                FileStream file = File.Create(_path + @"\" + _sessionFileName + _sessionFileExtension);
 
                 using Aes aes = Aes.Create();
                 aes.Key = _encryptionKey;
@@ -142,7 +142,7 @@ namespace Models
 
         public static string LoadToken()
         {
-            string fullFilePath = _path + @"\" + _tokenFileName + _tokenFileExtension;
+            string fullFilePath = _path + @"\" + _sessionFileName + _sessionFileExtension;
 
             StreamReader reader = null;
             try
@@ -177,7 +177,7 @@ namespace Models
 
         public static AppSettings LoadSettings()
         {
-            string fullFilePath = _path + @"\" + _settingsFileName + _extension;
+            string fullFilePath = _path + @"\" + _settingsFileName + _genericExtension;
 
             StreamReader reader = null;
             try
@@ -207,7 +207,7 @@ namespace Models
 
                 string settingsAsJson = JsonSerializer.Serialize(settings);
 
-                FileStream file = File.Create(_path + @"\" + _settingsFileName + _extension);
+                FileStream file = File.Create(_path + @"\" + _settingsFileName + _genericExtension);
 
                 StreamWriter writer = new StreamWriter(file);
                 writer.Write(settingsAsJson);
@@ -267,7 +267,7 @@ namespace Models
             {
                 string bindingsAsJson = JsonSerializer.Serialize(_bindTable);
 
-                FileStream file = File.Create(_path + @"\" + _bindingsFileName + _extension);
+                FileStream file = File.Create(_path + @"\" + _bindingsFileName + _genericExtension);
 
                 StreamWriter writer = new StreamWriter(file);
                 writer.Write(bindingsAsJson);
@@ -283,7 +283,7 @@ namespace Models
 
         private static void LoadBindings()
         {
-            string fullFilePath = _path + @"\" + _bindingsFileName + _extension;
+            string fullFilePath = _path + @"\" + _bindingsFileName + _genericExtension;
 
             StreamReader reader = null;
             try
