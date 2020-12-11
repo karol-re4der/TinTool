@@ -195,7 +195,6 @@ namespace Models
         #region authentication
         public bool RequestLoginCode(string phoneNumber)
         {
-            return true;
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
             client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
