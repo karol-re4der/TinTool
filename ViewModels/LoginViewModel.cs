@@ -92,13 +92,20 @@ namespace Tintool.ViewModels
         {
             if (KeepLogged)
             {
-                string loadedToken = FileManager.LoadToken();
-                if (loadedToken?.Length > 0)
+                SessionData loadedSession = FileManager.LoadSession();
+                if (loadedSession?.AuthToken.Length > 0)
                 {
-                    _api.SetToken(loadedToken);
+                    _api.SetSession(loadedSession);
                     if (_api.IsTokenWorking())
                     {
                         FinalizeLogin();
+                    }
+                    else
+                    {
+                        if (_api.RefreshSession())
+                        {
+                            FinalizeLogin();
+                        }
                     }
                 }
             }
@@ -139,10 +146,10 @@ namespace Tintool.ViewModels
         public async Task<bool> RequestToken()
         {
             await Task.Delay(1);
-            string token = _api.RequestAuthToken(Code, PhoneNumber);
-            if (!string.IsNullOrWhiteSpace(token))
+            SessionData session = _api.RequestNewSession(Code, PhoneNumber);
+            if (!string.IsNullOrWhiteSpace(session?.AuthToken))
             {
-                _api.SetToken(token);
+                _api.SetSession(session);
                 return true;
             }
             else
@@ -171,7 +178,7 @@ namespace Tintool.ViewModels
             {
                 if (KeepLogged)
                 {
-                    FileManager.SaveToken(_api.GetToken());
+                    FileManager.SaveSession(_api.GetSession());
                 }
                 return true;
             }
@@ -186,7 +193,7 @@ namespace Tintool.ViewModels
             _settings.KeepLogged = KeepLogged;
             _settings.LoginNumber = PhoneNumber;
             FileManager.SaveSettings(_settings);
-            FileManager.SaveToken(_api.GetToken());
+            FileManager.SaveSession(_api.GetSession());
             _wm.ShowWindow(new LoggedViewModel(_wm, _api, _settings));
             TryClose();
         }

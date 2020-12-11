@@ -118,7 +118,7 @@ namespace Models
         }
         #endregion
 
-        public static void SaveToken(string token)
+        public static void SaveSession(SessionData token)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace Models
             }
         }
 
-        public static string LoadToken()
+        public static SessionData LoadSession()
         {
             string fullFilePath = _path + @"\" + _sessionFileName + _sessionFileExtension;
 
@@ -156,7 +156,7 @@ namespace Models
                 CryptoStream cStream = new CryptoStream(file, aes.CreateDecryptor(_encryptionKey, iv), CryptoStreamMode.Read);
                 reader = new StreamReader(cStream);
 
-                string result = reader.ReadToEnd();
+                SessionData result = JsonSerializer.Deserialize<SessionData>(reader.ReadToEnd());
 
                 return result;
             }

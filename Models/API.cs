@@ -25,7 +25,7 @@ namespace Models
 
     public class API
     {
-        private string _token;
+        private SessionData _session;
         private string _uri = "https://api.gotinder.com/";
         HttpClientHandler handler;
         HttpClient client;
@@ -195,6 +195,7 @@ namespace Models
         #region authentication
         public bool RequestLoginCode(string phoneNumber)
         {
+            return true;
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
             client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
@@ -223,7 +224,7 @@ namespace Models
 
             return true;
         }
-        public string RequestAuthToken(string code, string phoneNumber)
+        public SessionData RequestNewSession(string code, string phoneNumber)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
@@ -247,14 +248,27 @@ namespace Models
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
-                return "";
+                return null;
             }
 
             string responseAsString = response.Content.ReadAsStringAsync().Result;
+
             int tokenStartIndex = responseAsString.IndexOf("$")+2;
             int tokenEndIndex = responseAsString.IndexOf("\"");
             int tokenLength = tokenEndIndex - tokenStartIndex;
-            return responseAsString.Substring(tokenStartIndex, tokenLength);
+
+            int refStartIndex = responseAsString.IndexOf("B�\u0001\nP") + 5;
+            int refEndIndex = responseAsString.IndexOf("$");
+            int refLength = refEndIndex - refStartIndex;
+
+            SessionData session = new SessionData();
+            session.AuthToken = responseAsString.Substring(tokenStartIndex, tokenLength);
+            session.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
+            return session;
+        }
+        public bool RefreshSession()
+        {
+            return false;
         }
 
         public bool IsTokenWorking()
@@ -263,14 +277,14 @@ namespace Models
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
             return response.IsSuccessStatusCode;
         }
-        public void SetToken(string newToken)
+        public void SetSession(SessionData newSession)
         {
-            this._token = newToken;
-            client.DefaultRequestHeaders.Add("x-auth-token", newToken);
+            this._session = newSession;
+            client.DefaultRequestHeaders.Add("x-auth-token", newSession.AuthToken);
         }
-        public string GetToken()
+        public SessionData GetSession()
         {
-            return _token;
+            return _session;
         }
         #endregion
 
