@@ -100,13 +100,6 @@ namespace Tintool.ViewModels
                     {
                         FinalizeLogin();
                     }
-                    else
-                    {
-                        if (_api.RefreshSession())
-                        {
-                            FinalizeLogin();
-                        }
-                    }
                 }
             }
         }

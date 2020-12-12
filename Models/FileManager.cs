@@ -118,7 +118,7 @@ namespace Models
         }
         #endregion
 
-        public static void SaveSession(SessionData token)
+        public static void SaveSession(SessionData session)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace Models
                 file.Write(aes.IV, 0, aes.IV.Length);
                 CryptoStream cStream = new CryptoStream(file, aes.CreateEncryptor(), CryptoStreamMode.Write);
                 StreamWriter writer = new StreamWriter(cStream);
-                writer.Write(token);
+                writer.Write(JsonSerializer.Serialize(session));
                 writer.Close();
                 file.Close();
             }
@@ -156,7 +156,8 @@ namespace Models
                 CryptoStream cStream = new CryptoStream(file, aes.CreateDecryptor(_encryptionKey, iv), CryptoStreamMode.Read);
                 reader = new StreamReader(cStream);
 
-                SessionData result = JsonSerializer.Deserialize<SessionData>(reader.ReadToEnd());
+                string sessionAsJson = reader.ReadToEnd();
+                SessionData result = JsonSerializer.Deserialize<SessionData>(sessionAsJson);
 
                 return result;
             }

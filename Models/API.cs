@@ -265,10 +265,6 @@ namespace Models
             session.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
             return session;
         }
-        public bool RefreshSession()
-        {
-            return false;
-        }
 
         public bool IsTokenWorking()
         {
