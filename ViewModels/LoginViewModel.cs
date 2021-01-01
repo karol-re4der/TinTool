@@ -31,6 +31,20 @@ namespace Tintool.ViewModels
             }
         }
 
+        private string _mailCode;
+        public string MailCode
+        {
+            get
+            {
+                return _mailCode;
+            }
+            set
+            {
+                _mailCode = value;
+                NotifyOfPropertyChange(() => MailCode);
+            }
+        }
+
         private string _phoneNumber;
         public string PhoneNumber
         {
@@ -61,6 +75,15 @@ namespace Tintool.ViewModels
             }
         }
 
+        private bool _mailCodeSent = false;
+        public string MailCodeSent
+        {
+            get
+            {
+                return _mailCodeSent ? "True" : "False";
+            }
+        }
+
         private bool _keepLogged = true;
         public bool KeepLogged
         {
@@ -74,8 +97,6 @@ namespace Tintool.ViewModels
                 NotifyOfPropertyChange(() => KeepLogged);
             }
         }
-
-
 
         public LoginViewModel(IWindowManager wm)
         {
@@ -106,9 +127,20 @@ namespace Tintool.ViewModels
 
         private async void Authenticate()
         {
-            if (!string.IsNullOrWhiteSpace(Code))
+            if (!string.IsNullOrWhiteSpace(MailCode))
             {
-                if (await RequestToken())
+                if (await RequestTokenWithMail())
+                {
+                    FinalizeLogin();
+                }
+                else
+                {
+                    MessageBox.Show("Cannot authenticate!");
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(Code))
+            {
+                if (await RequestTokenWithCode())
                 {
                     FinalizeLogin();
                 }
@@ -136,14 +168,21 @@ namespace Tintool.ViewModels
             }
         }
 
-        public async Task<bool> RequestToken()
+        public async Task<bool> RequestTokenWithCode()
         {
             await Task.Delay(1);
-            SessionData session = _api.RequestNewSession(Code, PhoneNumber);
+            SessionData session = _api.RequestNewSessionWithPhoneCode(Code, PhoneNumber);
             if (!string.IsNullOrWhiteSpace(session?.AuthToken))
             {
                 _api.SetSession(session);
                 return true;
+            }
+            else if (string.IsNullOrWhiteSpace(_api.GetSession()?.AuthToken))
+            {
+                _api.SetSession(session);
+                _codeSent = false;
+                _mailCodeSent = true;
+                return false;
             }
             else
             {
@@ -156,6 +195,21 @@ namespace Tintool.ViewModels
             await Task.Delay(1);
             if (_api.RequestLoginCode(PhoneNumber))
             {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RequestTokenWithMail()
+        {
+            await Task.Delay(1);
+            SessionData session = _api.RequestNewSessionWithEmailCode(MailCode, _api.GetSession());
+            if (!string.IsNullOrWhiteSpace(session?.AuthToken))
+            {
+                _api.SetSession(session);
                 return true;
             }
             else
