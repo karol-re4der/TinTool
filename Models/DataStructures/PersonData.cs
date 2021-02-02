@@ -13,5 +13,8 @@ namespace Tintool.Models.DataStructures
 
         [JsonIgnore]
         public int Distance { get; set; }
+
+        [JsonIgnore]
+        public string SCode { get; set; }
     }
 }

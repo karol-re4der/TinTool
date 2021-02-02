@@ -22,7 +22,6 @@ using System.IO.Compression;
 
 namespace Models
 {
-
     public class API
     {
         private SessionData _session;
@@ -116,7 +115,8 @@ namespace Models
                 PersonData newPerson = new PersonData
                 {
                     Id = person.user._id,
-                    Name = person.user.name
+                    Name = person.user.name,
+                    SCode = ""+person.s_number
                 };
                 result.Add(newPerson);
             }
@@ -155,6 +155,7 @@ namespace Models
             }
         }
 
+        [Obsolete("API requires sending SCode now")]
         public LikeData SendLike(string userID)
         {
             Delay();
@@ -176,6 +177,44 @@ namespace Models
                 result.LikesRemaining = likeWithoutMatchResponse.likes_remaining;
             }
             catch(System.Text.Json.JsonException e)
+            {
+                try
+                {
+                    LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
+                    result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
+                    result.ResultingMatch.MatcherID = _lastID;
+                    result.LikesRemaining = likeAndMatchResponse.likes_remaining;
+                }
+                catch (System.Text.Json.JsonException e2)
+                {
+                    return null;
+                }
+            }
+            return result;
+        }
+
+        public LikeData SendLike(string userID, string sCode)
+        {
+            Delay();
+            string payloadContent = "{\"s_number\":" + sCode + "}";
+            var payload = new StringContent(payloadContent, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = client.PostAsync("/like/" + userID, payload).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
+
+            string textResponse = response.Content.ReadAsStringAsync().Result;
+
+            LikeData result = new LikeData();
+            try
+            {
+                LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
+                result.LikesRemaining = likeWithoutMatchResponse.likes_remaining;
+            }
+            catch (System.Text.Json.JsonException e)
             {
                 try
                 {

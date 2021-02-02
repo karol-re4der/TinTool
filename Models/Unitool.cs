@@ -111,7 +111,7 @@ namespace Tintool.Models
                             iterations++;
                             if (iterations <= size)
                             {
-                                LikeData likeResult = api.SendLike(person.Id);
+                                LikeData likeResult = api.SendLike(person.Id, person.SCode);
    
                                 if (likeResult?.LikesRemaining>0)
                                 {
