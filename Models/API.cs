@@ -422,7 +422,7 @@ namespace Models
 
         private void Delay()
         {
-            System.Threading.Thread.Sleep(rand.Next() % 50 + 25);
+            System.Threading.Thread.Sleep(rand.Next() % 100 + 50);
         }
     }
 }
