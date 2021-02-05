@@ -121,6 +121,16 @@ namespace Tintool.ViewModels
                     {
                         FinalizeLogin();
                     }
+                    else if (loadedSession?.RefreshToken.Length > 0)
+                    {
+                        loadedSession = _api.TryRefresh(loadedSession);
+
+                        if (loadedSession != null)
+                        {
+                            _api.SetSession(loadedSession);
+                            FinalizeLogin();
+                        }
+                    }
                 }
             }
         }

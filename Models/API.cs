@@ -232,6 +232,75 @@ namespace Models
         }
 
         #region authentication
+        public SessionData TryRefresh(SessionData session)
+        {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
+            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+            client.DefaultRequestHeaders.Add("platform", "web");
+            client.DefaultRequestHeaders.Add("persistent-device-id", "89621f05-6135-426c-b74e-8b4a850ff1d8");
+            client.DefaultRequestHeaders.Add("accept-encoding", "gzip, deflate");
+            client.DefaultRequestHeaders.Add("app-version", "1026400");
+            client.DefaultRequestHeaders.Add("app-session-id", "28cb573e-0727-4541-a605-75b9cea98767");
+            client.DefaultRequestHeaders.Add("x-supported-image-formats", "webp");
+            client.DefaultRequestHeaders.Add("funnel-session-id", "727442c23bbc4799");
+            client.DefaultRequestHeaders.Add("app-session-time-elapsed", "45913");
+            client.DefaultRequestHeaders.Add("accept-language", "en-US");
+
+            string payloadContent = "RR\nP" + session.RefreshToken;
+
+            Delay();
+            var payload = new StringContent(payloadContent, Encoding.UTF8, "application/x-google-protobuf");
+            HttpResponseMessage response = client.PostAsync("/v3/auth/login", payload).Result;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                return null;
+            }
+
+            string responseAsString = response.Content.ReadAsStringAsync().Result;
+
+            int tokenStartIndex = responseAsString.IndexOf("$") + 2;
+            int tokenEndIndex = responseAsString.IndexOf("\"");
+            int tokenLength = tokenEndIndex - tokenStartIndex;
+
+            int refStartIndex = responseAsString.IndexOf("B�\u0001\nP") + 5;
+            int refEndIndex = responseAsString.IndexOf("$");
+            int refLength = refEndIndex - refStartIndex;
+
+            SessionData newSession = new SessionData();
+            if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
+            {
+                if (refLength > 0 && refStartIndex - 5 != -1 && refEndIndex != -1)
+                {
+                    newSession.AuthToken = responseAsString.Substring(tokenStartIndex, tokenLength);
+                    newSession.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
+                    return newSession;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            if (refLength > 0 && refStartIndex - 5 != -1 && refEndIndex != -1)
+            {
+                if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
+                {
+                    newSession.AuthToken = responseAsString.Substring(tokenStartIndex, tokenLength);
+                    newSession.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
+                    return newSession;
+                }
+                else
+                {
+                    newSession.AuthToken = "";
+                    newSession.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
+                    return newSession;
+                }
+            }
+            return null;
+        }
         public bool RequestLoginCode(string phoneNumber)
         {
             client.DefaultRequestHeaders.Clear();
