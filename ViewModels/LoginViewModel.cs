@@ -31,6 +31,20 @@ namespace Tintool.ViewModels
             }
         }
 
+        private string _mailCode;
+        public string MailCode
+        {
+            get
+            {
+                return _mailCode;
+            }
+            set
+            {
+                _mailCode = value;
+                NotifyOfPropertyChange(() => MailCode);
+            }
+        }
+
         private string _phoneNumber;
         public string PhoneNumber
         {
@@ -61,6 +75,15 @@ namespace Tintool.ViewModels
             }
         }
 
+        private bool _mailCodeSent = false;
+        public string MailCodeSent
+        {
+            get
+            {
+                return _mailCodeSent ? "True" : "False";
+            }
+        }
+
         private bool _keepLogged = true;
         public bool KeepLogged
         {
@@ -74,8 +97,6 @@ namespace Tintool.ViewModels
                 NotifyOfPropertyChange(() => KeepLogged);
             }
         }
-
-
 
         public LoginViewModel(IWindowManager wm)
         {
@@ -92,13 +113,23 @@ namespace Tintool.ViewModels
         {
             if (KeepLogged)
             {
-                string loadedToken = FileManager.LoadToken();
-                if (loadedToken?.Length > 0)
+                SessionData loadedSession = FileManager.LoadSession();
+                if (loadedSession?.AuthToken.Length > 0)
                 {
-                    _api.SetToken(loadedToken);
+                    _api.SetSession(loadedSession);
                     if (_api.IsTokenWorking())
                     {
                         FinalizeLogin();
+                    }
+                    else if (loadedSession?.RefreshToken.Length > 0)
+                    {
+                        loadedSession = _api.TryRefresh(loadedSession);
+
+                        if (loadedSession != null)
+                        {
+                            _api.SetSession(loadedSession);
+                            FinalizeLogin();
+                        }
                     }
                 }
             }
@@ -106,9 +137,20 @@ namespace Tintool.ViewModels
 
         private async void Authenticate()
         {
-            if (!string.IsNullOrWhiteSpace(Code))
+            if (!string.IsNullOrWhiteSpace(MailCode))
             {
-                if (await RequestToken())
+                if (await RequestTokenWithMail())
+                {
+                    FinalizeLogin();
+                }
+                else
+                {
+                    MessageBox.Show("Cannot authenticate!");
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(Code))
+            {
+                if (await RequestTokenWithCode())
                 {
                     FinalizeLogin();
                 }
@@ -136,14 +178,21 @@ namespace Tintool.ViewModels
             }
         }
 
-        public async Task<bool> RequestToken()
+        public async Task<bool> RequestTokenWithCode()
         {
             await Task.Delay(1);
-            string token = _api.RequestAuthToken(Code, PhoneNumber);
-            if (!string.IsNullOrWhiteSpace(token))
+            SessionData session = _api.RequestNewSessionWithPhoneCode(Code, PhoneNumber);
+            if (!string.IsNullOrWhiteSpace(session?.AuthToken))
             {
-                _api.SetToken(token);
+                _api.SetSession(session);
                 return true;
+            }
+            else if (string.IsNullOrWhiteSpace(_api.GetSession()?.AuthToken))
+            {
+                _api.SetSession(session);
+                _codeSent = false;
+                _mailCodeSent = true;
+                return false;
             }
             else
             {
@@ -164,6 +213,21 @@ namespace Tintool.ViewModels
             }
         }
 
+        public async Task<bool> RequestTokenWithMail()
+        {
+            await Task.Delay(1);
+            SessionData session = _api.RequestNewSessionWithEmailCode(MailCode, _api.GetSession());
+            if (!string.IsNullOrWhiteSpace(session?.AuthToken))
+            {
+                _api.SetSession(session);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> LogByToken()
         {
             await Task.Delay(1);
@@ -171,7 +235,7 @@ namespace Tintool.ViewModels
             {
                 if (KeepLogged)
                 {
-                    FileManager.SaveToken(_api.GetToken());
+                    FileManager.SaveSession(_api.GetSession());
                 }
                 return true;
             }
@@ -186,7 +250,7 @@ namespace Tintool.ViewModels
             _settings.KeepLogged = KeepLogged;
             _settings.LoginNumber = PhoneNumber;
             FileManager.SaveSettings(_settings);
-            FileManager.SaveToken(_api.GetToken());
+            FileManager.SaveSession(_api.GetSession());
             _wm.ShowWindow(new LoggedViewModel(_wm, _api, _settings));
             TryClose();
         }

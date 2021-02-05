@@ -16,8 +16,10 @@
         <StackPanel>
             <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0" Text="Phone Number"/>
             <TextBox IsEnabled="{Binding CodeSentNegation}" Text="{Binding PhoneNumber}" Width="300" Height="35" Margin="10,5,10,5" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
-            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Code</TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Phone Code</TextBlock>
             <TextBox IsEnabled="{Binding CodeSent}" Text="{Binding Code}" Width="300" Height="35" Margin="10,10,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Center" Margin="10,10,10,0">Email Code</TextBlock>
+            <TextBox IsEnabled="{Binding MailCodeSent}" Text="{Binding MailCode}" Width="300" Height="35" Margin="10,10,10,10" FlowDirection="LeftToRight" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top"/>
         </StackPanel>
     </DockPanel>
 
