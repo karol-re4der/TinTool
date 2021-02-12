@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Tinder.DataStructures;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
+using Tintool.ViewModels.Dialogs;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -74,6 +75,8 @@ namespace Tintool.ViewModels.Tabs
         }
         public void TinderButtonClicked()
         {
+            _wm.ShowDialog(new LoginDialogViewModel(_api, _settings));
+
             TinderButtonColor = ButtonActiveColor;
         }
         public void BadooButtonClicked()
