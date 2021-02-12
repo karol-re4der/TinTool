@@ -81,13 +81,13 @@ namespace Tintool.ViewModels.Tabs
 
         private IWindowManager _wm;
 
-        private API _api;
+        private TinderAPI _api;
         private Stats _stats;
         private AppSettings _settings;
         private LoggedViewModel _baseViewModel;
         
 
-        public ToolsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public ToolsUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             this._wm = wm;
             this._api = api;

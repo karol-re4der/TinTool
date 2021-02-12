@@ -22,7 +22,7 @@ namespace Tintool.ViewModels
 
         private AppSettings _settings;
         public Stats stats;
-        public API api;
+        public TinderAPI api;
 
         public MatchesUserControlViewModel MatchesUserControl { get; }
         public MessagesUserControlViewModel MessagesUserControl { get; }
@@ -59,7 +59,7 @@ namespace Tintool.ViewModels
         }
         #endregion
 
-        public LoggedViewModel(IWindowManager wm, API api, AppSettings settings)
+        public LoggedViewModel(IWindowManager wm, TinderAPI api, AppSettings settings)
         {
             this.wm = wm;
             this.api = api;

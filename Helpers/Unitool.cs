@@ -26,7 +26,7 @@ namespace Tintool.Models
             }
         }
 
-        public static Task ProximityCheck(API api, Stats stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
+        public static Task ProximityCheck(TinderAPI api, Stats stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
         {
             return new Task(() =>
             {
@@ -92,7 +92,7 @@ namespace Tintool.Models
             });
         }
 
-        public static Task SwipeAll(API api, int size, Action<int> OnProgress, Action<string> OnMatch, Action<string> OnFinish, CancellationToken cancellationToken)
+        public static Task SwipeAll(TinderAPI api, int size, Action<int> OnProgress, Action<string> OnMatch, Action<string> OnFinish, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
@@ -160,7 +160,7 @@ namespace Tintool.Models
             });
         }
 
-        public static Task ValidateMatches(API api, Stats stats, Action<int> OnProgress, CancellationToken cancellationToken)
+        public static Task ValidateMatches(TinderAPI api, Stats stats, Action<int> OnProgress, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {

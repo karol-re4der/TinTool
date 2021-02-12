@@ -69,14 +69,14 @@ namespace Tintool.ViewModels.Tabs
         private IWindowManager _wm;
 
 
-        private API _api;
+        private TinderAPI _api;
         private Stats _stats;
         private AppSettings _settings;
         private LoggedViewModel _baseViewModel;
 
         private bool _comboBoxHandled = false;
 
-        public AccountsUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public AccountsUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             _wm = wm;
             _api = api;

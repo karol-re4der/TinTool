@@ -14,7 +14,7 @@ namespace Tintool.ViewModels
     {
         private IWindowManager _wm;
 
-        private API _api;
+        private TinderAPI _api;
         private Stats _stats;
         private AppSettings _settings;
         private LoggedViewModel _baseViewModel;
@@ -252,7 +252,7 @@ namespace Tintool.ViewModels
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MatchesUserControlViewModel(IWindowManager wm, ref API api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public MatchesUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
         {
             this._wm = wm;
             this._api = api;

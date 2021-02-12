@@ -22,7 +22,7 @@ using System.IO.Compression;
 
 namespace Models
 {
-    public class API
+    public class TinderAPI
     {
         private SessionData _session;
         private string _uri = "https://api.gotinder.com/";
@@ -31,7 +31,7 @@ namespace Models
         private Random rand;
         private string _lastID = "";
 
-        public API()
+        public TinderAPI()
         {
             rand = new Random();
             handler = new HttpClientHandler()

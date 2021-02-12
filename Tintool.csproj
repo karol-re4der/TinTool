@@ -18,4 +18,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="APIs\Badoo\Responses\" />
+  </ItemGroup>
+
 </Project>

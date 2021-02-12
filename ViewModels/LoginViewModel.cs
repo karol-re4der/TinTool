@@ -14,7 +14,7 @@ namespace Tintool.ViewModels
     class LoginViewModel:Screen
     {
         private IWindowManager _wm;
-        private API _api;
+        private TinderAPI _api;
         private AppSettings _settings;
 
         private string _code;
@@ -103,7 +103,7 @@ namespace Tintool.ViewModels
             FileManager.Prepare();
 
             this._wm = wm;
-            _api = new API();
+            _api = new TinderAPI();
             _settings = FileManager.LoadSettings();
             KeepLogged = _settings.KeepLogged;
             PhoneNumber = _settings.LoginNumber;
