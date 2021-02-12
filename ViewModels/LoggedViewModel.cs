@@ -28,6 +28,8 @@ namespace Tintool.ViewModels
         public MessagesUserControlViewModel MessagesUserControl { get; }
         public ToolsUserControlViewModel ToolsUserControl { get; }
         public AccountsUserControlViewModel AccountsUserControl { get; }
+        public ConnectUserControlViewModel ConnectUserControl { get; }
+
 
         #region Progressbar
         public Task CurrentTask;
@@ -85,6 +87,7 @@ namespace Tintool.ViewModels
             MessagesUserControl = new MessagesUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
             ToolsUserControl = new ToolsUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
             AccountsUserControl = new AccountsUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
+            ConnectUserControl = new ConnectUserControlViewModel(wm, ref api, ref stats, ref _settings, this);
         }
 
         public void OnStartup(object sender)
@@ -110,6 +113,10 @@ namespace Tintool.ViewModels
                     else if (tab.Equals("MessagesTab"))
                     {
                         MessagesUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("ConnectTab"))
+                    {
+                        ConnectUserControl.RefreshContent();
                     }
                 }
                 else

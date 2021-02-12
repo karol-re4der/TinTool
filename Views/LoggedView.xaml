@@ -18,6 +18,9 @@
             </Grid>
         </DockPanel>
         <TabControl cal:Message.Attach="[Event SelectionChanged] = [Action RefreshContent($eventArgs)]">
+            <TabItem Header="Connect" Name="ConnectTab">
+                <ContentControl x:Name="ConnectUserControl"/>
+            </TabItem>
             <TabItem Header="Tools" x:Name="ToolsTab">
                 <ContentControl x:Name="ToolsUserControl"/>
             </TabItem>
@@ -30,6 +33,7 @@
             <TabItem Header="Accounts" Name="AccountsTab">
                 <ContentControl x:Name="AccountsUserControl"/>
             </TabItem>
+            
         </TabControl>
     </DockPanel>
 </Window>
