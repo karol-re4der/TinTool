@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tinder.DataStructures;
+using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
 
@@ -14,10 +15,11 @@ namespace Tintool.ViewModels
     {
         private IWindowManager _wm;
 
-        private TinderAPI _api;
+        private TinderAPI _tinderAPI;
+        private BadooAPI _badooAPI;
         private Stats _stats;
         private AppSettings _settings;
-        private LoggedViewModel _baseViewModel;
+        private MainViewModel _baseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -252,10 +254,11 @@ namespace Tintool.ViewModels
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MatchesUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public MatchesUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
         {
             this._wm = wm;
-            this._api = api;
+            this._tinderAPI = tinderAPI;
+            this._badooAPI = badooAPI;
             this._stats = stats;
             this._settings = settings;
             this._baseViewModel = baseViewModel;
@@ -279,7 +282,7 @@ namespace Tintool.ViewModels
         {
             _baseViewModel.ProgressText = "Searching for new matches!";
             _baseViewModel.Progress = 0;
-            Unitool.LogNewMatches(_api.GetMatches(100), _stats);
+            Unitool.LogNewMatches(_tinderAPI.GetMatches(100), _stats);
             Replot();
             _baseViewModel.ProgressText = "Complete!";
             _baseViewModel.Progress = 100;

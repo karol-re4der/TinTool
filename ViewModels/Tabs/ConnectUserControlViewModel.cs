@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media;
 using Tinder.DataStructures;
+using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
 using Tintool.ViewModels.Dialogs;
@@ -15,10 +16,11 @@ namespace Tintool.ViewModels.Tabs
         #region fields
         private IWindowManager _wm;
 
-        private TinderAPI _api;
+        private TinderAPI _tinderAPI;
+        private BadooAPI _badooAPI;
         private Stats _stats;
         private AppSettings _settings;
-        private LoggedViewModel _baseViewModel;
+        private MainViewModel _baseViewModel;
 
         private Brush _tinderButtonColor = Brushes.Gray;
         public Brush TinderButtonColor
@@ -50,10 +52,11 @@ namespace Tintool.ViewModels.Tabs
         private Brush ButtonInactiveColor = Brushes.White;
         #endregion
 
-        public ConnectUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public ConnectUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
         {
             this._wm = wm;
-            this._api = api;
+            this._tinderAPI = tinderAPI;
+            this._badooAPI = badooAPI;
             this._stats = stats;
             this._settings = settings;
             this._baseViewModel = baseViewModel;
@@ -64,7 +67,7 @@ namespace Tintool.ViewModels.Tabs
         #region methods
         public void RefreshContent()
         {
-            if (_api.IsTokenWorking())
+            if (_tinderAPI.IsTokenWorking())
             {
                 TinderButtonColor = ButtonActiveColor;
             }
@@ -75,7 +78,7 @@ namespace Tintool.ViewModels.Tabs
         }
         public void TinderButtonClicked()
         {
-            _wm.ShowDialog(new LoginDialogViewModel(_api, _settings));
+            _wm.ShowDialog(new LoginDialogViewModel(_tinderAPI, _settings));
 
             TinderButtonColor = ButtonActiveColor;
         }

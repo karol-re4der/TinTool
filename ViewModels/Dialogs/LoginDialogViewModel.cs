@@ -27,7 +27,7 @@ namespace Tintool.ViewModels.Dialogs
 
         private async void Authenticate()
         {
-            if (!string.IsNullOrWhiteSpace(Code))
+            if (!string.IsNullOrWhiteSpace(Number) && !string.IsNullOrWhiteSpace(Code))
             {
                 if (await RequestTokenWithCode())
                 {
@@ -38,7 +38,7 @@ namespace Tintool.ViewModels.Dialogs
                     MessageBox.Show("Cannot authenticate!");
                 }
             }
-            else if (!string.IsNullOrWhiteSpace(Number) && !string.IsNullOrWhiteSpace(Code))
+            else if (!string.IsNullOrWhiteSpace(Number))
             {
                 if (!await RequestCode())
                 {

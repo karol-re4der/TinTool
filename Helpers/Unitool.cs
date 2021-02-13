@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Tinder.DataStructures;
 using Tintool.Models.DataStructures;
 using Tintool.Models.DataStructures.Responses.Nearby;
+using Tintool.APIs.Badoo;
 
 namespace Tintool.Models
 {
@@ -232,6 +233,59 @@ namespace Tintool.Models
                     }
                 }
 
+            });
+        }
+
+        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI> OnTinderAPILoaded, Action<BadooAPI> OnBadooAPILoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
+        {
+            return new Task(() =>
+            {
+                CancellationToken token = cancellationToken;
+
+                //Files
+                FileManager.Prepare();
+                AppSettings loadedSettings = FileManager.LoadSettings();
+                OnSettingsLoaded(loadedSettings);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                //APIs
+                TinderAPI api = new TinderAPI();
+                SessionData loadedSession = FileManager.LoadSession();
+                if (loadedSession?.AuthToken.Length > 0)
+                {
+                    api.SetSession(loadedSession);
+                    if (api.IsTokenWorking())
+                    {
+
+                    }
+                    else if (loadedSession?.RefreshToken.Length > 0)
+                    {
+                        loadedSession = api.TryRefresh(loadedSession);
+
+                        if (loadedSession != null)
+                        {
+                            api.SetSession(loadedSession);
+                        }
+                    }
+                }
+                OnTinderAPILoaded(api);
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                OnBadooAPILoaded(new BadooAPI());
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                OnFinished(true);
             });
         }
     }

@@ -1,15 +1,19 @@
 ﻿using Caliburn.Micro;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using Tintool.Models.DataStructures;
 using Tintool.ViewModels;
+using Tintool.Views;
 
 namespace Tintool
 {
     class Bootstrapper: BootstrapperBase
     {
-        private IWindowManager wm = new WindowManager();
+        private IWindowManager _wm = new WindowManager();
+        private TinderAPI _api = new TinderAPI();
 
         public Bootstrapper()
         {
@@ -18,15 +22,7 @@ namespace Tintool
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            LoginViewModel loginViewModel = new LoginViewModel(wm);
-            try
-            {
-                wm.ShowWindow(loginViewModel);
-            }
-            catch(Exception ex)
-            {
-
-            }
+            _wm.ShowWindow(new StartupViewModel(_wm));
         }
 
     }

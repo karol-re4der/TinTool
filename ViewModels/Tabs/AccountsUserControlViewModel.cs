@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using Tinder.DataStructures;
+using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
 
@@ -69,17 +70,19 @@ namespace Tintool.ViewModels.Tabs
         private IWindowManager _wm;
 
 
-        private TinderAPI _api;
+        private TinderAPI _tinderAPI;
+        private BadooAPI _badooAPI;
         private Stats _stats;
         private AppSettings _settings;
-        private LoggedViewModel _baseViewModel;
+        private MainViewModel _baseViewModel;
 
         private bool _comboBoxHandled = false;
 
-        public AccountsUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public AccountsUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
         {
             _wm = wm;
-            _api = api;
+            _tinderAPI = tinderAPI;
+            _badooAPI = badooAPI;
             _stats = stats;
             _settings = settings;
             _baseViewModel = baseViewModel;

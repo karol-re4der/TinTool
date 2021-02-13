@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,14 +10,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Tintool.Views.Dialogs
+namespace Tintool.Views
 {
     /// <summary>
-    /// Interaction logic for ProgressDialog.xaml
+    /// Interaction logic for StartupView.xaml
     /// </summary>
-    public partial class ProgressDialogView : Window
+    public partial class StartupView : Window
     {
-        public ProgressDialogView()
+        public StartupView()
         {
             InitializeComponent();
         }

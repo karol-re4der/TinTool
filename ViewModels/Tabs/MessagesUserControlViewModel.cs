@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using Tinder.DataStructures;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
+using Tintool.APIs.Badoo;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -18,10 +19,11 @@ namespace Tintool.ViewModels.Tabs
     {
         private IWindowManager _wm;
 
-        private TinderAPI _api;
+        private BadooAPI _badooAPI;
+        private TinderAPI _tinderAPI;
         private Stats _stats;
         private AppSettings _settings;
-        private LoggedViewModel _baseViewModel;
+        private MainViewModel _baseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -189,10 +191,11 @@ namespace Tintool.ViewModels.Tabs
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MessagesUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public MessagesUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
         {
             this._wm = wm;
-            this._api = api;
+            this._tinderAPI = tinderAPI;
+            this._badooAPI = badooAPI;
             this._stats = stats;
             this._settings = settings;
             this._baseViewModel = baseViewModel;
@@ -222,7 +225,7 @@ namespace Tintool.ViewModels.Tabs
 
                 _baseViewModel.Progress = 0;
                 _baseViewModel.ProgressText = "Loading new messages";
-                _baseViewModel.CurrentTask = Unitool.ValidateMatches(_api, _stats, (x) => _baseViewModel.Progress = x, token);
+                _baseViewModel.CurrentTask = Unitool.ValidateMatches(_tinderAPI, _stats, (x) => _baseViewModel.Progress = x, token);
 
                 //Prepare ploting
                 Action<object> continuation = (x) =>

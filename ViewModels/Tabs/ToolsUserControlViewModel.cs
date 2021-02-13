@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using Tinder.DataStructures;
 using Tinder.DataStructures.Responses.Matches;
+using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
 using Tintool.ViewModels.Dialogs;
+using Tintool.Views;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -81,16 +83,17 @@ namespace Tintool.ViewModels.Tabs
 
         private IWindowManager _wm;
 
-        private TinderAPI _api;
+        private TinderAPI _tinderAPI;
+        private BadooAPI _badooAPI;
         private Stats _stats;
         private AppSettings _settings;
-        private LoggedViewModel _baseViewModel;
-        
+        private MainViewModel _baseViewModel;
 
-        public ToolsUserControlViewModel(IWindowManager wm, ref TinderAPI api, ref Stats stats, ref AppSettings settings, LoggedViewModel baseViewModel)
+        public ToolsUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
         {
             this._wm = wm;
-            this._api = api;
+            this._tinderAPI = tinderAPI;
+            this._badooAPI = badooAPI;
             this._stats = stats;
             this._settings = settings;
             this._baseViewModel = baseViewModel;
@@ -113,7 +116,7 @@ namespace Tintool.ViewModels.Tabs
 
                 _baseViewModel.Progress = 0;
                 _baseViewModel.ProgressText = "Checking";
-                _baseViewModel.CurrentTask = Unitool.ProximityCheck(_api, _stats, _proximityDistance, (x)=> _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
+                _baseViewModel.CurrentTask = Unitool.ProximityCheck(_tinderAPI, _stats, _proximityDistance, (x)=> _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
                 Action<object> continuation = (x) =>
                 {
                     _baseViewModel.ProgressText = "Checked all!";
@@ -133,10 +136,10 @@ namespace Tintool.ViewModels.Tabs
 
                 _baseViewModel.Progress = 0;
                 _baseViewModel.ProgressText = "Swiping";
-                _baseViewModel.CurrentTask = Unitool.SwipeAll(_api, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x)=>MessageBox.Show(x), token);
+                _baseViewModel.CurrentTask = Unitool.SwipeAll(_tinderAPI, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x)=>MessageBox.Show(x), token);
                 Action<object> continuation = (x) => 
                 {
-                    Unitool.LogNewMatches(_api.GetMatches(100), _stats);
+                    Unitool.LogNewMatches(_tinderAPI.GetMatches(100), _stats);
                     _baseViewModel.ProgressText = "Swiped all!";
                     _baseViewModel.Progress = 100;
                 };

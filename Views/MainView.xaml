@@ -5,7 +5,7 @@
         xmlns:cal="http://www.caliburnproject.org"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:datastructures="clr-namespace:Tinder.DataStructures" xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:Tintool.Views" 
-        x:Class="Tintool.Views.LoggedView"
+        x:Class="Tintool.Views.MainView"
         mc:Ignorable="d"
         Title="Tintool - logged" Height="450" Width="800"
         cal:Message.Attach="[Event Closing] = [Action WindowExit()]">

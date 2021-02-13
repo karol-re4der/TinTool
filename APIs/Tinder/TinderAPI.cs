@@ -445,9 +445,13 @@ namespace Models
             return session;
         }
 
-        public bool IsTokenWorking()
+        public bool IsTokenWorking(bool quickCheck=false)
         {
-            Delay();
+            if (!quickCheck)
+            {
+                Delay();
+            }
+
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
             return response.IsSuccessStatusCode;
         }
