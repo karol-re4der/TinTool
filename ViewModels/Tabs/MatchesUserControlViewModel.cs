@@ -14,13 +14,7 @@ namespace Tintool.ViewModels
 {
     class MatchesUserControlViewModel : Screen
     {
-        private IWindowManager _wm;
-
-        private TinderAPI _tinderAPI;
-        private BadooAPI _badooAPI;
-        private Stats _stats;
-        private AppSettings _settings;
-        private MainViewModel _baseViewModel;
+        private MainViewModel BaseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -255,16 +249,11 @@ namespace Tintool.ViewModels
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MatchesUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
+        public MatchesUserControlViewModel(MainViewModel baseViewModel)
         {
-            this._wm = wm;
-            this._tinderAPI = tinderAPI;
-            this._badooAPI = badooAPI;
-            this._stats = stats;
-            this._settings = settings;
-            this._baseViewModel = baseViewModel;
+            BaseViewModel = baseViewModel;
 
-            SetTime(_stats.Date.Date, DateTime.Today);
+            SetTime(BaseViewModel.Stats.Date.Date, DateTime.Today);
         }
 
         private void SetTime(DateTime start, DateTime end)
@@ -281,30 +270,30 @@ namespace Tintool.ViewModels
 
         public void PreparePlot()
         {
-            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
+            if (BaseViewModel.CurrentTask == null || BaseViewModel.CurrentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                _baseViewModel.ProgressText = "Searching for new matches..";
-                _baseViewModel.Progress = 0;
+                BaseViewModel.ProgressText = "Searching for new matches..";
+                BaseViewModel.Progress = 0;
 
-                _baseViewModel.CurrentTask = Unitool.LogNewMatches(_tinderAPI, (x)=>
+                BaseViewModel.CurrentTask = Unitool.LogNewMatches(BaseViewModel.TinderAPI, (x)=>
                 {
                     Replot();
-                    _baseViewModel.ProgressText = "Complete!";
-                    _baseViewModel.Progress = 100;
-                }, _stats, token);
+                    BaseViewModel.ProgressText = "Complete!";
+                    BaseViewModel.Progress = 100;
+                }, BaseViewModel.Stats, token);
 
-                _baseViewModel.CurrentTask.Start();
+                BaseViewModel.CurrentTask.Start();
             }
         }
 
         public void Replot()
         {
-            float avg = _stats.AverageMatchesPerDay(StartingDate, EndingDate);
+            float avg = BaseViewModel.Stats.AverageMatchesPerDay(StartingDate, EndingDate);
             TotalThroughTimePlot.Title = $"Matches per day. Average: ({avg:F2})";
-            _stats.PlotMatchesThroughTime(StartingDate, EndingDate, TotalThroughTimePlot, RegularThroughTimePlot, SuperThroughTimePlot, BoostsThroughTimePlot, FastThroughTimePlot, ExpThroughTimePlot);
+            BaseViewModel.Stats.PlotMatchesThroughTime(StartingDate, EndingDate, TotalThroughTimePlot, RegularThroughTimePlot, SuperThroughTimePlot, BoostsThroughTimePlot, FastThroughTimePlot, ExpThroughTimePlot);
             PlotUpperConstraint = TotalThroughTimePlot.Points.Max((x) => x.Y) + 5.0;
 
             TimeSpan timespan = EndingDate.Subtract(StartingDate);
@@ -339,7 +328,7 @@ namespace Tintool.ViewModels
 
         public void Button_FullTimeframe()
         {
-            DateTime start = _stats.Date.Date;
+            DateTime start = BaseViewModel.Stats.Date.Date;
             DateTime end = DateTime.Now.Date;
 
             SetTime(start, end);

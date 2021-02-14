@@ -67,29 +67,22 @@ namespace Tintool.ViewModels.Tabs
             }
         }
 
-        private IWindowManager _wm;
-
-
-        private TinderAPI _tinderAPI;
-        private BadooAPI _badooAPI;
-        private Stats _stats;
-        private AppSettings _settings;
-        private MainViewModel _baseViewModel;
+        public MainViewModel BaseViewModel { get; set; }
 
         private bool _comboBoxHandled = false;
 
-        public AccountsUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
+        public AccountsUserControlViewModel(MainViewModel baseViewModel)
         {
-            _wm = wm;
-            _tinderAPI = tinderAPI;
-            _badooAPI = badooAPI;
-            _stats = stats;
-            _settings = settings;
-            _baseViewModel = baseViewModel;
+            BaseViewModel = baseViewModel;
 
+            RefreshContent();
+        }
+
+        public void RefreshContent()
+        {
             RefreshAllTables();
             AvailableSaveFiles = FileManager.FindAvailableSaveFiles();
-            SelectedSaveFile = AvailableSaveFiles.Find((x)=>x.Name.Replace(x.Extension, "").Equals(_stats.FileName));
+            SelectedSaveFile = AvailableSaveFiles.Find((x) => x.Name.Replace(x.Extension, "").Equals(BaseViewModel.Stats.FileName));
         }
 
         private void RefreshAllTables()
@@ -100,16 +93,18 @@ namespace Tintool.ViewModels.Tabs
 
         private void RefreshCurrentIDsTable()
         {
-            ProfileIDsList = ListModelsFromStats(_stats);
+            ProfileIDsList = ListModelsFromStats(BaseViewModel.Stats);
             NotifyOfPropertyChange(() => ProfileIDsList);
         }
 
         private void RefreshAvailableIDsTable()
         {
-            AvailableIDsList.Clear();
+            AvailableIDsList = new List<AccountsTableItemModel>();
+            //NotifyOfPropertyChange(() => AvailableIDsList);
+
             foreach (Stats s in FileManager.LoadAllSavefiles())
             {
-                if (!s.FileName.Equals(_stats.FileName))
+                if (!s.FileName.Equals(BaseViewModel.Stats.FileName))
                 {
                     AvailableIDsList.AddRange(ListModelsFromStats(s));
                 }
@@ -119,10 +114,10 @@ namespace Tintool.ViewModels.Tabs
 
         private void SwitchSaveFile()
         {
-            FileManager.SaveStats(_stats);
-            _stats = FileManager.LoadStatsWithFileName(SelectedSaveFile.Name);
-            _settings.DefaultSaveFile = SelectedSaveFile.Name;
-            RefreshAllTables();
+            FileManager.SaveStats(BaseViewModel.Stats);
+            BaseViewModel.Stats = FileManager.LoadStatsWithFileName(SelectedSaveFile.Name);
+            BaseViewModel.Settings.DefaultSaveFile = SelectedSaveFile.Name;
+            RefreshContent();
         }
 
         private List<AccountsTableItemModel> ListModelsFromStats(Stats stats)
@@ -169,13 +164,13 @@ namespace Tintool.ViewModels.Tabs
         {
             if (AvailableIDsSelection != null)
             {
-                if (!_stats.ProfileIDs.Contains(AvailableIDsSelection.ID))
+                if (!BaseViewModel.Stats.ProfileIDs.Contains(AvailableIDsSelection.ID))
                 {
-                    _stats.ProfileIDs.Add(AvailableIDsSelection.ID);
+                    BaseViewModel.Stats.ProfileIDs.Add(AvailableIDsSelection.ID);
                 }
                 if (UseIDsMerge)
                 {
-                    _stats.MergeUniqueMatchesFrom(AvailableIDsSelection.LinkedStats, AvailableIDsSelection.ID);
+                    BaseViewModel.Stats.MergeUniqueMatchesFrom(AvailableIDsSelection.LinkedStats, AvailableIDsSelection.ID);
                 }
                 RefreshCurrentIDsTable();
             }
@@ -183,18 +178,18 @@ namespace Tintool.ViewModels.Tabs
 
         public void Button_RemoveFromSelection()
         {
-            if (_stats.ProfileIDs.Contains(ProfileIDsSelection.ID))
+            if (BaseViewModel.Stats.ProfileIDs.Contains(ProfileIDsSelection.ID))
             {
-                _stats.ProfileIDs.Remove(ProfileIDsSelection.ID);
+                BaseViewModel.Stats.ProfileIDs.Remove(ProfileIDsSelection.ID);
                 RefreshCurrentIDsTable();
             }
         }
 
         public void Button_AddFromTextBox()
         {
-            if (!_stats.ProfileIDs.Contains(IDTextBox))
+            if (!BaseViewModel.Stats.ProfileIDs.Contains(IDTextBox))
             {
-                _stats.ProfileIDs.Add(IDTextBox);
+                BaseViewModel.Stats.ProfileIDs.Add(IDTextBox);
                 IDTextBox = "";
                 RefreshCurrentIDsTable();
             }

@@ -19,19 +19,17 @@ namespace Tintool.ViewModels
 {
     class MainViewModel : Screen
     {
-        private IWindowManager _wm;
+        public IWindowManager WM { get; set; }
+        public AppSettings Settings { get; set; }
+        public Stats Stats { get; set; }
+        public TinderAPI TinderAPI { get; set; }
+        public BadooAPI BadooAPI { get; set; }
 
-        private AppSettings _settings;
-        private Stats _stats;
-        private TinderAPI _tinderAPI;
-        private BadooAPI _badooAPI;
-
-        public MatchesUserControlViewModel MatchesUserControl { get; }
-        public MessagesUserControlViewModel MessagesUserControl { get; }
-        public ToolsUserControlViewModel ToolsUserControl { get; }
-        public AccountsUserControlViewModel AccountsUserControl { get; }
-        public ConnectUserControlViewModel ConnectUserControl { get; }
-
+        public MatchesUserControlViewModel MatchesUserControl { get; set; }
+        public MessagesUserControlViewModel MessagesUserControl { get; set; }
+        public ToolsUserControlViewModel ToolsUserControl { get; set; }
+        public AccountsUserControlViewModel AccountsUserControl { get; set; }
+        public ConnectUserControlViewModel ConnectUserControl { get; set; }
 
         #region Progressbar
         public Task CurrentTask;
@@ -63,19 +61,18 @@ namespace Tintool.ViewModels
         }
         #endregion
 
-        public MainViewModel(IWindowManager wm, TinderAPI tinderAPI, BadooAPI badooAPI, AppSettings settings, Stats stats)
+        public MainViewModel(IWindowManager wm)
         {
-            this._wm = wm;
-            this._tinderAPI = tinderAPI;
-            this._badooAPI = badooAPI;
-            this._settings = settings;
-            this._stats = stats;
+            this.WM = wm;
+        }
 
-            MatchesUserControl = new MatchesUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
-            MessagesUserControl = new MessagesUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
-            ToolsUserControl = new ToolsUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
-            AccountsUserControl = new AccountsUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
-            ConnectUserControl = new ConnectUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
+        public void InitializeTabs()
+        {
+            MatchesUserControl = new MatchesUserControlViewModel(this);
+            MessagesUserControl = new MessagesUserControlViewModel(this);
+            ToolsUserControl = new ToolsUserControlViewModel(this);
+            AccountsUserControl = new AccountsUserControlViewModel(this);
+            ConnectUserControl = new ConnectUserControlViewModel(this);
         }
 
         public void OnStartup(object sender)
@@ -85,52 +82,53 @@ namespace Tintool.ViewModels
 
         public void RefreshContent(SelectionChangedEventArgs args)
         {
-            if (_tinderAPI.IsTokenWorking())
+            try
             {
-                try
+                if (args.AddedItems.Count > 0)
                 {
-                    if (args.AddedItems.Count > 0)
+                    string tab = ((TabItem)args.AddedItems[0]).Name;
+                    if (tab.Equals("MatchesTab"))
                     {
-                        string tab = ((TabItem)args.AddedItems[0]).Name;
-                        if (tab.Equals("MatchesTab"))
-                        {
-                            MatchesUserControl.RefreshContent();
-                        }
-                        else if (tab.Equals("ToolsTab"))
-                        {
-                            ToolsUserControl.RefreshContent();
-                        }
-                        else if (tab.Equals("MessagesTab"))
-                        {
-                            MessagesUserControl.RefreshContent();
-                        }
-                        else if (tab.Equals("ConnectTab"))
-                        {
-                            ConnectUserControl.RefreshContent();
-                        }
+                        MatchesUserControl.RefreshContent();
                     }
-                    else
+                    else if (tab.Equals("ToolsTab"))
                     {
-                        return;
+                        ToolsUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("MessagesTab"))
+                    {
+                        MessagesUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("ConnectTab"))
+                    {
+                        ConnectUserControl.RefreshContent();
+                    }
+                    else if (tab.Equals("AccountsTab"))
+                    {
+                        AccountsUserControl.RefreshContent();
                     }
                 }
-                catch (Exception e)
+                else
                 {
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
 
-                }
             }
         }
 
         public void WindowExit()
         {
-            FileManager.SaveStats(_stats);
-            FileManager.SaveSettings(_settings);
+            FileManager.SaveStats(Stats);
+            FileManager.SaveSettings(Settings);
         }
 
         public void Button_LogOut()
         {
-            FileManager.SaveSettings(_settings);
-            FileManager.SaveStats(_stats);
+            FileManager.SaveSettings(Settings);
+            FileManager.SaveStats(Stats);
             TryClose();
         }
     }

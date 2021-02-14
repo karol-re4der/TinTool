@@ -17,13 +17,7 @@ namespace Tintool.ViewModels.Tabs
 {
     class MessagesUserControlViewModel: Screen
     {
-        private IWindowManager _wm;
-
-        private BadooAPI _badooAPI;
-        private TinderAPI _tinderAPI;
-        private Stats _stats;
-        private AppSettings _settings;
-        private MainViewModel _baseViewModel;
+        public MainViewModel BaseViewModel;
 
         #region Plots
         public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
@@ -191,16 +185,11 @@ namespace Tintool.ViewModels.Tabs
         public OxyPlot.Wpf.Plot PlotItem { get; set; } = new OxyPlot.Wpf.Plot();
         #endregion
 
-        public MessagesUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
-        {
-            this._wm = wm;
-            this._tinderAPI = tinderAPI;
-            this._badooAPI = badooAPI;
-            this._stats = stats;
-            this._settings = settings;
-            this._baseViewModel = baseViewModel;
+        public MessagesUserControlViewModel(MainViewModel baseViewModel)
+        { 
+            BaseViewModel = baseViewModel;
 
-            SetTime(_stats.Date.Date, DateTime.Today);
+            SetTime(BaseViewModel.Stats.Date.Date, DateTime.Today);
         }
 
         private void SetTime(DateTime start, DateTime end)
@@ -212,38 +201,38 @@ namespace Tintool.ViewModels.Tabs
 
         public void RefreshContent()
         {
-            //Replot();
+            Replot();
         }
 
         public void PreparePlot()
         {
-            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
+            if (BaseViewModel.CurrentTask == null || BaseViewModel.CurrentTask.IsCompleted)
             {
                 //Prepare validation
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                _baseViewModel.Progress = 0;
-                _baseViewModel.ProgressText = "Loading new messages";
-                _baseViewModel.CurrentTask = Unitool.ValidateMatches(_tinderAPI, _stats, (x) => _baseViewModel.Progress = x, token);
+                BaseViewModel.Progress = 0;
+                BaseViewModel.ProgressText = "Loading new messages";
+                BaseViewModel.CurrentTask = Unitool.ValidateMatches(BaseViewModel.TinderAPI, BaseViewModel.Stats, (x) => BaseViewModel.Progress = x, token);
 
                 //Prepare ploting
                 Action<object> continuation = (x) =>
                 {
                     Replot();
-                    _baseViewModel.Progress = 100;
-                    _baseViewModel.ProgressText = "Complete!";
+                    BaseViewModel.Progress = 100;
+                    BaseViewModel.ProgressText = "Complete!";
                 };
-                _baseViewModel.CurrentTask.ContinueWith(continuation);
+                BaseViewModel.CurrentTask.ContinueWith(continuation);
 
-                _baseViewModel.CurrentTask.Start();
+                BaseViewModel.CurrentTask.Start();
             }
         }
 
         public void Replot()
         {
-            _stats.PlotMessagesThroughTime(StartingDate, EndingDate, TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);
-            PlotTitle = $"Messages per day. Response rate: {_stats.ResponseRate(StartingDate, EndingDate):F2}, Average convo length: {_stats.AverageConversationLength(StartingDate, EndingDate):F2}";
+            BaseViewModel.Stats.PlotMessagesThroughTime(StartingDate, EndingDate, TotalThroughTimePlot, SentThroughTimePlot, ReceivedThroughTimePlot);
+            PlotTitle = $"Messages per day. Response rate: {BaseViewModel.Stats.ResponseRate(StartingDate, EndingDate):F2}, Average convo length: {BaseViewModel.Stats.AverageConversationLength(StartingDate, EndingDate):F2}";
             PlotUpperConstraint = TotalThroughTimePlot.Points.Max((x) => x.Y) + 5.0;
 
             TimeSpan timespan = EndingDate.Subtract(StartingDate);
@@ -278,7 +267,7 @@ namespace Tintool.ViewModels.Tabs
 
         public void Button_FullTimeframe()
         {
-            DateTime start = _stats.Date.Date;
+            DateTime start = BaseViewModel.Stats.Date.Date;
             DateTime end = DateTime.Now.Date;
 
             SetTime(start, end);

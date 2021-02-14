@@ -80,23 +80,11 @@ namespace Tintool.ViewModels.Tabs
             }
         }
 
+        private MainViewModel BaseViewModel { get; set; }
 
-        private IWindowManager _wm;
-
-        private TinderAPI _tinderAPI;
-        private BadooAPI _badooAPI;
-        private Stats _stats;
-        private AppSettings _settings;
-        private MainViewModel _baseViewModel;
-
-        public ToolsUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
+        public ToolsUserControlViewModel(MainViewModel baseViewModel)
         {
-            this._wm = wm;
-            this._tinderAPI = tinderAPI;
-            this._badooAPI = badooAPI;
-            this._stats = stats;
-            this._settings = settings;
-            this._baseViewModel = baseViewModel;
+            BaseViewModel = baseViewModel;
 
             ProximityDistance = "20";
             ProximityInactivityCutout = "1";
@@ -109,35 +97,35 @@ namespace Tintool.ViewModels.Tabs
 
         public void ProximityCheckAction()
         {
-            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
+            if (BaseViewModel.CurrentTask == null || BaseViewModel.CurrentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                _baseViewModel.Progress = 0;
-                _baseViewModel.ProgressText = "Checking";
-                _baseViewModel.CurrentTask = Unitool.ProximityCheck(_tinderAPI, _stats, _proximityDistance, (x)=> _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
+                BaseViewModel.Progress = 0;
+                BaseViewModel.ProgressText = "Checking";
+                BaseViewModel.CurrentTask = Unitool.ProximityCheck(BaseViewModel.TinderAPI, BaseViewModel.Stats, _proximityDistance, (x)=> BaseViewModel.Progress = x, (x) => BaseViewModel.ProgressText = x+" is eligible!", (x) => MessageBox.Show(x), token);
                 Action<object> continuation = (x) =>
                 {
-                    _baseViewModel.ProgressText = "Checked all!";
-                    _baseViewModel.Progress = 100;
+                    BaseViewModel.ProgressText = "Checked all!";
+                    BaseViewModel.Progress = 100;
                 };
-                _baseViewModel.CurrentTask.ContinueWith(continuation);
-                _baseViewModel.CurrentTask.Start();
+                BaseViewModel.CurrentTask.ContinueWith(continuation);
+                BaseViewModel.CurrentTask.Start();
             }
         }
 
         public void SwipeAllAction()
         {
-            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
+            if (BaseViewModel.CurrentTask == null || BaseViewModel.CurrentTask.IsCompleted)
             {
                 CancellationTokenSource tokenSource = new CancellationTokenSource();
                 CancellationToken token = tokenSource.Token;
 
-                _baseViewModel.Progress = 0;
-                _baseViewModel.ProgressText = "Swiping";
-                _baseViewModel.CurrentTask = Unitool.SwipeAll(_tinderAPI, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x) => MessageBox.Show(x), token);
-                _baseViewModel.CurrentTask.Start();
+                BaseViewModel.Progress = 0;
+                BaseViewModel.ProgressText = "Swiping";
+                BaseViewModel.CurrentTask = Unitool.SwipeAll(BaseViewModel.TinderAPI, _swipeAllSize, (x) => BaseViewModel.Progress = x, (x) => BaseViewModel.ProgressText = x, (x) => MessageBox.Show(x), token);
+                BaseViewModel.CurrentTask.Start();
             }
         }
     }

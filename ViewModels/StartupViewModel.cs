@@ -44,14 +44,12 @@ namespace Tintool.ViewModels
 
         private Task _startUpTask = null;
 
-        private IWindowManager _wm;
-        private TinderAPI _tinderAPI;
-        private Stats _stats;
-        private BadooAPI _badooAPI = new BadooAPI();
-        private AppSettings _settings;
+        public IWindowManager WM { get; set; }
+        public MainViewModel BaseViewModel { get; set; }
+
         public StartupViewModel(IWindowManager wm)
-        { 
-            _wm = wm;
+        {
+            this.WM = wm;
             StartUp();
         }
 
@@ -60,20 +58,23 @@ namespace Tintool.ViewModels
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
 
+            BaseViewModel = new MainViewModel(WM);
+
             _startUpTask = Unitool.StartUp(
                 (x) => {
                     Progress(25, "Settings loaded...!");
-                    _settings = x;
+                    BaseViewModel.Settings = x;
                 },
                 (x) => {
                     Progress(50, "Tinder session loaded...!");
-                    _tinderAPI = x;
+                    BaseViewModel.TinderAPI = x;
                 }, (x) => {
                     Progress(75, "Badoo session loaded...!");
+                    BaseViewModel.BadooAPI = new BadooAPI();
                 }, (x) =>
                 {
                     Progress(99, "Stats loaded...!");
-                    _stats = x;
+                    BaseViewModel.Stats = x;
                 }, (x) => {
                     if (x)
                     {
@@ -101,7 +102,8 @@ namespace Tintool.ViewModels
 
         private void FinalizeLogin()
         {
-            _wm.ShowWindow(new MainViewModel(_wm, _tinderAPI, _badooAPI, _settings, _stats));
+            BaseViewModel.InitializeTabs();
+            WM.ShowWindow(BaseViewModel);
             this.TryClose();
         }
 

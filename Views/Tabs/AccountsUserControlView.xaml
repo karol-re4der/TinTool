@@ -28,7 +28,7 @@
             <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">
                 IDs in use
             </TextBlock>
-            <ListView SelectedItem="{Binding ProfileIDsSelection}" ItemsSource="{Binding ProfileIDsList}">
+            <ListView Name="LeftTable" SelectedItem="{Binding ProfileIDsSelection}" ItemsSource="{Binding ProfileIDsList}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="200" Header="ID" DisplayMemberBinding="{Binding ID}"/>
@@ -41,7 +41,7 @@
             <TextBlock DockPanel.Dock="Top" HorizontalAlignment="Center">
                 Other savefiles
             </TextBlock>
-            <ListView SelectedItem="{Binding AvailableIDsSelection}" ItemsSource="{Binding AvailableIDsList}">
+            <ListView Name="RightTable" SelectedItem="{Binding AvailableIDsSelection}" ItemsSource="{Binding AvailableIDsList}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="100" Header="File Name" DisplayMemberBinding="{Binding FileName}"/>

@@ -14,13 +14,7 @@ namespace Tintool.ViewModels.Tabs
     class ConnectUserControlViewModel : Screen
     {
         #region fields
-        private IWindowManager _wm;
-
-        private TinderAPI _tinderAPI;
-        private BadooAPI _badooAPI;
-        private Stats _stats;
-        private AppSettings _settings;
-        private MainViewModel _baseViewModel;
+        private MainViewModel BaseViewModel { get; set; }
 
         private Brush _tinderButtonColor = Brushes.Gray;
         public Brush TinderButtonColor
@@ -52,14 +46,9 @@ namespace Tintool.ViewModels.Tabs
         private Brush ButtonInactiveColor = Brushes.White;
         #endregion
 
-        public ConnectUserControlViewModel(IWindowManager wm, ref TinderAPI tinderAPI, ref BadooAPI badooAPI, ref Stats stats, ref AppSettings settings, MainViewModel baseViewModel)
+        public ConnectUserControlViewModel(MainViewModel baseViewModel)
         {
-            this._wm = wm;
-            this._tinderAPI = tinderAPI;
-            this._badooAPI = badooAPI;
-            this._stats = stats;
-            this._settings = settings;
-            this._baseViewModel = baseViewModel;
+            BaseViewModel = baseViewModel;
 
             RefreshContent();
         }
@@ -67,7 +56,7 @@ namespace Tintool.ViewModels.Tabs
         #region methods
         public void RefreshContent()
         {
-            if (_tinderAPI.IsTokenWorking())
+            if (BaseViewModel.TinderAPI.IsTokenWorking())
             {
                 TinderButtonColor = ButtonActiveColor;
             }
@@ -76,7 +65,7 @@ namespace Tintool.ViewModels.Tabs
                 TinderButtonColor = ButtonInactiveColor;
             }
 
-            if (_badooAPI.IsTokenWorking())
+            if (BaseViewModel.BadooAPI.IsTokenWorking())
             {
                 BadooButtonColor = ButtonActiveColor;
             }
@@ -87,7 +76,7 @@ namespace Tintool.ViewModels.Tabs
         }
         public void TinderButtonClicked()
         {
-            _wm.ShowDialog(new LoginDialogViewModel(_tinderAPI, _settings));
+            BaseViewModel.WM.ShowDialog(new LoginDialogViewModel(BaseViewModel.TinderAPI, BaseViewModel.Settings));
 
             TinderButtonColor = ButtonActiveColor;
         }
