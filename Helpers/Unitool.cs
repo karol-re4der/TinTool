@@ -256,10 +256,10 @@ namespace Tintool.Models
             return new Task(() =>
             {
                 CancellationToken token = cancellationToken;
-                string newFileName = FileManager.CreateUniqueStatsName();
 
                 //Settings
                 FileManager.Prepare();
+                string newFileName = FileManager.CreateUniqueStatsName();
                 AppSettings loadedSettings = FileManager.LoadSettings();
                 OnSettingsLoaded(loadedSettings);
                 if (cancellationToken.IsCancellationRequested)

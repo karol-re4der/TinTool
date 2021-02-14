@@ -100,7 +100,6 @@ namespace Tintool.ViewModels.Tabs
         private void RefreshAvailableIDsTable()
         {
             AvailableIDsList = new List<AccountsTableItemModel>();
-            //NotifyOfPropertyChange(() => AvailableIDsList);
 
             foreach (Stats s in FileManager.LoadAllSavefiles())
             {

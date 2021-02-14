@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Windows;
 using Tinder.DataStructures;
 using Tinder.DataStructures.Responses.Matches;
 using Tintool.Models.DataStructures;
@@ -13,7 +14,7 @@ namespace Models
 {
     class FileManager
     {
-        private static string _path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"/Tintool/";
+        private static string _path;
         private static string _statsFolder = "SaveFiles//";
         private static string _sessionFileName = "session";
         private static string _settingsFileName = "app_settings";
@@ -210,6 +211,14 @@ namespace Models
         #region Preparation
         public static void Prepare()
         {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                _path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/Tintool_Debug/";
+            }
+            else
+            {
+                _path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/Tintool/";
+            }
             Directory.CreateDirectory(_path);
             Directory.CreateDirectory(_path + _statsFolder);
         }
