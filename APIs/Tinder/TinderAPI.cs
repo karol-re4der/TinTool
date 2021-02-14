@@ -445,15 +445,22 @@ namespace Models
             return session;
         }
 
-        public bool IsTokenWorking(bool quickCheck=false)
+        public bool IsTokenWorking(bool quickCheck = false)
         {
-            if (!quickCheck)
+            if (_session != null)
             {
-                Delay();
-            }
+                if (!quickCheck)
+                {
+                    Delay();
+                }
 
-            HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
-            return response.IsSuccessStatusCode;
+                HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
+                return response.IsSuccessStatusCode;
+            }
+            else
+            {
+                return false;
+            }
         }
         public void SetSession(SessionData newSession)
         {

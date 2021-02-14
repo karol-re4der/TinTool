@@ -22,9 +22,9 @@ namespace Tintool.ViewModels
         private IWindowManager _wm;
 
         private AppSettings _settings;
-        public Stats stats;
-        public TinderAPI _tinderAPI;
-        public BadooAPI _badooAPI;
+        private Stats _stats;
+        private TinderAPI _tinderAPI;
+        private BadooAPI _badooAPI;
 
         public MatchesUserControlViewModel MatchesUserControl { get; }
         public MessagesUserControlViewModel MessagesUserControl { get; }
@@ -63,28 +63,13 @@ namespace Tintool.ViewModels
         }
         #endregion
 
-        public MainViewModel(IWindowManager wm, TinderAPI tinderAPI, BadooAPI badooAPI, AppSettings settings)
+        public MainViewModel(IWindowManager wm, TinderAPI tinderAPI, BadooAPI badooAPI, AppSettings settings, Stats stats)
         {
             this._wm = wm;
             this._tinderAPI = tinderAPI;
             this._badooAPI = badooAPI;
             this._settings = settings;
-
-            stats = FileManager.LoadStatsWithNumber(settings.LoginNumber);
-            if (stats == null)
-            {
-                stats = new Stats(FileManager.CreateUniqueStatsName());
-                FileManager.AddBinding(_settings.LoginNumber, stats.FileName);
-                FileManager.SaveStats(stats);
-                stats.ResetDate();
-            }
-            else
-            {
-
-            }
-            stats.ProfileIDs.Add(tinderAPI.GetProfileID());
-            stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
-            //Unitool.LogNewMatches(api.GetMatches(100), stats);
+            this._stats = stats;
 
             MatchesUserControl = new MatchesUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
             MessagesUserControl = new MessagesUserControlViewModel(_wm, ref _tinderAPI, ref _badooAPI, ref stats, ref _settings, this);
@@ -138,13 +123,14 @@ namespace Tintool.ViewModels
 
         public void WindowExit()
         {
-            FileManager.SaveStats(stats);
+            FileManager.SaveStats(_stats);
+            FileManager.SaveSettings(_settings);
         }
 
         public void Button_LogOut()
         {
             FileManager.SaveSettings(_settings);
-            FileManager.SaveStats(stats);
+            FileManager.SaveStats(_stats);
             TryClose();
         }
     }

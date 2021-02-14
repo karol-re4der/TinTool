@@ -75,6 +75,15 @@ namespace Tintool.ViewModels.Tabs
             {
                 TinderButtonColor = ButtonInactiveColor;
             }
+
+            if (_badooAPI.IsTokenWorking())
+            {
+                BadooButtonColor = ButtonActiveColor;
+            }
+            else
+            {
+                BadooButtonColor = ButtonInactiveColor;
+            }
         }
         public void TinderButtonClicked()
         {

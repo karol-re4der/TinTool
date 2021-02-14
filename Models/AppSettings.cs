@@ -8,6 +8,6 @@ namespace Tintool.Models.DataStructures
     {
         public bool KeepLogged { get; set; } = false;
         public string LoginNumber { get; set; } = "";
-
+        public string DefaultSaveFile { get; set; } = "";
     }
 }

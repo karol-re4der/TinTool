@@ -3,6 +3,7 @@ using Models;
 using OxyPlot.Axes;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tinder.DataStructures;
 using Tintool.APIs.Badoo;
@@ -280,12 +281,23 @@ namespace Tintool.ViewModels
 
         public void PreparePlot()
         {
-            _baseViewModel.ProgressText = "Searching for new matches!";
-            _baseViewModel.Progress = 0;
-            Unitool.LogNewMatches(_tinderAPI.GetMatches(100), _stats);
-            Replot();
-            _baseViewModel.ProgressText = "Complete!";
-            _baseViewModel.Progress = 100;
+            if (_baseViewModel.CurrentTask == null || _baseViewModel.CurrentTask.IsCompleted)
+            {
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                CancellationToken token = tokenSource.Token;
+
+                _baseViewModel.ProgressText = "Searching for new matches..";
+                _baseViewModel.Progress = 0;
+
+                _baseViewModel.CurrentTask = Unitool.LogNewMatches(_tinderAPI, (x)=>
+                {
+                    Replot();
+                    _baseViewModel.ProgressText = "Complete!";
+                    _baseViewModel.Progress = 100;
+                }, _stats, token);
+
+                _baseViewModel.CurrentTask.Start();
+            }
         }
 
         public void Replot()

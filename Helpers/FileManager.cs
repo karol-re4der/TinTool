@@ -17,29 +17,16 @@ namespace Models
         private static string _statsFolder = "SaveFiles//";
         private static string _sessionFileName = "session";
         private static string _settingsFileName = "app_settings";
-        private static string _bindingsFileName = "bindings";
         private static string _sessionFileExtension = ".bin";
         private static string _genericExtension = ".json";
 
         private static byte[] _encryptionKey = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
-        private static BindTable _bindTable;
 
         #region Stats
         public static List<FileInfo> FindAvailableSaveFiles()
         {
             return new DirectoryInfo(_path + _statsFolder).GetFiles().Where((x)=>x.Extension.Equals(_genericExtension)).ToList();
-        }
-
-        public static Stats LoadStatsWithNumber(string number)
-        {
-            string statsFileName = _bindTable.bindings.Find((x) => x.PhoneNumber.Equals(number))?.SaveFileName;
-            if (string.IsNullOrWhiteSpace(statsFileName))
-            {
-                return null;
-            }
-
-            return LoadStatsWithFileName(statsFileName);
         }
 
         public static Stats LoadStatsWithFileName(string fileName)
@@ -76,7 +63,6 @@ namespace Models
                 reader?.Close();
             }
         }
-
 
         public static List<Stats> LoadAllSavefiles()
         {
@@ -227,7 +213,6 @@ namespace Models
         {
             Directory.CreateDirectory(_path);
             Directory.CreateDirectory(_path + _statsFolder);
-            LoadBindings();
         }
 
         public static string CreateUniqueStatsName()
@@ -240,67 +225,6 @@ namespace Models
                 sequence = System.Text.RegularExpressions.Regex.Replace(sequence, "[^0-9a-zA-Z]+", "");
             }
             return sequence;
-        }
-
-        public static void AddBinding(string number, string fileName)
-        {
-            var foo = _bindTable.bindings.Find((x) => x.PhoneNumber.Equals(number));
-
-            if (foo == null)
-            {
-                _bindTable.bindings.Add(new BindTableItemModel
-                {
-                    PhoneNumber = number,
-                    SaveFileName = fileName
-                });
-            }
-            else
-            {
-                foo.SaveFileName = fileName;
-            }
-
-            SaveBindings();
-        }
-
-        private static void SaveBindings()
-        {
-            try
-            {
-                string bindingsAsJson = JsonSerializer.Serialize(_bindTable);
-
-                FileStream file = File.Create(_path + @"\" + _bindingsFileName + _genericExtension);
-
-                StreamWriter writer = new StreamWriter(file);
-                writer.Write(bindingsAsJson);
-                writer.Close();
-                file.Close();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
-        }
-
-        private static void LoadBindings()
-        {
-            string fullFilePath = _path + @"\" + _bindingsFileName + _genericExtension;
-
-            StreamReader reader = null;
-            try
-            { 
-                reader = new StreamReader(fullFilePath);
-                _bindTable = JsonSerializer.Deserialize<BindTable>(reader.ReadToEnd());
-            }
-            catch (FileNotFoundException e)
-            {
-                _bindTable = new BindTable();
-                SaveBindings();
-            }
-            finally
-            {
-                reader?.Close();
-            }
         }
         #endregion
     }

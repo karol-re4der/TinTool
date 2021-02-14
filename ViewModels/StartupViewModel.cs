@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Tinder.DataStructures;
 using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
@@ -45,10 +46,11 @@ namespace Tintool.ViewModels
 
         private IWindowManager _wm;
         private TinderAPI _tinderAPI;
+        private Stats _stats;
         private BadooAPI _badooAPI = new BadooAPI();
         private AppSettings _settings;
         public StartupViewModel(IWindowManager wm)
-        {
+        { 
             _wm = wm;
             StartUp();
         }
@@ -60,16 +62,19 @@ namespace Tintool.ViewModels
 
             _startUpTask = Unitool.StartUp(
                 (x) => {
-                    Progress(33, "Settings loaded...!");
+                    Progress(25, "Settings loaded...!");
                     _settings = x;
                 },
                 (x) => {
-                    Progress(66, "Tinder session loaded...!");
+                    Progress(50, "Tinder session loaded...!");
                     _tinderAPI = x;
                 }, (x) => {
-                    Progress(99, "Badoo session loaded...!");
-                },
-                (x) => {
+                    Progress(75, "Badoo session loaded...!");
+                }, (x) =>
+                {
+                    Progress(99, "Stats loaded...!");
+                    _stats = x;
+                }, (x) => {
                     if (x)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -96,7 +101,7 @@ namespace Tintool.ViewModels
 
         private void FinalizeLogin()
         {
-            _wm.ShowWindow(new MainViewModel(_wm, _tinderAPI, _badooAPI, _settings));
+            _wm.ShowWindow(new MainViewModel(_wm, _tinderAPI, _badooAPI, _settings, _stats));
             this.TryClose();
         }
 

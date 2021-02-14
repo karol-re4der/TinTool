@@ -14,17 +14,32 @@ namespace Tintool.Models
 {
     class Unitool
     {
-        public static void LogNewMatches(List<MatchData> potentialMatches, Stats stats)
+        public static Task LogNewMatches(TinderAPI api, Action<bool> OnWorkFinished, Stats stats, CancellationToken cancellationToken)
         {
-            foreach (MatchData match in potentialMatches)
+            return new Task(() =>
             {
-                //add
-                MatchData existing = stats.Matches.Find((x) => x.IsSameMatch(match));
-                if (existing == null)
+                CancellationToken token = cancellationToken;
+                if (api.IsTokenWorking())
                 {
-                    stats.Matches.Add(match);
+                    foreach (MatchData match in api.GetMatches(100))
+                    {
+                        //add
+                        if (!token.IsCancellationRequested)
+                        {
+                            MatchData existing = stats.Matches.Find((x) => x.IsSameMatch(match));
+                            if (existing == null)
+                            {
+                                stats.Matches.Add(match);
+                            }
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
                 }
-            }
+                OnWorkFinished(true);
+            });
         }
 
         public static Task ProximityCheck(TinderAPI api, Stats stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
@@ -236,13 +251,14 @@ namespace Tintool.Models
             });
         }
 
-        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI> OnTinderAPILoaded, Action<BadooAPI> OnBadooAPILoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
+        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI> OnTinderAPILoaded, Action<BadooAPI> OnBadooAPILoaded, Action<Stats> OnStatsLoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
                 CancellationToken token = cancellationToken;
+                string newFileName = FileManager.CreateUniqueStatsName();
 
-                //Files
+                //Settings
                 FileManager.Prepare();
                 AppSettings loadedSettings = FileManager.LoadSettings();
                 OnSettingsLoaded(loadedSettings);
@@ -252,26 +268,26 @@ namespace Tintool.Models
                 }
 
                 //APIs
-                TinderAPI api = new TinderAPI();
+                TinderAPI tinderAPI = new TinderAPI();
                 SessionData loadedSession = FileManager.LoadSession();
                 if (loadedSession?.AuthToken.Length > 0)
                 {
-                    api.SetSession(loadedSession);
-                    if (api.IsTokenWorking())
+                    tinderAPI.SetSession(loadedSession);
+                    if (tinderAPI.IsTokenWorking())
                     {
 
                     }
                     else if (loadedSession?.RefreshToken.Length > 0)
                     {
-                        loadedSession = api.TryRefresh(loadedSession);
+                        loadedSession = tinderAPI.TryRefresh(loadedSession);
 
                         if (loadedSession != null)
                         {
-                            api.SetSession(loadedSession);
+                            tinderAPI.SetSession(loadedSession);
                         }
                     }
                 }
-                OnTinderAPILoaded(api);
+                OnTinderAPILoaded(tinderAPI);
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -284,6 +300,27 @@ namespace Tintool.Models
                 {
                     return;
                 }
+
+                //Stats
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                Stats stats = FileManager.LoadStatsWithFileName(loadedSettings.DefaultSaveFile);
+                if (stats == null)
+                {
+                    stats = new Stats(newFileName);
+                    loadedSettings.DefaultSaveFile = newFileName;
+                    FileManager.SaveStats(stats);
+                    stats.ResetDate();
+                }
+                if (tinderAPI.IsTokenWorking())
+                {
+                    stats.ProfileIDs.Add(tinderAPI.GetProfileID());
+                    stats.ProfileIDs = stats.ProfileIDs.Distinct().ToList();
+                }
+                OnStatsLoaded(stats);
 
                 OnFinished(true);
             });

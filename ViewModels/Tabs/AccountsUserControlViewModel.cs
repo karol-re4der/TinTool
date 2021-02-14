@@ -121,7 +121,7 @@ namespace Tintool.ViewModels.Tabs
         {
             FileManager.SaveStats(_stats);
             _stats = FileManager.LoadStatsWithFileName(SelectedSaveFile.Name);
-            FileManager.AddBinding(_settings.LoginNumber, _stats.FileName);
+            _settings.DefaultSaveFile = SelectedSaveFile.Name;
             RefreshAllTables();
         }
 

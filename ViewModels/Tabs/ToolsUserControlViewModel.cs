@@ -136,14 +136,7 @@ namespace Tintool.ViewModels.Tabs
 
                 _baseViewModel.Progress = 0;
                 _baseViewModel.ProgressText = "Swiping";
-                _baseViewModel.CurrentTask = Unitool.SwipeAll(_tinderAPI, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x)=>MessageBox.Show(x), token);
-                Action<object> continuation = (x) => 
-                {
-                    Unitool.LogNewMatches(_tinderAPI.GetMatches(100), _stats);
-                    _baseViewModel.ProgressText = "Swiped all!";
-                    _baseViewModel.Progress = 100;
-                };
-                _baseViewModel.CurrentTask.ContinueWith(continuation);
+                _baseViewModel.CurrentTask = Unitool.SwipeAll(_tinderAPI, _swipeAllSize, (x) => _baseViewModel.Progress = x, (x) => _baseViewModel.ProgressText = x, (x) => MessageBox.Show(x), token);
                 _baseViewModel.CurrentTask.Start();
             }
         }

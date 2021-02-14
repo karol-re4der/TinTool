@@ -6,5 +6,9 @@ namespace Tintool.APIs.Badoo
 {
     class BadooAPI
     {
+        public bool IsTokenWorking()
+        {
+            return false;
+        }
     }
 }
