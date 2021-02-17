@@ -8,6 +8,7 @@ namespace Tintool.Models
     class AccountsTableItemModel
     {
         public string ID { get; set; }
+        public string Platform { get; set; }
         public int Matches { get; set; }
         public string FileName { get; set; }
 

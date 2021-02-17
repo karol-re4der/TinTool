@@ -15,6 +15,9 @@ namespace Tintool.ViewModels
 {
     class StartupViewModel : Screen
     {
+        private bool _badooUp = false;
+        private bool _tinderUp = false;
+
         private int _progressBarValue = 50;
         public int ProgressBarValue {
             get
@@ -65,12 +68,14 @@ namespace Tintool.ViewModels
                     Progress(25, "Settings loaded...!");
                     BaseViewModel.Settings = x;
                 },
-                (x) => {
+                (api, status) => {
                     Progress(50, "Tinder session loaded...!");
-                    BaseViewModel.TinderAPI = x;
-                }, (x) => {
+                    BaseViewModel.TinderAPI = api;
+                    _tinderUp = status;
+                }, (api, status) => {
                     Progress(75, "Badoo session loaded...!");
                     BaseViewModel.BadooAPI = new BadooAPI();
+                    _badooUp = status;
                 }, (x) =>
                 {
                     Progress(99, "Stats loaded...!");
@@ -102,7 +107,7 @@ namespace Tintool.ViewModels
 
         private void FinalizeLogin()
         {
-            BaseViewModel.InitializeTabs();
+            BaseViewModel.Initialize(_tinderUp, _badooUp);
             WM.ShowWindow(BaseViewModel);
             this.TryClose();
         }

@@ -14,13 +14,18 @@
             <Button DockPanel.Dock="Right" cal:Message.Attach="[Event Click]=[Button_LogOut()]" Height="20" Width="100" HorizontalContentAlignment="Center" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,0">Log out</Button>
             <Grid>
                 <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
-                <TextBlock Text="{Binding ProgressText}"/>
+                <DockPanel Height="20">
+                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[TinderButtonClicked()]">
+                        <Image DockPanel.Dock="Left" Source="/Views/icon_tinder.png" Opacity="{Binding TinderIconOpacity}"/>
+                    </Button>
+                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[BadooButtonClicked()]">
+                        <Image DockPanel.Dock="Left" Source="/Views/icon_badoo.png" Opacity="{Binding BadooIconOpacity}"/>
+                    </Button>
+                    <TextBlock Text="{Binding ProgressText}"/>
+                </DockPanel>
             </Grid>
         </DockPanel>
         <TabControl cal:Message.Attach="[Event SelectionChanged] = [Action RefreshContent($eventArgs)]">
-            <TabItem Header="Connect" Name="ConnectTab">
-                <ContentControl x:Name="ConnectUserControl"/>
-            </TabItem>
             <TabItem Header="Tools" x:Name="ToolsTab">
                 <ContentControl x:Name="ToolsUserControl"/>
             </TabItem>

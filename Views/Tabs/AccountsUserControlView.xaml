@@ -31,8 +31,9 @@
             <ListView Name="LeftTable" SelectedItem="{Binding ProfileIDsSelection}" ItemsSource="{Binding ProfileIDsList}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="200" Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                        <GridViewColumn Width="150" Header="ID" DisplayMemberBinding="{Binding ID}"/>
                         <GridViewColumn Width="50" Header="Matches" DisplayMemberBinding="{Binding Matches}"/>
+                        <GridViewColumn Width="50" Header="Platform" DisplayMemberBinding="{Binding Platform}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -45,8 +46,9 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="100" Header="File Name" DisplayMemberBinding="{Binding FileName}"/>
-                        <GridViewColumn Width="200" Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                        <GridViewColumn Width="150" Header="ID" DisplayMemberBinding="{Binding ID}"/>
                         <GridViewColumn Width="50" Header="Matches" DisplayMemberBinding="{Binding Matches}"/>
+                        <GridViewColumn Width="50" Header="Platform" DisplayMemberBinding="{Binding Platform}"/>
                     </GridView>
                 </ListView.View>
             </ListView>

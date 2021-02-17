@@ -13,6 +13,7 @@ using Tintool.APIs.Badoo;
 using Tintool.Models;
 using Tintool.Models.DataStructures;
 using Tintool.ViewModels;
+using Tintool.ViewModels.Dialogs;
 using Tintool.ViewModels.Tabs;
 
 namespace Tintool.ViewModels
@@ -29,7 +30,6 @@ namespace Tintool.ViewModels
         public MessagesUserControlViewModel MessagesUserControl { get; set; }
         public ToolsUserControlViewModel ToolsUserControl { get; set; }
         public AccountsUserControlViewModel AccountsUserControl { get; set; }
-        public ConnectUserControlViewModel ConnectUserControl { get; set; }
 
         #region Progressbar
         public Task CurrentTask;
@@ -59,6 +59,34 @@ namespace Tintool.ViewModels
                 NotifyOfPropertyChange(() => ProgressText);
             }
         }
+        private double _badooIconOpacity;
+        public double BadooIconOpacity
+        {
+            get
+            {
+                return _badooIconOpacity;
+            }
+            set
+            {
+                _badooIconOpacity = value;
+                NotifyOfPropertyChange(() => BadooIconOpacity);
+            }
+        }
+        private double _tinderIconOpacity;
+        public double TinderIconOpacity
+        {
+            get
+            {
+                return _tinderIconOpacity;
+            }
+            set
+            {
+                _tinderIconOpacity = value;
+                NotifyOfPropertyChange(() => TinderIconOpacity);
+            }
+        }
+        private const double ActiveIconOpacity = 1;
+        private const double DisabledIconOpacity = 0.5;
         #endregion
 
         public MainViewModel(IWindowManager wm)
@@ -66,13 +94,15 @@ namespace Tintool.ViewModels
             this.WM = wm;
         }
 
-        public void InitializeTabs()
+        public void Initialize(bool tinderUp, bool badooUp)
         {
             MatchesUserControl = new MatchesUserControlViewModel(this);
             MessagesUserControl = new MessagesUserControlViewModel(this);
             ToolsUserControl = new ToolsUserControlViewModel(this);
             AccountsUserControl = new AccountsUserControlViewModel(this);
-            ConnectUserControl = new ConnectUserControlViewModel(this);
+
+            TinderIconOpacity = tinderUp ? ActiveIconOpacity : DisabledIconOpacity;
+            BadooIconOpacity = badooUp ? ActiveIconOpacity : DisabledIconOpacity;
         }
 
         public void OnStartup(object sender)
@@ -98,10 +128,6 @@ namespace Tintool.ViewModels
                     else if (tab.Equals("MessagesTab"))
                     {
                         MessagesUserControl.RefreshContent();
-                    }
-                    else if (tab.Equals("ConnectTab"))
-                    {
-                        ConnectUserControl.RefreshContent();
                     }
                     else if (tab.Equals("AccountsTab"))
                     {
@@ -130,6 +156,15 @@ namespace Tintool.ViewModels
             FileManager.SaveSettings(Settings);
             FileManager.SaveStats(Stats);
             TryClose();
+        }
+
+        public void TinderButtonClicked()
+        {
+            WM.ShowDialog(new LoginDialogViewModel(TinderAPI, Settings));
+        }
+        public void BadooButtonClicked()
+        {
+
         }
     }
 }

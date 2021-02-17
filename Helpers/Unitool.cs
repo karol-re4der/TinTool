@@ -251,7 +251,7 @@ namespace Tintool.Models
             });
         }
 
-        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI> OnTinderAPILoaded, Action<BadooAPI> OnBadooAPILoaded, Action<Stats> OnStatsLoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
+        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI, bool> OnTinderAPILoaded, Action<BadooAPI, bool> OnBadooAPILoaded, Action<Stats> OnStatsLoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
@@ -287,14 +287,14 @@ namespace Tintool.Models
                         }
                     }
                 }
-                OnTinderAPILoaded(tinderAPI);
+                OnTinderAPILoaded(tinderAPI, tinderAPI.IsTokenWorking());
 
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                OnBadooAPILoaded(new BadooAPI());
+                OnBadooAPILoaded(new BadooAPI(), false);
 
                 if (cancellationToken.IsCancellationRequested)
                 {

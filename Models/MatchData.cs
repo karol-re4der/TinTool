@@ -27,6 +27,12 @@ namespace Tintool.Models.DataStructures
         Fast
     }
 
+    public enum MatchPlatform
+    {
+        Tinder,
+        Badoo
+    }
+
     public class MatchData
     {
         public string Id { get; set; }
@@ -38,6 +44,7 @@ namespace Tintool.Models.DataStructures
         public bool Active { get; set; } = true;
         public List<MessageData> Conversation { get; set; }
         public string MatcherID { get; set; }
+        public MatchPlatform platform {get;set;}
 
         public MatchData()
         {
@@ -73,6 +80,7 @@ namespace Tintool.Models.DataStructures
             {
                 MatchType = MatchTypes.Regular;
             }
+
 
             Person = new PersonData
             {
