@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tinder.DataStructures.Responses.Matches
+namespace Tintool.APIs.Tinder.Responses.MatchesResponse
 {
 
     public class Meta

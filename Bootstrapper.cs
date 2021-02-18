@@ -1,12 +1,7 @@
 ﻿using Caliburn.Micro;
 using Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using Tintool.Models.DataStructures;
 using Tintool.ViewModels;
-using Tintool.Views;
 
 namespace Tintool
 {

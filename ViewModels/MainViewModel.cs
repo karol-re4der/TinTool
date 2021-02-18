@@ -1,18 +1,10 @@
 ﻿using Caliburn.Micro;
 using Models;
-using OxyPlot.Wpf;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using Tinder.DataStructures;
 using Tintool.APIs.Badoo;
-using Tintool.Models;
-using Tintool.Models.DataStructures;
-using Tintool.ViewModels;
+using Tintool.Models.Saveables;
 using Tintool.ViewModels.Dialogs;
 using Tintool.ViewModels.Tabs;
 
@@ -21,8 +13,8 @@ namespace Tintool.ViewModels
     class MainViewModel : Screen
     {
         public IWindowManager WM { get; set; }
-        public AppSettings Settings { get; set; }
-        public Stats Stats { get; set; }
+        public SettingsModel Settings { get; set; }
+        public StatsModel Stats { get; set; }
         public TinderAPI TinderAPI { get; set; }
         public BadooAPI BadooAPI { get; set; }
 
@@ -160,11 +152,17 @@ namespace Tintool.ViewModels
 
         public void TinderButtonClicked()
         {
-            WM.ShowDialog(new LoginDialogViewModel(TinderAPI, Settings));
+            WM.ShowDialog(new LoginDialogViewModel(this));
         }
         public void BadooButtonClicked()
         {
 
+        }
+
+        public void RefreshStatusIcons()
+        {
+            TinderIconOpacity = TinderAPI.IsTokenWorking() ? ActiveIconOpacity : DisabledIconOpacity;
+            BadooIconOpacity = BadooAPI.IsTokenWorking() ? ActiveIconOpacity : DisabledIconOpacity;
         }
     }
 }

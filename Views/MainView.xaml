@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:cal="http://www.caliburnproject.org"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:datastructures="clr-namespace:Tinder.DataStructures" xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:Tintool.Views" 
         x:Class="Tintool.Views.MainView"
         mc:Ignorable="d"
@@ -15,10 +15,10 @@
             <Grid>
                 <ProgressBar Value="{Binding Progress}" Height="20" Name="ProgressIndicator"></ProgressBar>
                 <DockPanel Height="20">
-                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[TinderButtonClicked()]">
+                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[TinderButtonClicked()]" Background="Transparent">
                         <Image DockPanel.Dock="Left" Source="/Views/icon_tinder.png" Opacity="{Binding TinderIconOpacity}"/>
                     </Button>
-                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[BadooButtonClicked()]">
+                    <Button BorderThickness="0,0,0,0" cal:Message.Attach="[Event Click]=[BadooButtonClicked()]" Background="Transparent">
                         <Image DockPanel.Dock="Left" Source="/Views/icon_badoo.png" Opacity="{Binding BadooIconOpacity}"/>
                     </Button>
                     <TextBlock Text="{Binding ProgressText}"/>

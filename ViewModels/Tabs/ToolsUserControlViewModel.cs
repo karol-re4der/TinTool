@@ -1,18 +1,9 @@
 ﻿using Caliburn.Micro;
-using Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using Tinder.DataStructures;
-using Tinder.DataStructures.Responses.Matches;
-using Tintool.APIs.Badoo;
 using Tintool.Models;
-using Tintool.Models.DataStructures;
-using Tintool.ViewModels.Dialogs;
-using Tintool.Views;
+
 
 namespace Tintool.ViewModels.Tabs
 {

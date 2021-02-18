@@ -6,25 +6,21 @@ using System.Text;
 using System.Net.Http;
 using System.IO;
 using System.Text.Json;
-using Tinder.DataStructures;
-using Tintool.Models.DataStructures;
-using Tintool.Models.DataStructures.Responses.Nearby;
-using Tinder.DataStructures.Responses.Matches;
-using Tintool.Models.DataStructures.Responses.Like;
-using System.ComponentModel;
-using System.Windows.Controls;
-using Tintool.Models.DataStructures.UserResponse;
-using System.Threading.Tasks;
-using Tintool.Models.DataStructures.Responses.Messages;
-using Tintool.Models.DataStructures.Responses;
 using System.Net;
-using System.IO.Compression;
+using Tintool.Models;
+using Tintool.Models.Saveables;
+using Tintool.APIs.Tinder.Responses.MatchesResponse;
+using Tintool.APIs.Tinder.Responses.NearbyResponse;
+using Tintool.APIs.Tinder.Responses.UserResponse;
+using Tintool.APIs.Tinder.Responses.LikeResponse;
+using Tintool.APIs.Tinder.Responses.ProfileResponse;
+using Tintool.APIs.Tinder.Responses.MessageResponse;
 
 namespace Models
 {
     public class TinderAPI
     {
-        private SessionData _session;
+        private SessionModel _session;
         private string _uri = "https://api.gotinder.com/";
         HttpClientHandler handler;
         HttpClient client;
@@ -43,7 +39,7 @@ namespace Models
         }
 
 
-        public List<MessageData> GetMessages(string matchID, int amount = 100)
+        public List<MessageModel> GetMessages(string matchID, int amount = 100)
         {
             Delay();
             HttpResponseMessage response = client.GetAsync($"/v2/matches/{matchID}/messages?count={amount}").Result;
@@ -57,10 +53,10 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
 
-            List<MessageData> result = new List<MessageData>();
-            foreach (Tintool.Models.DataStructures.Responses.Messages.Message msg in JsonSerializer.Deserialize<MessagesResponse>(textResponse).data.messages)
+            List<MessageModel> result = new List<MessageModel>();
+            foreach (Tintool.APIs.Tinder.Responses.MessageResponse.Message msg in JsonSerializer.Deserialize<MessagesResponse>(textResponse).data.messages)
             {
-                MessageData nextMessage = new MessageData
+                MessageModel nextMessage = new MessageModel
                 {
                     Text = msg.message,
                     ReceiverId = msg.from,
@@ -72,7 +68,7 @@ namespace Models
             return result;
         }
 
-        public List<MatchData> GetMatches(int amount)
+        public List<MatchModel> GetMatches(int amount)
         {
             HttpResponseMessage response = client.GetAsync("/v2/matches?count=" + amount).Result;
 
@@ -85,10 +81,10 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
 
-            List<MatchData> result = new List<MatchData>();
-            foreach(Tinder.DataStructures.Responses.Matches.Match match in JsonSerializer.Deserialize<MatchesResponse>(textResponse).data.matches)
+            List<MatchModel> result = new List<MatchModel>();
+            foreach(Tintool.APIs.Tinder.Responses.MatchesResponse.Match match in JsonSerializer.Deserialize<MatchesResponse>(textResponse).data.matches)
             {
-                MatchData newMatchData = new MatchData(match);
+                MatchModel newMatchData = new MatchModel(match);
                 newMatchData.MatcherID = _lastID;
                 result.Add(newMatchData);
             }
@@ -96,7 +92,7 @@ namespace Models
             return result;
         }
 
-        public List<PersonData> GetNearby()
+        public List<PersonModel> GetNearby()
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/v2/recs/core").Result;
@@ -109,10 +105,10 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
 
-            List<PersonData> result = new List<PersonData>();
+            List<PersonModel> result = new List<PersonModel>();
             foreach(Result person in JsonSerializer.Deserialize<NearbyResponse>(textResponse).data.results)
             {
-                PersonData newPerson = new PersonData
+                PersonModel newPerson = new PersonModel
                 {
                     Id = person.user._id,
                     Name = person.user.name,
@@ -123,7 +119,7 @@ namespace Models
             return result;
         }
 
-        public PersonData GetUser(string userID)
+        public PersonModel GetUser(string userID)
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/user/" + userID).Result;
@@ -140,7 +136,7 @@ namespace Models
             UserResponse userResponse = JsonSerializer.Deserialize<UserResponse>(textResponse);
             if (userResponse?.results!=null)
             {
-                PersonData result = new PersonData
+                PersonModel result = new PersonModel
                 {
                     Id = userResponse.results._id,
                     Name = userResponse.results.name,
@@ -156,7 +152,7 @@ namespace Models
         }
 
         [Obsolete("API requires sending SCode now")]
-        public LikeData SendLike(string userID)
+        public LikeModel SendLike(string userID)
         {
             Delay();
             HttpResponseMessage response = client.GetAsync("/like/"+userID).Result;
@@ -170,7 +166,7 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
 
-            LikeData result = new LikeData();
+            LikeModel result = new LikeModel();
             try
             {
                 LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
@@ -181,7 +177,7 @@ namespace Models
                 try
                 {
                     LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
-                    result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
+                    result.ResultingMatch = new MatchModel(likeAndMatchResponse.match);
                     result.ResultingMatch.MatcherID = _lastID;
                     result.LikesRemaining = likeAndMatchResponse.likes_remaining;
                 }
@@ -193,7 +189,7 @@ namespace Models
             return result;
         }
 
-        public LikeData SendLike(string userID, string sCode)
+        public LikeModel SendLike(string userID, string sCode)
         {
             Delay();
             string payloadContent = "{\"s_number\":" + sCode + "}";
@@ -208,7 +204,7 @@ namespace Models
 
             string textResponse = response.Content.ReadAsStringAsync().Result;
 
-            LikeData result = new LikeData();
+            LikeModel result = new LikeModel();
             try
             {
                 LikeWithoutMatchResponse likeWithoutMatchResponse = JsonSerializer.Deserialize<LikeWithoutMatchResponse>(textResponse);
@@ -219,7 +215,7 @@ namespace Models
                 try
                 {
                     LikeAndMatchResponse likeAndMatchResponse = JsonSerializer.Deserialize<LikeAndMatchResponse>(textResponse);
-                    result.ResultingMatch = new MatchData(likeAndMatchResponse.match);
+                    result.ResultingMatch = new MatchModel(likeAndMatchResponse.match);
                     result.ResultingMatch.MatcherID = _lastID;
                     result.LikesRemaining = likeAndMatchResponse.likes_remaining;
                 }
@@ -232,7 +228,7 @@ namespace Models
         }
 
         #region authentication
-        public SessionData TryRefresh(SessionData session)
+        public SessionModel TryRefresh(SessionModel session)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
@@ -269,7 +265,7 @@ namespace Models
             int refEndIndex = responseAsString.IndexOf("$");
             int refLength = refEndIndex - refStartIndex;
 
-            SessionData newSession = new SessionData();
+            SessionModel newSession = new SessionModel();
             if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
             {
                 if (refLength > 0 && refStartIndex - 5 != -1 && refEndIndex != -1)
@@ -331,7 +327,7 @@ namespace Models
 
             return true;
         }
-        public SessionData RequestNewSessionWithPhoneCode(string code, string phoneNumber)
+        public SessionModel RequestNewSessionWithPhoneCode(string code, string phoneNumber)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
@@ -368,7 +364,7 @@ namespace Models
             int refEndIndex = responseAsString.IndexOf("$");
             int refLength = refEndIndex - refStartIndex;
 
-            SessionData session = new SessionData();
+            SessionModel session = new SessionModel();
             if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
             {
                 if (refLength > 0 && refStartIndex-5!=-1 && refEndIndex!=-1)
@@ -400,7 +396,7 @@ namespace Models
             }
             return null;
         }
-        public SessionData RequestNewSessionWithEmailCode(string code, SessionData session)
+        public SessionModel RequestNewSessionWithEmailCode(string code, SessionModel session)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("tinder-version", "2.64.0");
@@ -462,12 +458,12 @@ namespace Models
                 return false;
             }
         }
-        public void SetSession(SessionData newSession)
+        public void SetSession(SessionModel newSession)
         {
             this._session = newSession;
             client.DefaultRequestHeaders.Add("x-auth-token", newSession.AuthToken);
         }
-        public SessionData GetSession()
+        public SessionModel GetSession()
         {
             return _session;
         }

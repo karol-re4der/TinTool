@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures.Responses.Like
+namespace Tintool.APIs.Tinder.Responses.LikeResponse
 {
     public class Match
     {

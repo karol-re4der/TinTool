@@ -3,29 +3,29 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
-using Tintool.Models.DataStructures;
 using OxyPlot.Axes;
 using System.Collections.Immutable;
 using System.Collections;
+using Tintool.Models;
 
-namespace Tinder.DataStructures
+namespace Tintool.Models.Saveables
 {
-    public class Stats
+    public class StatsModel
     {
-        public List<MatchData> Matches { get; set; }
+        public List<MatchModel> Matches { get; set; }
         public DateTime Date = DateTime.MinValue;
         public List<string> ProfileIDs { get; set; } = new List<string>();
         public string FileName { get; set; }
 
-        public Stats()
+        public StatsModel()
         {
 
         }
 
-        public Stats(string fileName)
+        public StatsModel(string fileName)
         {
-            Matches = new List<MatchData>();
-            this.FileName = fileName;
+            Matches = new List<MatchModel>();
+            FileName = fileName;
         }
 
         public void ResetDate()
@@ -33,7 +33,7 @@ namespace Tinder.DataStructures
             if (Date == DateTime.MinValue)
             {
                 Date = DateTime.Now;
-                foreach (MatchData match in Matches)
+                foreach (MatchModel match in Matches)
                 {
                     if (match.CreationDate.CompareTo(Date) < 0)
                     {
@@ -43,10 +43,10 @@ namespace Tinder.DataStructures
             }
         }
 
-        public void MergeUniqueMatchesFrom(Stats stats, string withID = "")
+        public void MergeUniqueMatchesFrom(StatsModel stats, string withID = "")
         {
-            var toMerge = 
-                from MatchData match in stats.Matches
+            var toMerge =
+                from MatchModel match in stats.Matches
                 where Matches.Find((x) => x.IsSameMatch(match)) == null
                 select match;
 
@@ -62,12 +62,12 @@ namespace Tinder.DataStructures
         {
             DateTime actualEndDate = (DateTime.Now.CompareTo(endDate) < 0 ? DateTime.Now.Date : endDate).AddDays(1);
             int daysPassed = actualEndDate.Subtract(startDate).Days;
-            int matchesCount = Matches.Where((x)=>x.CreationDate>=startDate && x.CreationDate<=actualEndDate).Count();
-            float result = (float)matchesCount/daysPassed;
+            int matchesCount = Matches.Where((x) => x.CreationDate >= startDate && x.CreationDate <= actualEndDate).Count();
+            float result = (float)matchesCount / daysPassed;
             return result;
         }
 
-        public void PlotMatchesThroughTime(DateTime startDate, DateTime endDate, PlotData totalDest, PlotData regularDest, PlotData superDest, PlotData boostsDest, PlotData fastDest, PlotData expDest)
+        public void PlotMatchesThroughTime(DateTime startDate, DateTime endDate, UI.PlotModel totalDest, UI.PlotModel regularDest, UI.PlotModel superDest, UI.PlotModel boostsDest, UI.PlotModel fastDest, UI.PlotModel expDest)
         {
             totalDest.Points.Clear();
             regularDest.Points.Clear();
@@ -78,10 +78,10 @@ namespace Tinder.DataStructures
 
             for (DateTime i = startDate; i <= endDate.AddDays(1); i = i.AddDays(1))
             {
-                List<MatchData> matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).ToList();
+                List<MatchModel> matchesThatDay = Matches.Where((x) => x.CreationDate.Date.Equals(i)).ToList();
 
                 int totalThatDay = matchesThatDay.Count();
-                int regularThatDay = matchesThatDay.Where((x)=>x.MatchType==MatchTypes.Regular).Count();
+                int regularThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Regular).Count();
                 int superThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Super).Count();
                 int boostsThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Boost || x.MatchType == MatchTypes.SuperBoost).Count();
                 int expThatDay = matchesThatDay.Where((x) => x.MatchType == MatchTypes.Experiences).Count();
@@ -105,7 +105,7 @@ namespace Tinder.DataStructures
         {
             int totalResponses = 0;
             int totalMessaged = 0;
-            foreach (MatchData match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate.AddDays(1)))
+            foreach (MatchModel match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate.AddDays(1)))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
@@ -135,7 +135,7 @@ namespace Tinder.DataStructures
         {
             int totalConversations = 0;
             int totalMessages = 0;
-            foreach (MatchData match in Matches.Where((x)=>x.CreationDate.Date>=startDate && x.CreationDate<=endDate.AddDays(1)))
+            foreach (MatchModel match in Matches.Where((x) => x.CreationDate.Date >= startDate && x.CreationDate <= endDate.AddDays(1)))
             {
                 if (match.ResponseStatus != ResponseStatusTypes.Undefined && match.ResponseStatus != ResponseStatusTypes.Empty)
                 {
@@ -154,18 +154,18 @@ namespace Tinder.DataStructures
             }
         }
 
-        public void PlotMessagesThroughTime(DateTime startDate, DateTime endDate, PlotData totalDest, PlotData sentDest, PlotData receivedDest)
+        public void PlotMessagesThroughTime(DateTime startDate, DateTime endDate, UI.PlotModel totalDest, UI.PlotModel sentDest, UI.PlotModel receivedDest)
         {
             totalDest.Points.Clear();
             sentDest.Points.Clear();
             receivedDest.Points.Clear();
 
-            List<MessageData> allMsg = new List<MessageData>();
-            foreach (MatchData match in Matches)
+            List<MessageModel> allMsg = new List<MessageModel>();
+            foreach (MatchModel match in Matches)
             {
                 if (match.Conversation?.Count > 0)
                 {
-                    foreach (MessageData msg in match.Conversation)
+                    foreach (MessageModel msg in match.Conversation)
                     {
                         allMsg.Add(msg);
                     }
@@ -174,11 +174,11 @@ namespace Tinder.DataStructures
 
             for (DateTime i = startDate; i <= endDate; i = i.AddDays(1))
             {
-                List<MessageData> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
+                List<MessageModel> messagesThatDay = allMsg.Where((x) => x.Date.Date == i).ToList();
 
                 int totalThatDay = messagesThatDay.Count();
                 int sentThatDay = messagesThatDay.Where((x) => ProfileIDs.Contains(x.ReceiverId)).Count();
-                int receivedThatDay = totalThatDay-sentThatDay;
+                int receivedThatDay = totalThatDay - sentThatDay;
 
                 double translatedDate = DateTimeAxis.ToDouble(i);
 

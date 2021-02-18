@@ -5,24 +5,22 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Tintool.Models.DataStructures;
+using Tintool.Models.Saveables;
 
 namespace Tintool.ViewModels.Dialogs
 {
     class LoginDialogViewModel:Screen
     {
-        private TinderAPI _api;
-        private AppSettings _settings;
+        private MainViewModel _baseViewModel;
 
         public string Number { get; set; }
         public string Code { get; set; }
 
-        public LoginDialogViewModel(TinderAPI api, AppSettings set)
+        public LoginDialogViewModel(MainViewModel baseViewModel)
         {
-            _api = api;
-            _settings = set;
+            _baseViewModel = baseViewModel;
 
-            Number = _settings.LoginNumber;
+            Number = _baseViewModel.Settings.LoginNumber;
         }
 
         private async void Authenticate()
@@ -54,15 +52,15 @@ namespace Tintool.ViewModels.Dialogs
         public async Task<bool> RequestTokenWithCode()
         {
             await Task.Delay(1);
-            SessionData session = _api.RequestNewSessionWithPhoneCode(Code, Number);
+            SessionModel session = _baseViewModel.TinderAPI.RequestNewSessionWithPhoneCode(Code, Number);
             if (!string.IsNullOrWhiteSpace(session?.AuthToken))
             {
-                _api.SetSession(session);
+                _baseViewModel.TinderAPI.SetSession(session);
                 return true;
             }
-            else if (string.IsNullOrWhiteSpace(_api.GetSession()?.AuthToken))
+            else if (string.IsNullOrWhiteSpace(_baseViewModel.TinderAPI.GetSession()?.AuthToken))
             {
-                _api.SetSession(session);
+                _baseViewModel.TinderAPI.SetSession(session);
                 return false;
             }
             else
@@ -74,7 +72,7 @@ namespace Tintool.ViewModels.Dialogs
         public async Task<bool> RequestCode()
         {
             await Task.Delay(1);
-            if (_api.RequestLoginCode(Number))
+            if (_baseViewModel.TinderAPI.RequestLoginCode(Number))
             {
                 return true;
             }
@@ -87,9 +85,9 @@ namespace Tintool.ViewModels.Dialogs
         public async Task<bool> LogByToken()
         {
             await Task.Delay(1);
-            if (_api.IsTokenWorking())
+            if (_baseViewModel.TinderAPI.IsTokenWorking())
             {
-                FileManager.SaveSession(_api.GetSession());
+                FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession());
                 return true;
             }
             else
@@ -100,9 +98,10 @@ namespace Tintool.ViewModels.Dialogs
 
         public void FinalizeLogin()
         {
-            _settings.LoginNumber = Number;
-            FileManager.SaveSettings(_settings);
-            FileManager.SaveSession(_api.GetSession());
+            _baseViewModel.Settings.LoginNumber = Number;
+            FileManager.SaveSettings(_baseViewModel.Settings);
+            FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession());
+            _baseViewModel.RefreshStatusIcons();
             TryClose();
         }
 

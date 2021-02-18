@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures.Responses.Nearby
+namespace Tintool.APIs.Tinder.Responses.NearbyResponse
 {
     public class Meta
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tinder.DataStructures;
+using Tintool.Models.Saveables;
 
-namespace Tintool.Models
+namespace Tintool.Models.UI
 {
     class AccountsTableItemModel
     {
@@ -12,6 +12,6 @@ namespace Tintool.Models
         public int Matches { get; set; }
         public string FileName { get; set; }
 
-        public Stats LinkedStats { get; set; }
+        public StatsModel LinkedStats { get; set; }
     }
 }

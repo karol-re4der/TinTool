@@ -4,7 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace Tintool.Models.DataStructures
+namespace Tintool.Models
 {
     public enum ResponseStatusTypes
     {
@@ -30,27 +30,28 @@ namespace Tintool.Models.DataStructures
     public enum MatchPlatform
     {
         Tinder,
-        Badoo
+        Badoo,
+        Undefined
     }
 
-    public class MatchData
+    public class MatchModel
     {
         public string Id { get; set; }
         public ResponseStatusTypes ResponseStatus { get; set; } = ResponseStatusTypes.Undefined;
         public MatchTypes MatchType { get; set; } = MatchTypes.Undefined;
         public int MessageCount { get; set; } = 0;
         public DateTime CreationDate { get; set; }
-        public PersonData Person { get; set; }
+        public PersonModel Person { get; set; }
         public bool Active { get; set; } = true;
-        public List<MessageData> Conversation { get; set; }
+        public List<MessageModel> Conversation { get; set; }
         public string MatcherID { get; set; }
-        public MatchPlatform platform {get;set;}
+        public MatchPlatform platform { get; set; } = MatchPlatform.Undefined;
 
-        public MatchData()
+        public MatchModel()
         {
 
         }
-        public MatchData(Tinder.DataStructures.Responses.Matches.Match match)
+        public MatchModel(APIs.Tinder.Responses.MatchesResponse.Match match)
         {
 
             Id = match.id;
@@ -82,14 +83,14 @@ namespace Tintool.Models.DataStructures
             }
 
 
-            Person = new PersonData
+            Person = new PersonModel
             {
                 Name = match.person.name,
                 Id = match.person._id,
                 Birthday = match.person.birth_date
             };
         }
-        public MatchData(Responses.Like.Match match)
+        public MatchModel(APIs.Tinder.Responses.LikeResponse.Match match)
         {
             Id = match._id;
             CreationDate = match.created_date;
@@ -120,7 +121,7 @@ namespace Tintool.Models.DataStructures
             }
         }
 
-        public bool IsSameMatch(MatchData match)
+        public bool IsSameMatch(MatchModel match)
         {
             if (match.Id.Equals(Id) && match.MatcherID.Equals(MatcherID))
             {

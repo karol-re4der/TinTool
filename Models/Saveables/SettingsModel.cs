@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures
+namespace Tintool.Models.Saveables
 {
-    class AppSettings
+    class SettingsModel
     {
         public bool KeepLogged { get; set; } = false;
         public string LoginNumber { get; set; } = "";

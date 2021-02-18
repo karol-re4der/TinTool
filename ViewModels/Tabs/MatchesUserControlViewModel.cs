@@ -5,10 +5,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Tinder.DataStructures;
 using Tintool.APIs.Badoo;
 using Tintool.Models;
-using Tintool.Models.DataStructures;
+using Tintool.Models.UI;
 
 namespace Tintool.ViewModels
 {
@@ -17,12 +16,12 @@ namespace Tintool.ViewModels
         private MainViewModel BaseViewModel;
 
         #region Plots
-        public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
-        public PlotData RegularThroughTimePlot { get; set; } = new PlotData();
-        public PlotData SuperThroughTimePlot { get; set; } = new PlotData();
-        public PlotData ExpThroughTimePlot { get; set; } = new PlotData();
-        public PlotData BoostsThroughTimePlot { get; set; } = new PlotData();
-        public PlotData FastThroughTimePlot { get; set; } = new PlotData();
+        public PlotModel TotalThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel RegularThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel SuperThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel ExpThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel BoostsThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel FastThroughTimePlot { get; set; } = new PlotModel();
 
 
         private bool _totalVisible = true;

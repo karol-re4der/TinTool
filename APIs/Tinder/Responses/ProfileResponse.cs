@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures.Responses
+namespace Tintool.APIs.Tinder.Responses.ProfileResponse
 {
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
     public class Meta
     {
         public int status { get; set; }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures.UserResponse
+namespace Tintool.APIs.Tinder.Responses.UserResponse
 {
     public class Image
     {

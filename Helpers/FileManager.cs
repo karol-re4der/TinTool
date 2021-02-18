@@ -6,9 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
-using Tinder.DataStructures;
-using Tinder.DataStructures.Responses.Matches;
-using Tintool.Models.DataStructures;
+using Tintool.Models.Saveables;
 
 namespace Models
 {
@@ -29,7 +27,7 @@ namespace Models
             return new DirectoryInfo(_path + _statsFolder).GetFiles().Where((x)=>x.Extension.Equals(_genericExtension)).ToList();
         }
 
-        public static Stats LoadStatsWithFileName(string fileName)
+        public static StatsModel LoadStatsWithFileName(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -46,7 +44,7 @@ namespace Models
             try
             {
                 reader = new StreamReader(fullFilePath);
-                Stats stats = JsonSerializer.Deserialize<Stats>(reader.ReadToEnd());
+                StatsModel stats = JsonSerializer.Deserialize<StatsModel>(reader.ReadToEnd());
                 stats.ResetDate();
                 return stats;
             }
@@ -64,15 +62,15 @@ namespace Models
             }
         }
 
-        public static List<Stats> LoadAllSavefiles()
+        public static List<StatsModel> LoadAllSavefiles()
         {
-            List<Stats> result = new List<Stats>();
+            List<StatsModel> result = new List<StatsModel>();
 
             foreach(FileInfo file in FindAvailableSaveFiles())
             {
                 if (file.Extension.Equals(_genericExtension))
                 {
-                    Stats loadedStats = LoadStatsWithFileName(file.Name.Replace(_genericExtension, ""));
+                    StatsModel loadedStats = LoadStatsWithFileName(file.Name.Replace(_genericExtension, ""));
                     if (loadedStats != null)
                     {
                         result.Add(loadedStats);
@@ -83,7 +81,7 @@ namespace Models
             return result;
         }
 
-        public static void SaveStats(Stats stats)
+        public static void SaveStats(StatsModel stats)
         {
             try
             {
@@ -104,7 +102,7 @@ namespace Models
         }
         #endregion
 
-        public static void SaveSession(SessionData session)
+        public static void SaveSession(SessionModel session)
         {
             try
             {
@@ -126,7 +124,7 @@ namespace Models
             }
         }
 
-        public static SessionData LoadSession()
+        public static SessionModel LoadSession()
         {
             string fullFilePath = _path + @"\" + _sessionFileName + _sessionFileExtension;
 
@@ -143,7 +141,7 @@ namespace Models
                 reader = new StreamReader(cStream);
 
                 string sessionAsJson = reader.ReadToEnd();
-                SessionData result = JsonSerializer.Deserialize<SessionData>(sessionAsJson);
+                SessionModel result = JsonSerializer.Deserialize<SessionModel>(sessionAsJson);
 
                 return result;
             }
@@ -162,7 +160,7 @@ namespace Models
             }
         }
 
-        public static AppSettings LoadSettings()
+        public static SettingsModel LoadSettings()
         {
             string fullFilePath = _path + @"\" + _settingsFileName + _genericExtension;
 
@@ -170,12 +168,12 @@ namespace Models
             try
             {
                 reader = new StreamReader(fullFilePath);
-                AppSettings stats = JsonSerializer.Deserialize<AppSettings>(reader.ReadToEnd());
+                SettingsModel stats = JsonSerializer.Deserialize<SettingsModel>(reader.ReadToEnd());
                 return stats;
             }
             catch (FileNotFoundException e)
             {
-                return new AppSettings();
+                return new SettingsModel();
             }
             catch (Exception e)
             {
@@ -187,7 +185,7 @@ namespace Models
             }
         }
 
-        public static void SaveSettings(AppSettings settings)
+        public static void SaveSettings(SettingsModel settings)
         {
             try
             {

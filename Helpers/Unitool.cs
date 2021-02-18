@@ -5,28 +5,26 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tinder.DataStructures;
-using Tintool.Models.DataStructures;
-using Tintool.Models.DataStructures.Responses.Nearby;
 using Tintool.APIs.Badoo;
+using Tintool.Models.Saveables;
 
 namespace Tintool.Models
 {
     class Unitool
     {
-        public static Task LogNewMatches(TinderAPI api, Action<bool> OnWorkFinished, Stats stats, CancellationToken cancellationToken)
+        public static Task LogNewMatches(TinderAPI api, Action<bool> OnWorkFinished, StatsModel stats, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
                 CancellationToken token = cancellationToken;
                 if (api.IsTokenWorking())
                 {
-                    foreach (MatchData match in api.GetMatches(100))
+                    foreach (MatchModel match in api.GetMatches(100))
                     {
                         //add
                         if (!token.IsCancellationRequested)
                         {
-                            MatchData existing = stats.Matches.Find((x) => x.IsSameMatch(match));
+                            MatchModel existing = stats.Matches.Find((x) => x.IsSameMatch(match));
                             if (existing == null)
                             {
                                 stats.Matches.Add(match);
@@ -42,7 +40,7 @@ namespace Tintool.Models
             });
         }
 
-        public static Task ProximityCheck(TinderAPI api, Stats stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
+        public static Task ProximityCheck(TinderAPI api, StatsModel stats, int distance, Action<int> OnProgress, Action<string> OnResults, Action<string> OnFinish, CancellationToken token)
         {
             return new Task(() =>
             {
@@ -50,10 +48,10 @@ namespace Tintool.Models
                 List<string> results = new List<string>();
                 int progress = 0;
                 int maxProgress = stats.Matches.Count();
-                List<MatchData> allMatches = api.GetMatches(100);
+                List<MatchModel> allMatches = api.GetMatches(100);
                 
 
-                foreach (MatchData match in stats.Matches)
+                foreach (MatchModel match in stats.Matches)
                 {
                     if (token.IsCancellationRequested)
                     {
@@ -75,7 +73,7 @@ namespace Tintool.Models
                     {
                         if (allMatches.Any((x) => x.Person.Id.Equals(match.Person.Id)))
                         {
-                            PersonData upToDateMatch = api.GetUser(match.Person.Id);
+                            PersonModel upToDateMatch = api.GetUser(match.Person.Id);
                             if (upToDateMatch?.Distance <= distance)
                             {
                                 results.Add(upToDateMatch.Name);
@@ -119,15 +117,15 @@ namespace Tintool.Models
 
                 while (iterations <= size)
                 {
-                    List<PersonData> nearby = api.GetNearby();
+                    List<PersonModel> nearby = api.GetNearby();
                     if (nearby?.Count>0)
                     {
-                        foreach (PersonData person in nearby)
+                        foreach (PersonModel person in nearby)
                         {
                             iterations++;
                             if (iterations <= size)
                             {
-                                LikeData likeResult = api.SendLike(person.Id, person.SCode);
+                                LikeModel likeResult = api.SendLike(person.Id, person.SCode);
    
                                 if (likeResult?.LikesRemaining>0)
                                 {
@@ -176,15 +174,15 @@ namespace Tintool.Models
             });
         }
 
-        public static Task ValidateMatches(TinderAPI api, Stats stats, Action<int> OnProgress, CancellationToken cancellationToken)
+        public static Task ValidateMatches(TinderAPI api, StatsModel stats, Action<int> OnProgress, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
                 int progress = 0;
                 int maxProgress = stats.Matches.Where((x) => x.Active).Count();
-                List<MatchData> allMatches = api.GetMatches(100);
+                List<MatchModel> allMatches = api.GetMatches(100);
                 CancellationToken token = cancellationToken;
-                foreach (MatchData match in stats.Matches)
+                foreach (MatchModel match in stats.Matches)
                 {
                     if (token.IsCancellationRequested)
                     {
@@ -192,7 +190,7 @@ namespace Tintool.Models
                     }
                     else if (match.Active)
                     {
-                        List<MessageData> messages = api.GetMessages(match.Id);
+                        List<MessageModel> messages = api.GetMessages(match.Id);
 
                         //activity
                         if (messages == null || !allMatches.Any((x)=>x.Person.Id.Equals(match.Person.Id)))
@@ -251,7 +249,7 @@ namespace Tintool.Models
             });
         }
 
-        public static Task StartUp(Action<AppSettings> OnSettingsLoaded, Action<TinderAPI, bool> OnTinderAPILoaded, Action<BadooAPI, bool> OnBadooAPILoaded, Action<Stats> OnStatsLoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
+        public static Task StartUp(Action<SettingsModel> OnSettingsLoaded, Action<TinderAPI, bool> OnTinderAPILoaded, Action<BadooAPI, bool> OnBadooAPILoaded, Action<StatsModel> OnStatsLoaded, Action<bool> OnFinished, CancellationToken cancellationToken)
         {
             return new Task(() =>
             {
@@ -260,7 +258,7 @@ namespace Tintool.Models
                 //Settings
                 FileManager.Prepare();
                 string newFileName = FileManager.CreateUniqueStatsName();
-                AppSettings loadedSettings = FileManager.LoadSettings();
+                SettingsModel loadedSettings = FileManager.LoadSettings();
                 OnSettingsLoaded(loadedSettings);
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -269,7 +267,7 @@ namespace Tintool.Models
 
                 //APIs
                 TinderAPI tinderAPI = new TinderAPI();
-                SessionData loadedSession = FileManager.LoadSession();
+                SessionModel loadedSession = FileManager.LoadSession();
                 if (loadedSession?.AuthToken.Length > 0)
                 {
                     tinderAPI.SetSession(loadedSession);
@@ -307,10 +305,10 @@ namespace Tintool.Models
                     return;
                 }
 
-                Stats stats = FileManager.LoadStatsWithFileName(loadedSettings.DefaultSaveFile);
+                StatsModel stats = FileManager.LoadStatsWithFileName(loadedSettings.DefaultSaveFile);
                 if (stats == null)
                 {
-                    stats = new Stats(newFileName);
+                    stats = new StatsModel(newFileName);
                     loadedSettings.DefaultSaveFile = newFileName;
                     FileManager.SaveStats(stats);
                     stats.ResetDate();

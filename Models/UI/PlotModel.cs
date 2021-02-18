@@ -3,18 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures
+namespace Tintool.Models.UI
 {
-    public class PlotData
+    public class PlotModel
     {
-        public PlotData()
+        public PlotModel()
         {
-            this.Title = "Example 2";
-            this.Points = new List<DataPoint>();
+            Title = "Example 2";
+            Points = new List<DataPoint>();
         }
 
         public string Title { get; set; }
-        
+
 
         public IList<DataPoint> Points { get; private set; }
     }

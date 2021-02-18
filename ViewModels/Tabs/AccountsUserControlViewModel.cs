@@ -8,10 +8,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using Tinder.DataStructures;
 using Tintool.APIs.Badoo;
-using Tintool.Models;
-using Tintool.Models.DataStructures;
+using Tintool.Models.Saveables;
+using Tintool.Models.UI;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -101,7 +100,7 @@ namespace Tintool.ViewModels.Tabs
         {
             AvailableIDsList = new List<AccountsTableItemModel>();
 
-            foreach (Stats s in FileManager.LoadAllSavefiles())
+            foreach (StatsModel s in FileManager.LoadAllSavefiles())
             {
                 if (!s.FileName.Equals(BaseViewModel.Stats.FileName))
                 {
@@ -119,7 +118,7 @@ namespace Tintool.ViewModels.Tabs
             RefreshContent();
         }
 
-        private List<AccountsTableItemModel> ListModelsFromStats(Stats stats)
+        private List<AccountsTableItemModel> ListModelsFromStats(StatsModel stats)
         {
             List<AccountsTableItemModel> result = new List<AccountsTableItemModel>();
 

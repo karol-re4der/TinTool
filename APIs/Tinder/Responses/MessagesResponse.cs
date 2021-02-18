@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tintool.Models.DataStructures.Responses.Messages
+namespace Tintool.APIs.Tinder.Responses.MessageResponse
 {
     public class Meta
     {

@@ -8,10 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Tinder.DataStructures;
 using Tintool.Models;
-using Tintool.Models.DataStructures;
 using Tintool.APIs.Badoo;
+using Tintool.Models.UI;
 
 namespace Tintool.ViewModels.Tabs
 {
@@ -20,9 +19,9 @@ namespace Tintool.ViewModels.Tabs
         public MainViewModel BaseViewModel;
 
         #region Plots
-        public PlotData TotalThroughTimePlot { get; set; } = new PlotData();
-        public PlotData SentThroughTimePlot { get; set; } = new PlotData();
-        public PlotData ReceivedThroughTimePlot { get; set; } = new PlotData();
+        public PlotModel TotalThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel SentThroughTimePlot { get; set; } = new PlotModel();
+        public PlotModel ReceivedThroughTimePlot { get; set; } = new PlotModel();
 
         private bool _totalVisible = true;
         public string TotalVisibleAsString
