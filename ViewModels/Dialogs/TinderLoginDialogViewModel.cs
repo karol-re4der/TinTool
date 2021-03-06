@@ -1,22 +1,19 @@
 ﻿using Caliburn.Micro;
 using Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Tintool.Models.Saveables;
 
 namespace Tintool.ViewModels.Dialogs
 {
-    class LoginDialogViewModel:Screen
+    class TinderLoginDialogViewModel:Screen
     {
         private MainViewModel _baseViewModel;
 
         public string Number { get; set; }
         public string Code { get; set; }
 
-        public LoginDialogViewModel(MainViewModel baseViewModel)
+        public TinderLoginDialogViewModel(MainViewModel baseViewModel)
         {
             _baseViewModel = baseViewModel;
 
@@ -87,7 +84,7 @@ namespace Tintool.ViewModels.Dialogs
             await Task.Delay(1);
             if (_baseViewModel.TinderAPI.IsTokenWorking())
             {
-                FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession());
+                FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession(), "tinder");
                 return true;
             }
             else
@@ -100,7 +97,7 @@ namespace Tintool.ViewModels.Dialogs
         {
             _baseViewModel.Settings.LoginNumber = Number;
             FileManager.SaveSettings(_baseViewModel.Settings);
-            FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession());
+            FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession(), "tinder");
             _baseViewModel.RefreshStatusIcons();
             TryClose();
         }

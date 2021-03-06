@@ -267,7 +267,7 @@ namespace Tintool.Models
 
                 //APIs
                 TinderAPI tinderAPI = new TinderAPI();
-                SessionModel loadedSession = FileManager.LoadSession();
+                SessionModel loadedSession = FileManager.LoadSession("tinder");
                 if (loadedSession?.AuthToken.Length > 0)
                 {
                     tinderAPI.SetSession(loadedSession);

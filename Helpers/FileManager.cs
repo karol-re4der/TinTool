@@ -102,11 +102,12 @@ namespace Models
         }
         #endregion
 
-        public static void SaveSession(SessionModel session)
+        #region Session
+        public static void SaveSession(SessionModel session, string platform)
         {
             try
             {
-                FileStream file = File.Create(_path + @"\" + _sessionFileName + _sessionFileExtension);
+                FileStream file = File.Create(_path + @"\" + _sessionFileName + "_" + platform + _sessionFileExtension);
 
                 using Aes aes = Aes.Create();
                 aes.Key = _encryptionKey;
@@ -124,9 +125,9 @@ namespace Models
             }
         }
 
-        public static SessionModel LoadSession()
+        public static SessionModel LoadSession(string platform)
         {
-            string fullFilePath = _path + @"\" + _sessionFileName + _sessionFileExtension;
+            string fullFilePath = _path + @"\" + _sessionFileName + "_" + platform + _sessionFileExtension;
 
             StreamReader reader = null;
             try
@@ -159,6 +160,7 @@ namespace Models
                 reader?.Close();
             }
         }
+        #endregion
 
         public static SettingsModel LoadSettings()
         {

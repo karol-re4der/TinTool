@@ -15,9 +15,9 @@ namespace Tintool.Views.Dialogs
     /// <summary>
     /// Interaction logic for LoginDialogView.xaml
     /// </summary>
-    public partial class LoginDialogView : Window
+    public partial class BadooLoginDialogView : Window
     {
-        public LoginDialogView()
+        public BadooLoginDialogView()
         {
             InitializeComponent();
         }

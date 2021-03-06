@@ -152,11 +152,11 @@ namespace Tintool.ViewModels
 
         public void TinderButtonClicked()
         {
-            WM.ShowDialog(new LoginDialogViewModel(this));
+            WM.ShowDialog(new TinderLoginDialogViewModel(this));
         }
         public void BadooButtonClicked()
         {
-
+            WM.ShowDialog(new BadooLoginDialogViewModel(this));
         }
 
         public void RefreshStatusIcons()

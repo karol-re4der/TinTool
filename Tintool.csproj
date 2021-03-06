@@ -32,4 +32,16 @@
     <Resource Include="Views\icon_tinder.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Views\Dialogs\BadooLoginDialogView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\Dialogs\BadooLoginDialogView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>
