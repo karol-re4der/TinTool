@@ -11,8 +11,10 @@
         <TextBlock>Phone Number</TextBlock>
         <TextBox Text="{Binding Number}"/>
         <Separator/>
-        <TextBlock>Code</TextBlock>
-        <TextBox Text="{Binding Code}"/>
+        <TextBlock>Phone Code</TextBlock>
+        <TextBox Text="{Binding PhoneCode}"/>
+        <TextBlock>Email Code</TextBlock>
+        <TextBox Text="{Binding MailCode}"/>
         <Separator/>
         <Button cal:Message.Attach="[Event Click]=[LoginButtonClicked()]">Log in</Button>
         <Separator Visibility="Hidden"/>

@@ -11,7 +11,10 @@ namespace Tintool.ViewModels.Dialogs
         private MainViewModel _baseViewModel;
 
         public string Number { get; set; }
-        public string Code { get; set; }
+        public string PhoneCode { get; set; }
+        public string MailCode { get; set; }
+
+        public SessionModel Session { get; set; }
 
         public TinderLoginDialogViewModel(MainViewModel baseViewModel)
         {
@@ -22,42 +25,56 @@ namespace Tintool.ViewModels.Dialogs
 
         private async void Authenticate()
         {
-            if (!string.IsNullOrWhiteSpace(Number) && !string.IsNullOrWhiteSpace(Code))
+            if (!string.IsNullOrWhiteSpace(MailCode) && !string.IsNullOrWhiteSpace(Number) && !string.IsNullOrWhiteSpace(PhoneCode))
             {
-                if (await RequestTokenWithCode())
+                if (await RequestTokenWithMailCode())
                 {
                     FinalizeLogin();
                 }
                 else
                 {
-                    MessageBox.Show("Cannot authenticate!");
+                    MessageBox.Show("Something went wrong!");
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(PhoneCode) && !string.IsNullOrWhiteSpace(Number))
+            {
+                if (!await RequestTokenWithPhoneCode())
+                {
+                    if (!string.IsNullOrWhiteSpace(_baseViewModel.TinderAPI.GetSession()?.AuthToken))
+                    {
+                        FinalizeLogin();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Something went wrong! Is mail code required?");
+                    }
                 }
             }
             else if (!string.IsNullOrWhiteSpace(Number))
             {
-                if (!await RequestCode())
+                if (!await RequestPhoneCode())
                 {
-                    MessageBox.Show("Cannot request code!");
+                    MessageBox.Show("Something went wrong!");
                 }
             }
             else
             {
-                MessageBox.Show("Enter phone number first!");
+                MessageBox.Show("Enter credentials first!");
             }
         }
 
-        public async Task<bool> RequestTokenWithCode()
+        public async Task<bool> RequestTokenWithPhoneCode()
         {
             await Task.Delay(1);
-            SessionModel session = _baseViewModel.TinderAPI.RequestNewSessionWithPhoneCode(Code, Number);
-            if (!string.IsNullOrWhiteSpace(session?.AuthToken))
+            Session = _baseViewModel.TinderAPI.RequestNewSessionWithPhoneCode(PhoneCode, Number);
+            if (!string.IsNullOrWhiteSpace(Session?.AuthToken))
             {
-                _baseViewModel.TinderAPI.SetSession(session);
+                _baseViewModel.TinderAPI.SetSession(Session);
                 return true;
             }
             else if (string.IsNullOrWhiteSpace(_baseViewModel.TinderAPI.GetSession()?.AuthToken))
             {
-                _baseViewModel.TinderAPI.SetSession(session);
+                _baseViewModel.TinderAPI.SetSession(Session);
                 return false;
             }
             else
@@ -66,7 +83,27 @@ namespace Tintool.ViewModels.Dialogs
             }
         }
 
-        public async Task<bool> RequestCode()
+        public async Task<bool> RequestTokenWithMailCode()
+        {
+            await Task.Delay(1);
+            Session = _baseViewModel.TinderAPI.RequestNewSessionWithEmailCode(MailCode, Session);
+            if (!string.IsNullOrWhiteSpace(Session?.AuthToken))
+            {
+                _baseViewModel.TinderAPI.SetSession(Session);
+                return true;
+            }
+            else if (string.IsNullOrWhiteSpace(_baseViewModel.TinderAPI.GetSession()?.AuthToken))
+            {
+                _baseViewModel.TinderAPI.SetSession(Session);
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RequestPhoneCode()
         {
             await Task.Delay(1);
             if (_baseViewModel.TinderAPI.RequestLoginCode(Number))
@@ -84,7 +121,6 @@ namespace Tintool.ViewModels.Dialogs
             await Task.Delay(1);
             if (_baseViewModel.TinderAPI.IsTokenWorking())
             {
-                FileManager.SaveSession(_baseViewModel.TinderAPI.GetSession(), "tinder");
                 return true;
             }
             else

@@ -361,13 +361,16 @@ namespace Models
             int tokenLength = tokenEndIndex - tokenStartIndex;
 
             int refStartIndex = responseAsString.IndexOf("B�\u0001\nP") + 5;
-            int refEndIndex = responseAsString.IndexOf("$");
-            int refLength = refEndIndex - refStartIndex;
+            if (refStartIndex == -1)
+            {
+                refStartIndex = responseAsString.IndexOf("\nP") + 2;
+            }
+            int refLength = 36;
 
             SessionModel session = new SessionModel();
             if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
             {
-                if (refLength > 0 && refStartIndex-5!=-1 && refEndIndex!=-1)
+                if (refLength > 0 && refStartIndex-5!=-1)
                 {
                     session.AuthToken = responseAsString.Substring(tokenStartIndex, tokenLength);
                     session.RefreshToken = responseAsString.Substring(refStartIndex, refLength);
@@ -379,7 +382,7 @@ namespace Models
                 }
             }
             
-            if(refLength > 0 && refStartIndex - 5 != -1 && refEndIndex != -1)
+            if(refStartIndex - 2 != -1)
             {
                 if (tokenLength == 36 && tokenStartIndex - 2 != -1 && tokenEndIndex != -1)
                 {
