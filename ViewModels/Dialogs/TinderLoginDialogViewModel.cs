@@ -38,7 +38,7 @@ namespace Tintool.ViewModels.Dialogs
             }
             else if (!string.IsNullOrWhiteSpace(PhoneCode) && !string.IsNullOrWhiteSpace(Number))
             {
-                if (!await RequestTokenWithPhoneCode())
+                if (await RequestTokenWithPhoneCode())
                 {
                     if (!string.IsNullOrWhiteSpace(_baseViewModel.TinderAPI.GetSession()?.AuthToken))
                     {
@@ -46,8 +46,12 @@ namespace Tintool.ViewModels.Dialogs
                     }
                     else
                     {
-                        MessageBox.Show("Something went wrong! Is mail code required?");
+                        MessageBox.Show("Something went wrong! Is a mail code required?");
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong! Is a mail code required?");
                 }
             }
             else if (!string.IsNullOrWhiteSpace(Number))
@@ -55,6 +59,10 @@ namespace Tintool.ViewModels.Dialogs
                 if (!await RequestPhoneCode())
                 {
                     MessageBox.Show("Something went wrong!");
+                }
+                else
+                {
+                    MessageBox.Show("Phone code sent!");
                 }
             }
             else

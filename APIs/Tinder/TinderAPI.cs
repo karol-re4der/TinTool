@@ -463,8 +463,11 @@ namespace Models
         }
         public void SetSession(SessionModel newSession)
         {
-            this._session = newSession;
-            client.DefaultRequestHeaders.Add("x-auth-token", newSession.AuthToken);
+            if (newSession != null)
+            {
+                this._session = newSession;
+                client.DefaultRequestHeaders.Add("x-auth-token", newSession.AuthToken);
+            }
         }
         public SessionModel GetSession()
         {
@@ -475,7 +478,7 @@ namespace Models
         public string GetProfileID()
         {
             Delay();
-            HttpResponseMessage response = client.GetAsync("/v2/profile?locale=en&include=likes%2Cplus_control%2Cproducts%2Cpurchase%2Cuser").Result;
+            HttpResponseMessage response = client.GetAsync("v2/profile?locale=en&include=user").Result;
 
             if (!response.IsSuccessStatusCode)
             {
